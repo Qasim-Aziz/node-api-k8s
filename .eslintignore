@@ -1,0 +1,7 @@
+.git
+**/node_modules/*
+build
+dist
+dist/static
+server/shared/assets
+server/helpers/express-validation/*.js

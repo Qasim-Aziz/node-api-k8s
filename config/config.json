@@ -1,0 +1,12 @@
+{
+  "development": {
+    "username": null,
+    "password": null,
+    "database": "pavlova",
+    "host": "127.0.0.1",
+    "dialect": "postgresql"
+  },
+  "prod": {
+    "use_env_variable": "DATABASE_URL"
+  }
+}

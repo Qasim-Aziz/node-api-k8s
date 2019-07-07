@@ -1,0 +1,10 @@
+
+{
+  "rules": {
+    "comma-spacing": ["off"],
+    "object-shorthand": ["off"],
+    "comma-dangle": ["off"],
+    "func-names": ["off"],
+    "no-unused-vars": ["off"] // this rule may stay
+  }
+}

@@ -1,0 +1,8 @@
+export default {
+  port: 12873,
+  jwtSecret: '0a6b944d-d2fb-46fc-a85e-0295c986cd9f',
+  front: {
+    url: '',
+    port: 8080
+  },
+};
