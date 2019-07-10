@@ -50,7 +50,6 @@ app.use(helmet());
 // enable CORS - Cross Origin Resource Sharing
 app.use(cors());
 
-
 passport.use(new JWTStrategy({
   jwtFromRequest: req => req.cookies.jwt,
   secretOrKey: secret,
@@ -60,7 +59,7 @@ passport.use(new JWTStrategy({
   logger.info(jwtPayload)
   if (moment() > moment(jwtPayload.expires)) return done('jwt expired');
   const user = await User.findOne({ where: { id: jwtPayload.userId } });
-  if (user) return done(null, jwtPayload);
+  if (user) return done(null, user);
   return done(null, false);
 }));
 
