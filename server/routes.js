@@ -3,6 +3,7 @@ import httpStatus from 'http-status';
 import config from 'config/env';
 
 import { userRoutes } from 'server/topics/user/user.route';
+import { authRoutes } from 'server/topics/auth/auth.route';
 
 import { Env } from 'server/helpers/helpers';
 
@@ -13,12 +14,6 @@ const router = express.Router(); // eslint-disable-line new-cap
 router.use((req, res, next) => {
   const env = process.env.NODE_ENV || config.env;
   if (Env.isTest) {
-    next();
-    return;
-  }
-  const bypass = false;
-
-  if (bypass) {
     next();
     return;
   }
@@ -37,5 +32,6 @@ router.use((req, res, next) => {
 });
 
 router.use('/users', userRoutes);
+router.use('/auth', authRoutes);
 
 export default router;

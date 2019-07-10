@@ -53,7 +53,7 @@ const getModel = (name) => {
   return model;
 };
 
-// export const User = getModel('user.js');
+export const User = getModel('user.js');
 
 _.forIn(exports, (model) => {
   if (model && model.associate) {

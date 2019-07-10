@@ -1,3 +1,4 @@
+import Promise from 'bluebird';
 import _ from 'server/helpers/lodash';
 
 export const promiseMapSeries = async (input, callback) => Promise.mapSeries(input, callback || (val => (val)));
