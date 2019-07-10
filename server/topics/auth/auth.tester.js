@@ -25,12 +25,12 @@ export const loginUser = async (credentials, email, password, { status = httpSta
   return res.body.user;
 };
 
-export const logoutUser = async (cookie, email, { status = httpStatus.OK } = {}) => {
+export const logoutUser = async (cookie, { status = httpStatus.OK } = {}) => {
   logger.info(cookie)
   const res = await request(app)
     .post('/api/auth/logout')
     .set('cookie', cookie)
-    .send({ email })
+    .send({})
     .expect(status);
   const userRes = res.body.user;
   logger.info('res');

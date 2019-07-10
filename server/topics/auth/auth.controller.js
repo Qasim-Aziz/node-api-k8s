@@ -41,10 +41,8 @@ export class AuthController {
     return this.login(req, res);
   }
 
-  @validation({ body: { email: Joi.string().lowercase().email().required() } })
+  @validation({})
   async logout(req, res) {
-    // useful for testing to have email in body
-    if (req.user.email !== req.body.email) throw new BackError('You can only logout your own account');
     //todo list of blacklisted token that are not yet expired
     res.clearCookie('jwt');
   }

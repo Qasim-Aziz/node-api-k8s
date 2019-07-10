@@ -9,5 +9,5 @@ describe('# Auth Tests', async () => {
 
   it('should register the user', () => Testers.registerUser(user1));
 
-  it('should logout the user', () => Testers.logoutUser(user1.cookie, user1.email));
+  it('should logout the user', () => Testers.logoutUser(user1.cookie));
 });
