@@ -37,10 +37,8 @@ export class AuthController {
   async register(req, res) {
     const { email, phone, password } = req.body;
     const passwordHash = await bcrypt.hash(password, 10);
-    const user = await User.create({ email, phone, passwordHash });
-    const jwt = AuthService.generateToken(user);
-    res.cookie('jwt', jwt, { httpOnly: true, secure: true });
-    res.json({ user });
+    await User.create({ email, phone, passwordHash });
+    return this.login(req, res);
   }
 
   @validation({ body: { email: Joi.string().lowercase().email().required() } })
