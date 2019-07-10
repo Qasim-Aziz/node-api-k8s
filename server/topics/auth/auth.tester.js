@@ -17,7 +17,7 @@ export const registerUser = async (user, { status = httpStatus.OK } = {}) => {
   return userRes;
 };
 
-export const loginUser = async (credentials, email, password, { status = httpStatus.OK } = {}) => {
+export const loginUser = async (email, password, { status = httpStatus.OK } = {}) => {
   const res = await request(app)
     .post('/api/auth/login')
     .send({ email, password })

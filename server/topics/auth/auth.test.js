@@ -10,4 +10,7 @@ describe('# Auth Tests', async () => {
   it('should register the user', () => Testers.registerUser(user1));
 
   it('should logout the user', () => Testers.logoutUser(user1.cookie));
+
+  it('should login again the user', () => Testers.loginUser(user1.email, user1.password));
+
 });

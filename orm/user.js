@@ -34,5 +34,6 @@ module.exports = function (sequelize, DataTypes) {
       field: 'is_admin',
       defaultValue: false,
     }
+    //todo define default scope and exclude passwordHash
   }, { tableName: 'user' });
 };
