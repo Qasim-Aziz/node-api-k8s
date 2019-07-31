@@ -22,8 +22,8 @@ export class AuthController {
     if (!user) throw new BackError(`User not found`);
     const isPwdOk = await bcrypt.compare(password, user.passwordHash);
     if (!isPwdOk) throw new BackError('Wrong password', httpStatus.BAD_REQUEST);
-    const jwt = AuthService.generateToken(user);
-    res.cookie('jwt', jwt, { httpOnly: true, secure: true });
+    const token = AuthService.generateToken(user);
+    res.cookie('jwt', token);
     res.json({ user });
   }
 
@@ -45,5 +45,7 @@ export class AuthController {
   async logout(req, res) {
     //todo list of blacklisted token that are not yet expired
     res.clearCookie('jwt');
+    res.clearCookie('expires');
+    res.json({});
   }
 }

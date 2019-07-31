@@ -11,6 +11,5 @@ describe('# Auth Tests', async () => {
 
   it('should logout the user', () => Testers.logoutUser(user1.cookie));
 
-  it('should login again the user', () => Testers.loginUser(user1.email, user1.password));
-
+  it('should login again the user', () => Testers.loginUser(user1));
 });

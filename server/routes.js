@@ -12,20 +12,8 @@ import logger from 'server/helpers/logger'; // eslint-disable-line no-unused-var
 const router = express.Router(); // eslint-disable-line new-cap
 
 router.use((req, res, next) => {
-  const env = process.env.NODE_ENV || config.env;
   if (Env.isTest) {
     next();
-    return;
-  }
-  const headerEnv = req.get('env') || req.cookies.env;
-
-  if (env !== headerEnv) {
-    const error = [
-      `Rejecting frontend request claiming to be on environment [${headerEnv}]`,
-      `because the server is running on environment [${env}].`,
-      `Request was a ${req.method} on "${req.originalUrl}"`,
-    ].join(' ');
-    res.status(httpStatus.NOT_ACCEPTABLE).json({ error });
     return;
   }
   next();
