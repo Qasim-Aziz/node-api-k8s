@@ -5,10 +5,10 @@ import _ from 'server/helpers/lodash';
 import logger from 'server/helpers/logger'; // eslint-disable-line no-unused-vars
 
 const PG_USER = process.env.PG_USER || 'postgres';
-const PG_PASSWORD = process.env.PG_PASSWORD || 'no_pass'; // In pg_hba trust, all passwords are accepted ..
+const PG_PASSWORD = process.env.PG_PASSWORD || 'password'; // In pg_hba trust, all passwords are accepted ..
 const PG_HOST = process.env.PG_HOST || 'localhost';
 const PG_PORT = process.env.PG_PORT || 5432;
-const PG_DATABASE = process.env.PG_DATABASE || 'pavlova';
+const PG_DATABASE = process.env.PG_DATABASE || 'jardinsecret';
 const databaseUrl = process.env.DATABASE_URL || `postgresql://${PG_USER}:${PG_PASSWORD}@${PG_HOST}:${PG_PORT}/${PG_DATABASE}`;
 
 const sequelizeOptions = (databaseUrl.indexOf('localhost') !== -1) ? {} : {

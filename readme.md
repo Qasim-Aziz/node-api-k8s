@@ -1,4 +1,4 @@
-# Pavlova back-end project
+# Jardin secret back-end project
 
 ## Prequisites
 
@@ -33,7 +33,7 @@ npm run yarn
 Create database:
 
 ```bash
-createdb pavlova
+createdb jardinsecret
 ```
 
 Run tests (btw it initializes the DB):

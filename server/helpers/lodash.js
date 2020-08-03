@@ -1,7 +1,7 @@
 import lodash from 'lodash'; // eslint-disable-line no-restricted-imports
 import seedrandom from 'seedrandom';
 
-seedrandom('pavlova', { global: true });
+seedrandom('jardinsecret', { global: true });
 const _ = lodash.runInContext();
 
 const hasNested = (obj, key) => {

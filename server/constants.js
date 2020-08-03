@@ -33,7 +33,7 @@ export const ENVS = Object.freeze({
   TEST: 'test',
 });
 
-export const CLS_NAMESPACE = 'pavlova';
+export const CLS_NAMESPACE = 'jardinsecret';
 
 export const secret = process.env.JWT_SECRET || 'FDA1A481A5928A35D7CD281076DE2791857D92F7E7742F7E32E6248DF5BDFBFA';
 
