@@ -23,10 +23,10 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       field: 'password_hash'
     },
-    phone: {
+    pseudo: {
       type: DataTypes.TEXT,
       allowNull: false,
-      field: 'phone',
+      field: 'pseudo',
     },
     isAdmin: {
       type: DataTypes.BOOLEAN,

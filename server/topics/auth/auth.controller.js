@@ -30,14 +30,14 @@ export class AuthController {
   @validation({
     body: {
       email: Joi.string().lowercase().email().required(),
-      phone: phoneValidator.phone().mobile().required(),
+      pseudo: Joi.string().required(),
       password: Joi.string().required(),
     },
   })
   async register(req, res) {
-    const { email, phone, password } = req.body;
+    const { email, pseudo, password } = req.body;
     const passwordHash = await bcrypt.hash(password, 10);
-    await User.create({ email, phone, passwordHash });
+    await User.create({ email, pseudo, passwordHash });
     return this.login(req, res);
   }
 

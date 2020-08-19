@@ -15,9 +15,10 @@ if (argv.only && argv.only !== process.env.NODE_ENV) {
 process.env.NODE_ENV = process.env.NODE_ENV || ENVS.TEST;
 
 const scriptFile = argv._[0].endsWith('.js') ? argv._[0]: argv._[0] + '.js'
-
+console.log('__dirname : ', __dirname)
+console.log('scriptFile : ', scriptFile)
 const fullPathScriptFile = path.join(__dirname, '/server/scripts/', scriptFile);
-
+console.log('fullPathScriptFile : ', fullPathScriptFile)
 const mocha = new Mocha({
   bail: true,
   ui: 'bdd',

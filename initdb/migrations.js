@@ -104,14 +104,14 @@ export function ensureCurrentMetaSchema(migrator) {
 
 
 export function getMigrator(type) {
-  const migrator = new Umzug({
+  const migrator = helpers.config.init().then(() => new Umzug({
     storage: helpers.umzug.getStorage(type),
     storageOptions: helpers.umzug.getStorageOptions(type, { sequelize: sequelize }),
     logging: require('debug')('migrations'),
     migrations: {
       params: [sequelize.getQueryInterface(), Sequelize],
       path: helpers.path.getPath(type),
-      pattern: helpers.config.supportsCoffee() ? /\.js$|\.coffee$/ : /\.js$/,
+      pattern: /\.js$/,
       wrap: function (fun) {
         if (fun.length === 3) {
           return Bluebird.promisify(fun);
@@ -120,7 +120,7 @@ export function getMigrator(type) {
         }
       }
     }
-  });
+  }));
 
   return sequelize
     .authenticate()

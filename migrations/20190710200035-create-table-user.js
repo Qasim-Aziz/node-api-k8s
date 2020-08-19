@@ -13,8 +13,8 @@ module.exports = {
     const createTable = `
 CREATE TABLE "user" (
     "id" serial,
+    "pseudo" text NOT NULL,
     "email" text NOT NULL,
-    "phone" text NOT NULL,
     "password_hash" text NOT NULL,
     "is_admin" boolean NOT NULL default false,
     "created_at" timestamp with time zone NOT NULL,

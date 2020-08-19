@@ -3,7 +3,7 @@ import { InitDBService } from 'initdb/initdb.service';
 import * as Testers from 'server/tests/testers';
 
 describe('# Auth Tests', async () => {
-  const user1 = { email: 'user1@yopmail.com', phone: '+33628450517', password: 'pwd' };
+  const user1 = { email: 'user1@yopmail.com', pseudo: 'MH', password: 'pwd' };
 
   setUp(async () => InitDBService.truncateTables());
 
