@@ -52,7 +52,8 @@ app.use(cors());
 app.use(passport.initialize());
 
 app.all('/api/*', (req, res, next) => {
-  if (req.path.includes('/api/auth/login') || req.path.includes('/api/auth/register')) return next();
+  if (req.path.includes('/api/auth/login') || req.path.includes('/api/auth/register') ||
+    req.path.includes('/api/users/by-email') || req.path.includes('/api/users/by-pseudo')) return next();
 
   passport.use('jwt', new JWTStrategy({
     jwtFromRequest: req => req.cookies.jwt,

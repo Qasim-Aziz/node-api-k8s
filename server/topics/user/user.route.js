@@ -12,11 +12,14 @@ class UserRouter {
     return this._router;
   }
 
-  _assignUserRoute() { // refactor with medical teams routes
+  _assignUserRoute() {
     const c = new UserController();
 
-    this._router.route('/')
-      .get(routeTo(c, c.get));
+    this._router.route('/by-email')
+      .get(routeTo(c, c.getByEmail));
+
+    this._router.route('/by-pseudo')
+      .get(routeTo(c, c.getByPseudo));
   }
 }
 

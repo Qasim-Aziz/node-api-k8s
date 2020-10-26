@@ -21,7 +21,7 @@
     "serve": "nodemon . | pino-pretty -t -i hostname",
     "spec": "NODE_ENV=test mocha --bail --require babel-register.js",
     "start": "node .",
-    "test": "NODE_ENV=test LOG_LEVEL=error mocha --opts mocha.opts --bail",
+    "test": "NODE_ENV=test LOG_LEVEL=debug mocha --opts mocha.opts --bail | pino-pretty -t -i hostname",
     "yarn": "yarn install --frozen-lockfile"
   },
   "dependencies": {

@@ -6,12 +6,22 @@ import expect from 'server/helpers/test.framework';
 
 import logger from 'server/helpers/logger'; // eslint-disable-line no-unused-vars
 
-export const getUser = async (credentials) => {
+export const isEmailUsed = async (email, { emailUsed = null } = {}) => {
   await request(app)
-    .get('/api/users/me')
-    .set('Authorization', credentials.token)
+    .get('/api/users/by-email')
+    .query({ email })
     .expect(httpStatus.OK)
     .then((res) => {
-      expect(true).to.equal(true);
+      expect(res.body.emailUsed).to.equal(emailUsed);
+    });
+};
+
+export const isPseudoUsed = async (pseudo, { pseudoUsed = null } = {}) => {
+  await request(app)
+    .get('/api/users/by-pseudo')
+    .query({ pseudo })
+    .expect(httpStatus.OK)
+    .then((res) => {
+      expect(res.body.pseudoUsed).to.equal(pseudoUsed);
     });
 };
