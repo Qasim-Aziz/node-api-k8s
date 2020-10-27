@@ -15,7 +15,10 @@ describe('# Message Tests', async () => {
   it('should count a new view if message get by another user', () => {});
   it('should comment a public message', () => {});
   it('shouldnt comment a private message', () => {});
-  it('should like a public message', () => {});
+  it('should like a public message and update nbLikes', () => {});
   it('shouldnt be able to like a private message', () => {});
   it('should unlike a public message', () => {});
+  it('should send a request when someone click on the comments or scroll and update nbClicks', () => {});
+  it('shouldnt delete a message if not mine', () => {});
+  it('should delete a message if mine', () => {});
 });
