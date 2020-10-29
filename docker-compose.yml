@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:11-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: wellinjob
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: no_pass
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+  node_modules:
