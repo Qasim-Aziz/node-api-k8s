@@ -42,7 +42,7 @@ Run tests (btw it initializes the DB):
 npm run test
 ```
 
-Build and run local server:
+Build and run local application:
 
 ```bash
 npm run serve

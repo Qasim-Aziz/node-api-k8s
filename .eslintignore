@@ -3,5 +3,5 @@
 build
 dist
 dist/static
-server/shared/assets
-server/helpers/express-validation/*.js
+application/shared/assets
+application/helpers/express-validation/*.js
