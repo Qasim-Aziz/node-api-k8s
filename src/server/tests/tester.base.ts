@@ -1,7 +1,8 @@
-import {TransactionContextManager, BackError, logger} from "src/server/helpers";
+import { TransactionContextManager, BackError, logger } from 'src/server/helpers';
 
 export class Checks {
   static counter;
+
   static deactivate() {
     Checks.counter = Checks.counter || 0;
     Checks.counter += 1;
@@ -47,8 +48,7 @@ export const setUp = (block, timeout = 200000, message = 'should set up the test
       } catch (e) {
         if (e?.matcherResult?.pass === false || numberOfRetriesLeft === 0) throw firstError || e;
         logger.error(e);
-        const msg =
-          `
+        const msg = `
             ${e.name} in test setUp
             --------------------------------------------------------------
             ---------  Now retrying test setUp. retries left: ${numberOfRetriesLeft}  ---------

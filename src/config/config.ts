@@ -4,31 +4,31 @@ export default {
       doc: 'Database username',
       format: String,
       default: 'postgres',
-      env: 'DB_USERNAME'
+      env: 'DB_USERNAME',
     },
     password: {
       doc: 'Database password',
       format: String,
       default: 'no_pass',
-      env: 'DB_PASSWORD'
+      env: 'DB_PASSWORD',
     },
     database: {
       doc: 'Database name',
       format: String,
       default: 'jardin_secret',
-      env: 'DB_NAME'
+      env: 'DB_NAME',
     },
     host: {
       doc: 'Database host',
       format: 'ipaddress',
       default: '127.0.0.1',
-      env: 'DB_HOST'
+      env: 'DB_HOST',
     },
     port: {
       doc: 'Database port',
       format: 'port',
       default: '15432',
-      env: 'DB_PORT'
+      env: 'DB_PORT',
     },
   },
   app: {
@@ -36,41 +36,41 @@ export default {
       doc: 'application port',
       format: 'port',
       default: '3000',
-      env: 'APP_PORT'
+      env: 'APP_PORT',
     },
     env: {
       doc: 'The application environment.',
       format: ['prod', 'dev', 'test'],
       default: 'dev',
-      env: 'NODE_ENV'
+      env: 'NODE_ENV',
     },
     logLevel: {
       doc: 'debug level',
       format: ['debug', 'error', 'info'],
       default: 'debug',
-      env: 'LOG_LEVEL'
+      env: 'LOG_LEVEL',
     },
     jwtSecret: {
       doc: 'jwtSecret',
       format: String,
       default: '0a6b944d-d2fb-46fc-a85e-0295c986cd9f',
-      env: 'APP_JWT_SECRET'
+      env: 'APP_JWT_SECRET',
     },
     flags: {
       showSql: {
         doc: 'show sequelize sql',
         format: Boolean,
         default: false,
-        env: 'SHOW_SQL'
+        env: 'SHOW_SQL',
       },
-    }
+    },
   },
   migrate: {
     forceUniqueTransaction: {
       doc: 'force unique transaction',
       format: Boolean,
       default: false,
-      env: 'FORCE_UNIQUE_TRANSACTION'
+      env: 'FORCE_UNIQUE_TRANSACTION',
     },
-  }
-}
+  },
+};

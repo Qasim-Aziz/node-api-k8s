@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import {ValidationError} from "../helpers";
+import { ValidationError } from '../helpers';
 
 const defaultOptions = {
   contextRequest: false,
@@ -9,17 +9,17 @@ const defaultOptions = {
   allowUnknownParams: true,
   allowUnknownCookies: true,
   status: 400,
-  statusText: 'Bad Request'
+  statusText: 'Bad Request',
 };
 
-let globalOptions = {};
+const globalOptions = {};
 
 const unknownMap = {
   headers: 'allowUnknownHeaders',
   body: 'allowUnknownBody',
   query: 'allowUnknownQuery',
   params: 'allowUnknownParams',
-  cookies: 'allowUnknownCookies'
+  cookies: 'allowUnknownCookies',
 };
 
 const validate = (errObj, request, schema, location, allowUnknown, context) => {
@@ -28,10 +28,10 @@ const validate = (errObj, request, schema, location, allowUnknown, context) => {
   const joiOptions = {
     context: context || request,
     allowUnknown,
-    abortEarly: false
+    abortEarly: false,
   };
 
-  const {errors, value} = Joi.object(schema).validate(request, joiOptions);
+  const { errors, value } = Joi.object(schema).validate(request, joiOptions);
   if (!errors || errors.details.length === 0) {
     Object.assign(request, value);
     return;
@@ -51,7 +51,7 @@ const validate = (errObj, request, schema, location, allowUnknown, context) => {
         field: error.path,
         location,
         messages: [error.message],
-        types: [error.type]
+        types: [error.type],
       });
     }
   });
@@ -64,7 +64,7 @@ export default function (schema) {
     const errors = [];
 
     // Set default options
-    const options = { ...defaultOptions, ...globalOptions, ...schema.options || {}};
+    const options = { ...defaultOptions, ...globalOptions, ...schema.options || {} };
 
     // NOTE: mutates `errors`
     ['headers', 'body', 'query', 'params', 'cookies'].forEach((key) => {
@@ -81,4 +81,4 @@ export default function (schema) {
 
     return next(new ValidationError(errors, options));
   };
-};
+}

@@ -1,11 +1,11 @@
-import {Model, Sequelize} from 'sequelize';
+import { Model, Sequelize } from 'sequelize';
 import config from 'src/config';
-import {logger} from "src/server/helpers";
+import { logger } from 'src/server/helpers/logger';
 
-
-const { username, password, database, host, port } = config.get('db');
+const {
+  username, password, database, host, port,
+} = config.get('db');
 const databaseUrl = `postgresql://${username}:${password}@${host}:${port}/${database}`;
-
 
 export const sequelize = new Sequelize(databaseUrl, {
   define: {
@@ -21,11 +21,12 @@ export const sequelize = new Sequelize(databaseUrl, {
   pool: {
     max: 15,
     min: 0,
-    idle: 1000
+    idle: 1000,
   },
 });
 
 export class OrmModel extends Model {
   public readonly createdAt!: Date;
+
   public readonly updatedAt!: Date;
 }

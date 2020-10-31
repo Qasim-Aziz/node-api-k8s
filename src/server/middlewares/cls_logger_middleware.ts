@@ -9,7 +9,7 @@ export default function clsLoggerMiddleware() {
     return logger.logger.child({
       reqId: req.header('x-traefik-reqid') || req.header('x-request-id') || idGenerator(),
       method: req.method,
-      path: req.originalUrl
+      path: req.originalUrl,
     });
   });
 }

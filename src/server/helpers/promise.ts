@@ -1,7 +1,6 @@
-import {logger} from "src/server/helpers/logger";
+import { logger } from 'src/server/helpers/logger';
 
 export class PromiseUtils {
-
   static promiseAll = async (promises) => (promises.length ? Promise.all(promises) : []);
 
   static promiseMapSeries = async (input = [], callback = (val, ind = null, inp = null) => (val)) => {
@@ -17,8 +16,8 @@ export class PromiseUtils {
   static promiseMap = async (
     input = [],
     mapper = (val, ind = null, inp = null) => (val),
-    { concurrency = 15 } = {}
-    ) => new Promise((resolve, reject) => {
+    { concurrency = 15 } = {},
+  ) => new Promise((resolve, reject) => {
     const len = input.length;
     let completed = 0;
     let started = 0;
@@ -50,8 +49,9 @@ export class PromiseUtils {
   static promiseTimeout = async (promise, timeout, { error = undefined } = {}) => Promise.race(
     [
       promise,
-      new Promise((res, rej) => setTimeout(() => rej(new Error(error)), timeout * 1000))
-    ]);
+      new Promise((res, rej) => setTimeout(() => rej(new Error(error)), timeout * 1000)),
+    ],
+  );
 
   static promiseRetry = async (block, { retries = 2, timeout = 200000 } = {}) => {
     await PromiseUtils.promiseTimeout((async () => {

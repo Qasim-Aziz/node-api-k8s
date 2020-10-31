@@ -1,4 +1,4 @@
-export default function addExpiresHeaderMiddleware (req, res, next) {
+export default function addExpiresHeaderMiddleware(req, res, next) {
   res.append('expires', -1);
   next();
 }

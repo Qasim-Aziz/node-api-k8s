@@ -2,7 +2,7 @@ import { setUp } from 'src/server/tests/tester.base';
 import { InitDBService } from 'src/initdb/initdb.service';
 import * as Testers from 'src/server/tests/testers';
 
-describe('# Auth Tests',  () => {
+describe('# Auth Tests', () => {
   const user1 = { email: 'user1@yopmail.com', pseudo: 'MH', password: 'pwd' };
 
   setUp(async () => InitDBService.truncateTables());

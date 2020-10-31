@@ -1,6 +1,5 @@
-import Sequelize from "sequelize";
-import {sequelize} from "src/orm/database";
-
+import Sequelize from 'sequelize';
+import { sequelize } from 'src/orm/database';
 
 const getCallerFile = () => {
   const originalPrepareStackTrace = Error.prepareStackTrace;
@@ -40,7 +39,7 @@ exports.FOREIGN_KEY_ACTIONS = {
 };
 
 exports.addColumn = function (tableName, colName, type,
-                              { defaultValue = null, allowNull = true } = {}) {
+  { defaultValue = null, allowNull = true } = {}) {
   const formattedDefaultValue = Array.isArray(defaultValue) ? `{${defaultValue.join(',')}}` : defaultValue;
   const defaultValueStr = (defaultValue !== null) ? ` DEFAULT '${formattedDefaultValue}'` : '';
   const allowNullStr = allowNull ? '' : 'NOT NULL ';
@@ -120,9 +119,8 @@ exports.removeNotNull = function setNotNull(tableName, columnName) {
   return `ALTER TABLE ${tableName} ALTER COLUMN ${columnName} DROP NOT NULL;`;
 };
 
-
 exports.addColumnEnum = function (tableName, colName, values,
-                                  { enumName = null, defaultValue = null, allowNull = true } = {}) {
+  { enumName = null, defaultValue = null, allowNull = true } = {}) {
   const enumName_ = enumName || exports.buildEnumName(tableName, colName);
   const createEnumType = exports.createEnum(enumName_, values);
   const addEnumCol = exports.addColumn(tableName, colName, enumName_, { defaultValue, allowNull });
@@ -136,7 +134,7 @@ exports.makeColumnNotNullable = function (tableName, colName, { defaultValue = n
   if (defaultValue === null) return notNull;
   return [
     `update "${tableName}" set "${colName}" = '${defaultValue}' where "${colName}" is null;`,
-    notNull
+    notNull,
   ].join('\n');
 };
 
@@ -151,17 +149,17 @@ exports.renameEnum = function renameEnum(oldName, newName) {
 exports.makeForeignKey = function makeForeignKey(tableName, allowNull, { keyName = 'id', onUpdate = null, onDelete = null } = {}) {
   const migrationDate = getMigrationDate();
   if (migrationDate >= '20191217') throw new Error('makeForeignKey is deprecated. Please create a normal column and use createFkV3.');
-  return Object.assign({
-      field: `${tableName}_${keyName}`,
-      allowNull,
-      type: Sequelize.INTEGER,
-      references: {
-        model: tableName,
-        key: keyName,
-      }
+  return {
+    field: `${tableName}_${keyName}`,
+    allowNull,
+    type: Sequelize.INTEGER,
+    references: {
+      model: tableName,
+      key: keyName,
     },
-    onUpdate ? { onUpdate } : {},
-    onDelete ? { onDelete } : {});
+    ...(onUpdate ? { onUpdate } : {}),
+    ...(onDelete ? { onDelete } : {}),
+  };
 };
 exports.createFKBase = function createFKBase(tableFrom, tableTo, fieldFrom, { fieldTo = 'id' } = {}) {
   const migrationDate = getMigrationDate();
@@ -191,7 +189,7 @@ exports.createFK = function createFK(tableFrom, tableTo, fieldFrom, { fieldTo = 
   const indexName = `index_${tableFrom}_${fieldFrom}`;
   return [
     exports.createFKBase(tableFrom, tableTo, fieldFrom, { fieldTo }),
-    exports.createIndex(indexName, tableFrom, [fieldFrom])
+    exports.createIndex(indexName, tableFrom, [fieldFrom]),
   ].join('\n');
 };
 
@@ -205,7 +203,7 @@ exports.createFkV2 = function createFkV2(tableFrom, tableTo, { fieldFrom = null,
 exports.createFkV3 = function createFkV3(tableFrom, tableTo, onDeleteAction, {
   fieldFrom = null,
   fieldTo = 'id',
-  onUpdateAction = exports.FOREIGN_KEY_ACTIONS.CASCADE
+  onUpdateAction = exports.FOREIGN_KEY_ACTIONS.CASCADE,
 } = {}) {
   const resolvedFieldFrom = fieldFrom === null ? `${tableTo}_id` : fieldFrom;
   const indexName = `index_${tableFrom}_${resolvedFieldFrom}`;
@@ -235,8 +233,8 @@ exports.changeFkType = function changeFkType(tableFrom, tableTo, newOnDelete, {
 
 exports.changeColumnType = function changeColumnType(tableName, columnName, newType, { using = null } = {}) {
   const usingStr = using !== null ? `USING ${using}` : '';
-  return `ALTER TABLE "public"."${tableName}" ALTER COLUMN "${columnName}" ` +
-    `SET DATA TYPE ${newType} ${usingStr};`;
+  return `ALTER TABLE "public"."${tableName}" ALTER COLUMN "${columnName}" `
+    + `SET DATA TYPE ${newType} ${usingStr};`;
 };
 
 exports.changeValuesEnum = async function changeValuesEnum(tableColumns, enumName, values) {
@@ -244,7 +242,7 @@ exports.changeValuesEnum = async function changeValuesEnum(tableColumns, enumNam
   await queryInterface.sequelize.query(`CREATE TYPE "${enumName}" AS ENUM (${values.map((x) => `'${x}'`).join(', ')});`);
   for (const tableColumn of tableColumns) {
     await queryInterface.sequelize.query(
-      `ALTER TABLE "${tableColumn.table}" ALTER COLUMN "${tableColumn.column}" TYPE ${enumName} USING ${tableColumn.column}::text::${enumName};`
+      `ALTER TABLE "${tableColumn.table}" ALTER COLUMN "${tableColumn.column}" TYPE ${enumName} USING ${tableColumn.column}::text::${enumName};`,
     );
   }
   await queryInterface.sequelize.query(`DROP TYPE "${enumName}_old";`);
@@ -255,7 +253,8 @@ exports.changeValuesEnumInArray = async function changeValuesEnumInArray(tableCo
   await queryInterface.sequelize.query(`CREATE TYPE "${enumName}" AS ENUM (${values.map((x) => `'${x}'`).join(', ')});`);
   for (const tableColumn of tableColumns) {
     await queryInterface.sequelize.query(
-      `ALTER TABLE "${tableColumn.table}" ALTER COLUMN "${tableColumn.column}" TYPE ${enumName}[] USING ${tableColumn.column}::text::${enumName}[];`);
+      `ALTER TABLE "${tableColumn.table}" ALTER COLUMN "${tableColumn.column}" TYPE ${enumName}[] USING ${tableColumn.column}::text::${enumName}[];`,
+    );
   }
   await queryInterface.sequelize.query(`DROP TYPE "${enumName}_old";`);
 };
@@ -280,7 +279,7 @@ function getDefaultFields() {
       type: Sequelize.INTEGER,
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
     },
     created_at: {
       allowNull: false,
@@ -300,11 +299,11 @@ function getDefaultFields() {
 const queryInterface = sequelize.getQueryInterface();
 
 exports.createTable = function createTable(tableName, fields, { transaction = null } = {}) {
-  return Promise.resolve(queryInterface.createTable(tableName, Object.assign(
-    {},
-    getDefaultFields(),
-    fields
-  ), { }));
+  return Promise.resolve(queryInterface.createTable(tableName, {
+
+    ...getDefaultFields(),
+    ...fields,
+  }, { }));
 };
 
 exports.dropIndex = function dropIndex(indexName) {

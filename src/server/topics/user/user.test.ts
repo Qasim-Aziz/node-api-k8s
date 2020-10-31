@@ -5,7 +5,7 @@ import { setUp } from 'src/server/tests/tester.base';
 const existingEmail = 'existing@yopmail.com';
 const existingPseudo = 'existing';
 
-describe('# Users Tests',  () => {
+describe('# Users Tests', () => {
   setUp(async () => {
     await InitDBService.truncateTables();
     await Testers.registerUser({ password: 'pwd', email: existingEmail, pseudo: existingPseudo });

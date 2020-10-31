@@ -1,6 +1,5 @@
-import { validation } from 'src/server/helpers';
+import { validation, Joi } from 'src/server/helpers';
 import { User } from 'src/orm';
-import { Joi } from 'src/server/helpers';
 
 export class UserController {
   @validation({

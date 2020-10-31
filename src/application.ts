@@ -36,7 +36,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // log request
 app.use(logRequestMiddleware());
 
-app.use(cookieParser(config.jwtSecret));
+app.use(cookieParser(config.get('app.jwtSecret')));
 app.use(compress());
 app.use(methodOverride());
 
@@ -49,11 +49,11 @@ app.use(cors());
 app.use(passport.initialize());
 
 app.all('/api/*', (req, res, next) => {
-  if (req.path.includes('/api/auth/login') || req.path.includes('/api/auth/register') ||
-    req.path.includes('/api/users/by-email') || req.path.includes('/api/users/by-pseudo')) return next();
+  if (req.path.includes('/api/auth/login') || req.path.includes('/api/auth/register')
+    || req.path.includes('/api/users/by-email') || req.path.includes('/api/users/by-pseudo')) return next();
 
   passport.use('jwt', new JWTStrategy({
-    jwtFromRequest: req => req.cookies.jwt,
+    jwtFromRequest: (request) => request.cookies.jwt,
     secretOrKey: config.get('app.jwtSecret'),
   }, async (jwtPayload, done) => {
     if (moment() > moment(jwtPayload.expires)) return done(null, false, { message: 'jwt expired' });

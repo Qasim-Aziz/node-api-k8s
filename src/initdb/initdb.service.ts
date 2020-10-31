@@ -1,7 +1,7 @@
 import util from 'util';
 import childProcess from 'child_process';
-import {BackError, logger} from "../server/helpers";
-import {sequelize} from "../orm/database";
+import { BackError, logger } from '../server/helpers';
+import { sequelize } from '../orm/database';
 
 const queryIdOffsets = (tablesToOmit) => `
 CREATE TEMPORARY SEQUENCE IF NOT EXISTS id_offsets
@@ -27,7 +27,7 @@ FROM (
 WHERE parse_serial_name = get_serial_name;
 `;
 
-export class InitDBService {
+export default class InitDBService {
   /**
    * Truncates all tables and resets ES indices
    * @param withWorkRelationHashTags
@@ -57,8 +57,7 @@ DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO public;
-`
-    );
+`);
   }
 
   static async initDb() {

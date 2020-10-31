@@ -1,11 +1,11 @@
-import { logger } from "src/server/helpers";
+import { logger } from 'src/server/helpers';
 
 export default abstract class ScriptAbstract {
   abstract async getScript();
 
-  async exec () {
+  async exec() {
     try {
-      await this.getScript()
+      await this.getScript();
       process.exit(0);
     } catch (e) {
       logger.error(e);

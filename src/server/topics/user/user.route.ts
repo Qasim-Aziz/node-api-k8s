@@ -7,10 +7,10 @@ const userRoutes = new Router();
 
 userRoutes
   .addRoute('/by-email', {
-    get: { handler: c.getByEmail }
+    get: { handler: c.getByEmail },
   })
   .addRoute('/by-pseudo', {
-    get: { handler: c.getByPseudo }
+    get: { handler: c.getByPseudo },
   });
 
 export default userRoutes.getRouter();

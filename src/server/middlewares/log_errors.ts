@@ -1,4 +1,4 @@
-import {logger} from 'src/server/helpers';
+import { logger } from 'src/server/helpers';
 
 const logErrors = function logErrors(err, req, res, next) {
   const status = err.status || err.statusCode || 500;

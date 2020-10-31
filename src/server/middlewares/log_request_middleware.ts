@@ -1,6 +1,5 @@
 import logger from 'server/helpers/logger';
 
-
 const getRequestDataKeys = () => ['method', 'path', 'originalUrl', 'query', 'headers', 'body'];
 
 const getRequestData = (req, res) => ({
@@ -17,17 +16,16 @@ const getRequestData = (req, res) => ({
 
 const logInCommingRequest = (data) => logger.access_log(data, `${data.method} ${data.path} - ${data.status} - Incoming request`);
 
-const logDurationRequest = (data, duration) =>
-  logger.access_log(data, `${data.method} ${data.path} - ${data.status} - ${duration.toFixed(2)} ms`);
+const logDurationRequest = (data, duration) => logger.access_log(data, `${data.method} ${data.path} - ${data.status} - ${duration.toFixed(2)} ms`);
 
 const connectionInfo = (data) => ({
   remoteIp: data.connection.remoteAddress,
   remotePort: data.connection.remotePort,
 });
 
-export default function logRequestMiddleware (req, res, next) {
+export default function logRequestMiddleware(req, res, next) {
   logInCommingRequest({
-    ..._.pick(req,getRequestDataKeys()),
+    ..._.pick(req, getRequestDataKeys()),
     ...connectionInfo(req),
     state: 'incoming',
   });
@@ -42,4 +40,4 @@ export default function logRequestMiddleware (req, res, next) {
     }, ms);
   });
   next();
-};
+}

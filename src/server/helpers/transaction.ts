@@ -4,10 +4,11 @@ import { sequelize } from 'src/orm/database';
 import { Env } from 'src/server/helpers/env';
 import { BackError } from 'src/server/helpers/error';
 import { logger } from 'src/server/helpers/logger';
-import {PromiseUtils} from "./promise";
+import { PromiseUtils } from './promise';
 
 export class TransactionContextManager {
   static _isActivated = true;
+
   static isTransactionChecked(check) {
     return TransactionContextManager.isActivated ? Env.isTest && check : false;
   }
@@ -28,7 +29,7 @@ export class TransactionContextManager {
 const getErrorMessageEnd = (options) => {
   try {
     const modelName = options.model.getTableName();
-    const type = options.type;
+    const { type } = options;
     return ` while doing ${type} on ${modelName}.`;
   } catch (e) {
     return '';

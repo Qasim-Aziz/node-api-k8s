@@ -1,7 +1,7 @@
-const lib = require('./lib/lib');
+import * as lib from './lib/lib';
 
 module.exports = {
-  up: (queryInterface, Sequelize) => {
+  up: () => {
     /*
       Add altering commands here.
       Return a promise to correctly handle asynchronicity.
@@ -34,5 +34,5 @@ CREATE TABLE "user" (
       Example:
       return queryInterface.dropTable('users');
     */
-  }
+  },
 };

@@ -1,7 +1,7 @@
 import express from 'express';
-import addExpiresHeaderMiddleware from "../middlewares/add_expires_header_middleware";
-import logRequestMiddleware from "../middlewares/log_request";
-import validate_request_middleware from "../middlewares/validate_request_middleware";
+import addExpiresHeaderMiddleware from '../middlewares/add_expires_header_middleware';
+import logRequestMiddleware from '../middlewares/log_request';
+import validate_request_middleware from '../middlewares/validate_request_middleware';
 
 interface Action {
   handler: (res: express.Request, req: express.Response) => {};
@@ -22,7 +22,7 @@ export default class Router {
   }
 
   routeTo(method) {
-    const middlewares = []
+    const middlewares = [];
     // const middlewares = [
     //   addExpiresHeaderMiddleware,
     //   logRequestMiddleware,

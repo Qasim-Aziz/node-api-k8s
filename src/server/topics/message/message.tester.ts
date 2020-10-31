@@ -3,7 +3,6 @@ import request from 'supertest';
 import app from 'src/server/index'; // eslint-disable-line no-unused-vars
 import expect from 'src/server/helpers/test.framework';
 
-
 export const publishMessage = async (user, message, { status = httpStatus.OK } = {}) => {
   const res = await request(app)
     .post('/api/messages')
@@ -12,6 +11,6 @@ export const publishMessage = async (user, message, { status = httpStatus.OK } =
     .expect(status);
   const messageRes = res.body.message;
   expect(messageRes).to.containSubset(message);
-  message.id = messageRes.id; //eslint-disable-line no-param-reassign
+  message.id = messageRes.id; // eslint-disable-line no-param-reassign
   return messageRes;
 };
