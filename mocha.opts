@@ -1,1 +1,0 @@
---recursive --require babel-register.js --timeout 5000 ./server/scripts/db.init.migrations.js ./**/*.unittest.js ./server/tests/*.js ./server/scripts/check.db.js ./server/**/*.test.js

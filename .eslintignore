@@ -3,5 +3,6 @@
 build
 dist
 dist/static
-server/shared/assets
-server/helpers/express-validation/*.js
+application/shared/assets
+src/migrations/lib/lib.ts
+/*.*
