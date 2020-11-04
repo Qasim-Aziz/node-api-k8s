@@ -1,7 +1,7 @@
 import util from 'util';
 import childProcess from 'child_process';
-import { BackError, logger } from '../server/helpers';
-import { sequelize } from '../orm/database';
+import { BackError, logger } from 'src/server/helpers';
+import { sequelize } from 'src/orm/database';
 
 const queryIdOffsets = (tablesToOmit) => `
 CREATE TEMPORARY SEQUENCE IF NOT EXISTS id_offsets
@@ -27,7 +27,7 @@ FROM (
 WHERE parse_serial_name = get_serial_name;
 `;
 
-export default class InitDBService {
+export class InitDBService {
   /**
    * Truncates all tables and resets ES indices
    * @param withWorkRelationHashTags

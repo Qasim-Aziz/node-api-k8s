@@ -1,10 +1,11 @@
 import express from 'express';
-import addExpiresHeaderMiddleware from '../middlewares/add_expires_header_middleware';
-import logRequestMiddleware from '../middlewares/log_request';
-import validate_request_middleware from '../middlewares/validate_request_middleware';
+import {
+  addExpiresHeaderMiddleware, sessionManager, initSessionUser, validateRequestMiddleware,
+} from 'src/server/middlewares/req.middleware';
+import { transactionContext } from 'src/server/helpers';
 
 interface Action {
-  handler: (res: express.Request, req: express.Response) => {};
+  handler: (res: express.Request, req: express.Response) => void;
 }
 
 interface RouteActions {
@@ -21,29 +22,34 @@ export default class Router {
     this.router = express.Router(); // eslint-disable-line new-cap
   }
 
-  routeTo(method) {
-    const middlewares = [];
-    // const middlewares = [
-    //   addExpiresHeaderMiddleware,
-    //   logRequestMiddleware,
-    // ];
-    //
-    // if (method.validation) {
-    //   middlewares.push(validate_request_middleware(method.validation));
-    // }
+  routeTo = (method) => {
+    const middlewares = [
+      addExpiresHeaderMiddleware,
+      initSessionUser,
+    ];
 
-    middlewares.push((req, res, next) => {
-      Promise.resolve(method.call(null, req, res, next)).catch((e) => next(e));
-    });
+    if (!method.forAll) {
+      middlewares.push(sessionManager);
+    }
+
+    if (method.validation) {
+      middlewares.push(validateRequestMiddleware(method.validation));
+    }
+
+    middlewares.push((req, res, next) => transactionContext(async (transaction) => {
+      req.transaction = transaction;
+      return Promise.resolve(method.call(null, req, res, next)).catch((e) => next(e));
+    }));
     return middlewares;
-  }
+  };
 
   addRoute(path: string, actions: RouteActions): Router {
     const route = this.router.route(path);
-    for (const [method, action] of Object.entries(actions)) {
+    Object.keys(actions).forEach((method) => {
+      const action = actions[method];
       const handler = this.routeTo(action.handler);
       route[method](handler);
-    }
+    });
     return this;
   }
 

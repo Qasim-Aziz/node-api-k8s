@@ -9,7 +9,7 @@ describe('# Auth Tests', () => {
 
   test('should register the user', () => Testers.registerUser(user1));
 
-  test('should logout the user', () => Testers.logoutUser(user1.cookie));
+  test('should logout the user', () => Testers.logoutUser(user1));
 
   test('should login again the user', () => Testers.loginUser(user1));
 });

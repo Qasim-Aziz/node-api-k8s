@@ -1,12 +1,12 @@
-import logger from 'server/helpers/logger';
+import { logger } from 'src/server/helpers';
 
 const getRequestDataKeys = () => ['method', 'path', 'originalUrl', 'query', 'headers', 'body'];
 
 const getRequestData = (req, res) => ({
   ..._.pick(req, getRequestDataKeys()),
-  ...connectionInfo(req),
   route: res.locals.routeName,
   status: res.statusCode,
+  // eslint-disable-next-line no-underscore-dangle
   contentLength: Number(res.getHeader('Content-Length') || res._contentLength),
   userId: req.user && req.user.id,
   userEmail: req.user && req.user.email,
@@ -14,9 +14,9 @@ const getRequestData = (req, res) => ({
   impersonatorEmail: req.impersonator && req.impersonator.email,
 });
 
-const logInCommingRequest = (data) => logger.access_log(data, `${data.method} ${data.path} - ${data.status} - Incoming request`);
+const logInCommingRequest = (data) => logger.info(data, `${data.method} ${data.path} - ${data.status} - Incoming request`);
 
-const logDurationRequest = (data, duration) => logger.access_log(data, `${data.method} ${data.path} - ${data.status} - ${duration.toFixed(2)} ms`);
+const logDurationRequest = (data, duration) => logger.info(data, `${data.method} ${data.path} - ${data.status} - ${duration.toFixed(2)} ms`);
 
 const connectionInfo = (data) => ({
   remoteIp: data.connection.remoteAddress,

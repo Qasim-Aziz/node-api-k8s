@@ -31,14 +31,14 @@ const getMigrationDate = () => {
   return fileName.substring(0, 8);
 };
 
-exports.FOREIGN_KEY_ACTIONS = {
+export const FOREIGN_KEY_ACTIONS = {
   CASCADE: 'CASCADE',
   SET_NULL: 'SET NULL',
   NO_ACTION: 'NO ACTION',
   RESTRICT: 'RESTRICT',
 };
 
-exports.addColumn = function (tableName, colName, type,
+export const addColumn = function (tableName, colName, type,
   { defaultValue = null, allowNull = true } = {}) {
   const formattedDefaultValue = Array.isArray(defaultValue) ? `{${defaultValue.join(',')}}` : defaultValue;
   const defaultValueStr = (defaultValue !== null) ? ` DEFAULT '${formattedDefaultValue}'` : '';
@@ -53,83 +53,83 @@ END; $$  LANGUAGE plpgsql;;
 `;
 };
 
-exports.addCheck = function addCheck(tableName, checkName, check) {
+export const addCheck = function addCheck(tableName, checkName, check) {
   return `ALTER TABLE "public"."${tableName}"
 ADD CONSTRAINT ${checkName} CHECK (${check});
 `;
 };
-exports.dropCheck = function dropCheck(tableName, checkName) {
+export const dropCheck = function dropCheck(tableName, checkName) {
   return `ALTER TABLE "public"."${tableName}"
 DROP CONSTRAINT IF EXISTS ${checkName};
 `;
 };
 
-exports.alterColumn = function alterColumn(tableName, colName, statement) {
+export const alterColumn = function alterColumn(tableName, colName, statement) {
   return `ALTER TABLE "public"."${tableName}" ALTER COLUMN "${colName}" ${statement};`;
 };
 
-exports.alterColumnSetDefault = function alterColumn(tableName, colName, defaultValue) {
+export const alterColumnSetDefault = function alterColumn(tableName, colName, defaultValue) {
   return `ALTER TABLE "public"."${tableName}" ALTER COLUMN "${colName}" SET DEFAULT ${defaultValue === null ? 'NULL' : `'${defaultValue}'`};`;
 };
 
-exports.alterColumnDropDefault = function alterColumn(tableName, colName) {
+export const alterColumnDropDefault = function alterColumn(tableName, colName) {
   return `ALTER TABLE "public"."${tableName}" ALTER COLUMN "${colName}" DROP DEFAULT;`;
 };
 
-exports.dropColumn = function dropColumn(tableName, colName) {
+export const dropColumn = function dropColumn(tableName, colName) {
   return `ALTER TABLE "public"."${tableName}" DROP COLUMN IF EXISTS "${colName}";`;
 };
 
-exports.dropTable = function dropTable(tableName) {
+export const dropTable = function dropTable(tableName) {
   return `DROP TABLE IF EXISTS ${tableName} CASCADE;`;
 };
 
-exports.renameColumn = function renameColumn(tableName, oldName, newName) {
+export const renameColumn = function renameColumn(tableName, oldName, newName) {
   return `ALTER TABLE "public"."${tableName}" RENAME COLUMN "${oldName}" TO "${newName}";`;
 };
 
-exports.buildEnumName = (tableName, colName) => `enum_${tableName}_${colName}`;
+export const buildEnumName = (tableName, colName) => `enum_${tableName}_${colName}`;
 
-exports.createEnum = function (enumName, values) {
+export const createEnum = function (enumName, values) {
   return `
     CREATE TYPE "${enumName}" AS ENUM (${values.map((x) => `'${x}'`).join(', ')});
 `;
 };
 
-exports.dropView = function (viewName, { ifExists = false } = {}) {
+export const dropView = function (viewName, { ifExists = false } = {}) {
   return `drop view ${ifExists ? 'if exists ' : ' '}${viewName};`;
 };
 
-exports.updateView = function (viewName, sql) {
+export const updateView = (viewName, sql) => {
   return [
-    exports.dropView(viewName, { ifExists: true }),
+     dropView(viewName, { ifExists: true }),
     `Create view ${viewName} as ${sql}`,
   ].join('\n');
 };
 
-exports.renameTable = function (oldName, newName) {
+export const renameTable = function (oldName, newName) {
   return `ALTER TABLE ${oldName} RENAME TO ${newName};`;
 };
 
-exports.setNotNull = function setNotNull(tableName, columnName) {
+export const setNotNull = function setNotNull(tableName, columnName) {
   return `ALTER TABLE ${tableName} ALTER COLUMN ${columnName} SET NOT NULL;`;
 };
 
-exports.removeNotNull = function setNotNull(tableName, columnName) {
+export const removeNotNull = function setNotNull(tableName, columnName) {
   return `ALTER TABLE ${tableName} ALTER COLUMN ${columnName} DROP NOT NULL;`;
 };
 
-exports.addColumnEnum = function (tableName, colName, values,
+export const addColumnEnum = function (tableName, colName, values,
   { enumName = null, defaultValue = null, allowNull = true } = {}) {
-  const enumName_ = enumName || exports.buildEnumName(tableName, colName);
-  const createEnumType = exports.createEnum(enumName_, values);
-  const addEnumCol = exports.addColumn(tableName, colName, enumName_, { defaultValue, allowNull });
+  const enumName_ = enumName || buildEnumName(tableName, colName);
+  const createEnumType = createEnum(enumName_, values);
+  const addEnumCol = addColumn(tableName, colName, enumName_, { defaultValue, allowNull });
   return [createEnumType, addEnumCol].join('\n');
 };
-exports.makeColumnNullable = function makeColumnNullable(tableName, colName) {
+export const makeColumnNullable = function makeColumnNullable(tableName, colName) {
   return `ALTER TABLE "public"."${tableName}" ALTER COLUMN "${colName}" DROP NOT NULL;`;
 };
-exports.makeColumnNotNullable = function (tableName, colName, { defaultValue = null } = {}) {
+export const makeColumnNotNullable = function (tableName, colName, { defaultValue = null } = {}) {
   const notNull = `ALTER TABLE "public"."${tableName}" ALTER COLUMN "${colName}" SET NOT NULL;`;
   if (defaultValue === null) return notNull;
   return [
@@ -138,15 +138,15 @@ exports.makeColumnNotNullable = function (tableName, colName, { defaultValue = n
   ].join('\n');
 };
 
-exports.dropEnum = function dropEnum(colName) {
+export const dropEnum = function dropEnum(colName) {
   return `DROP TYPE "${colName}";`;
 };
 
-exports.renameEnum = function renameEnum(oldName, newName) {
+export const renameEnum = function renameEnum(oldName, newName) {
   return `ALTER TYPE "${oldName}" RENAME TO "${newName}";`;
 };
 
-exports.makeForeignKey = function makeForeignKey(tableName, allowNull, { keyName = 'id', onUpdate = null, onDelete = null } = {}) {
+export const makeForeignKey = function makeForeignKey(tableName, allowNull, { keyName = 'id', onUpdate = null, onDelete = null } = {}) {
   const migrationDate = getMigrationDate();
   if (migrationDate >= '20191217') throw new Error('makeForeignKey is deprecated. Please create a normal column and use createFkV3.');
   return {
@@ -161,7 +161,7 @@ exports.makeForeignKey = function makeForeignKey(tableName, allowNull, { keyName
     ...(onDelete ? { onDelete } : {}),
   };
 };
-exports.createFKBase = function createFKBase(tableFrom, tableTo, fieldFrom, { fieldTo = 'id' } = {}) {
+export const createFKBase = function createFKBase(tableFrom, tableTo, fieldFrom, { fieldTo = 'id' } = {}) {
   const migrationDate = getMigrationDate();
   if (migrationDate >= '20190924') throw new Error('createFKBase is now deprecated. Please use createFkBaseV2.');
   return `
@@ -173,7 +173,7 @@ exports.createFKBase = function createFKBase(tableFrom, tableTo, fieldFrom, { fi
 `;
 };
 
-exports.createFkBaseV2 = function createFkBaseV2(tableFrom, tableTo, fieldFrom, fieldTo, onDeleteAction, onUpdateAction) {
+export const createFkBaseV2 = function createFkBaseV2(tableFrom, tableTo, fieldFrom, fieldTo, onDeleteAction, onUpdateAction) {
   return `
     ALTER TABLE "${tableFrom}"
     ADD FOREIGN KEY ("${fieldFrom}")
@@ -183,61 +183,61 @@ exports.createFkBaseV2 = function createFkBaseV2(tableFrom, tableTo, fieldFrom, 
 `;
 };
 
-exports.createFK = function createFK(tableFrom, tableTo, fieldFrom, { fieldTo = 'id' } = {}) {
+export const createFK = function createFK(tableFrom, tableTo, fieldFrom, { fieldTo = 'id' } = {}) {
   const migrationDate = getMigrationDate();
   if (migrationDate >= '20190924') throw new Error('createFK is now deprecated. Please use createFkV3.');
   const indexName = `index_${tableFrom}_${fieldFrom}`;
   return [
-    exports.createFKBase(tableFrom, tableTo, fieldFrom, { fieldTo }),
-    exports.createIndex(indexName, tableFrom, [fieldFrom]),
+    createFKBase(tableFrom, tableTo, fieldFrom, { fieldTo }),
+    createIndex(indexName, tableFrom, [fieldFrom]),
   ].join('\n');
 };
 
-exports.createFkV2 = function createFkV2(tableFrom, tableTo, { fieldFrom = null, fieldTo = 'id' } = {}) {
+export const createFkV2 = function createFkV2(tableFrom, tableTo, { fieldFrom = null, fieldTo = 'id' } = {}) {
   const migrationDate = getMigrationDate();
   if (migrationDate >= '20190924') throw new Error('createFkV2 is now deprecated. Please use createFkV3.');
   const fieldFrom_ = fieldFrom === null ? `${tableTo}_id` : fieldFrom;
-  return exports.createFK(tableFrom, tableTo, fieldFrom_, { fieldTo });
+  return createFK(tableFrom, tableTo, fieldFrom_, { fieldTo });
 };
 
-exports.createFkV3 = function createFkV3(tableFrom, tableTo, onDeleteAction, {
+export const createFkV3 = function createFkV3(tableFrom, tableTo, onDeleteAction, {
   fieldFrom = null,
   fieldTo = 'id',
-  onUpdateAction = exports.FOREIGN_KEY_ACTIONS.CASCADE,
+  onUpdateAction = FOREIGN_KEY_ACTIONS.CASCADE,
 } = {}) {
   const resolvedFieldFrom = fieldFrom === null ? `${tableTo}_id` : fieldFrom;
   const indexName = `index_${tableFrom}_${resolvedFieldFrom}`;
   return [
-    exports.createFkBaseV2(tableFrom, tableTo, resolvedFieldFrom, fieldTo, onDeleteAction, onUpdateAction),
-    exports.createIndex(indexName, tableFrom, [resolvedFieldFrom]),
+    createFkBaseV2(tableFrom, tableTo, resolvedFieldFrom, fieldTo, onDeleteAction, onUpdateAction),
+    createIndex(indexName, tableFrom, [resolvedFieldFrom]),
   ].join('\n');
 };
 
-exports.removeFkConstraint = function dropFk(tableName, fkName) {
+export const removeFkConstraint = function dropFk(tableName, fkName) {
   return `ALTER TABLE "${tableName}" DROP CONSTRAINT "${fkName}"; `;
 };
 
-exports.changeFkType = function changeFkType(tableFrom, tableTo, newOnDelete, {
+export const changeFkType = function changeFkType(tableFrom, tableTo, newOnDelete, {
   fieldFrom = null,
   fieldTo = 'id',
   fkName = null,
-  newOnUpdate = exports.FOREIGN_KEY_ACTIONS.CASCADE,
+  newOnUpdate = FOREIGN_KEY_ACTIONS.CASCADE,
 } = {}) {
   const resolvedFieldFrom = fieldFrom === null ? `${tableTo}_id` : fieldFrom;
   const resolvedFkName = fkName === null ? `${tableFrom}_${resolvedFieldFrom}_fkey` : fkName;
   return [
-    exports.dropConstraint(resolvedFkName, tableFrom),
-    exports.createFkBaseV2(tableFrom, tableTo, resolvedFieldFrom, fieldTo, newOnDelete, newOnUpdate),
+    dropConstraint(resolvedFkName, tableFrom),
+    createFkBaseV2(tableFrom, tableTo, resolvedFieldFrom, fieldTo, newOnDelete, newOnUpdate),
   ].join('\n');
 };
 
-exports.changeColumnType = function changeColumnType(tableName, columnName, newType, { using = null } = {}) {
+export const changeColumnType = function changeColumnType(tableName, columnName, newType, { using = null } = {}) {
   const usingStr = using !== null ? `USING ${using}` : '';
   return `ALTER TABLE "public"."${tableName}" ALTER COLUMN "${columnName}" `
     + `SET DATA TYPE ${newType} ${usingStr};`;
 };
 
-exports.changeValuesEnum = async function changeValuesEnum(tableColumns, enumName, values) {
+export const changeValuesEnum = async function changeValuesEnum(tableColumns, enumName, values) {
   await queryInterface.sequelize.query(`ALTER TYPE "${enumName}" RENAME TO "${enumName}_old";`);
   await queryInterface.sequelize.query(`CREATE TYPE "${enumName}" AS ENUM (${values.map((x) => `'${x}'`).join(', ')});`);
   for (const tableColumn of tableColumns) {
@@ -248,7 +248,7 @@ exports.changeValuesEnum = async function changeValuesEnum(tableColumns, enumNam
   await queryInterface.sequelize.query(`DROP TYPE "${enumName}_old";`);
 };
 
-exports.changeValuesEnumInArray = async function changeValuesEnumInArray(tableColumns, enumName, values) {
+export const changeValuesEnumInArray = async function changeValuesEnumInArray(tableColumns, enumName, values) {
   await queryInterface.sequelize.query(`ALTER TYPE "${enumName}" RENAME TO "${enumName}_old";`);
   await queryInterface.sequelize.query(`CREATE TYPE "${enumName}" AS ENUM (${values.map((x) => `'${x}'`).join(', ')});`);
   for (const tableColumn of tableColumns) {
@@ -259,7 +259,7 @@ exports.changeValuesEnumInArray = async function changeValuesEnumInArray(tableCo
   await queryInterface.sequelize.query(`DROP TYPE "${enumName}_old";`);
 };
 
-exports.createUniqueIndex = function createUniqueIndex(indexName, table, fields) {
+export const createUniqueIndex = function createUniqueIndex(indexName, table, fields) {
   return `\
 CREATE UNIQUE INDEX ${indexName}_deleted_unique ON ${table}
 USING btree (${fields.join(', ')}, deleted_at) WHERE deleted_at IS NOT NULL;
@@ -267,7 +267,7 @@ CREATE UNIQUE INDEX ${indexName}_unique ON ${table} USING btree (${fields.join('
 `;
 };
 
-exports.createIndex = function createIndex(indexName, table, fields) {
+export const createIndex = function createIndex(indexName, table, fields) {
   return `\
 CREATE INDEX "${indexName}" ON "public"."${table}"(${fields.join(', ')});
 `;
@@ -298,7 +298,7 @@ function getDefaultFields() {
 
 const queryInterface = sequelize.getQueryInterface();
 
-exports.createTable = function createTable(tableName, fields, { transaction = null } = {}) {
+export const createTable = function createTable(tableName, fields, { transaction = null } = {}) {
   return Promise.resolve(queryInterface.createTable(tableName, {
 
     ...getDefaultFields(),
@@ -306,23 +306,23 @@ exports.createTable = function createTable(tableName, fields, { transaction = nu
   }, { }));
 };
 
-exports.dropIndex = function dropIndex(indexName) {
+export const dropIndex = function dropIndex(indexName) {
   return `\
 DROP INDEX IF EXISTS ${indexName};
 `;
 };
 
-exports.dropConstraint = function dropConstraint(indexName, table) {
+export const dropConstraint = function dropConstraint(indexName, table) {
   return `\
 ALTER TABLE ${table} DROP CONSTRAINT  ${indexName};
 `;
 };
 
-exports.dropUniqueIndex = function dropUniqueIndex(indexName) {
-  return exports.dropIndex(`${indexName}_deleted_unique`) + exports.dropIndex(`${indexName}_unique`);
+export const dropUniqueIndex = function dropUniqueIndex(indexName) {
+  return dropIndex(`${indexName}_deleted_unique`) + dropIndex(`${indexName}_unique`);
 };
 
-exports.insertRow = function (tableName, row, { createdAt = 'NOW()', updatedAt = 'NOW()' } = {}) {
+export const insertRow = function (tableName, row, { createdAt = 'NOW()', updatedAt = 'NOW()' } = {}) {
   const keys = Object.keys(row);
   return `\
 INSERT INTO "${tableName}" ("${keys.join('", "')}", "created_at", "updated_at")
@@ -330,11 +330,11 @@ INSERT INTO "${tableName}" ("${keys.join('", "')}", "created_at", "updated_at")
 `;
 };
 
-exports.createAuditTrigger = function createAuditTrigger(tableName) {
+export const createAuditTrigger = function createAuditTrigger(tableName) {
   return `CREATE TRIGGER ${tableName}_audit AFTER DELETE ON ${tableName} FOR EACH ROW EXECUTE PROCEDURE if_modified_func();`;
 };
 
-exports.updateRows = function (tableName, fieldValues, conditions = null) {
+export const updateRows = function (tableName, fieldValues, conditions = null) {
   const where = conditions ? `
 WHERE ${conditions.map((constraint, field) => `${field} ${constraint}`).join(' AND ')};` : ';';
   return `\
@@ -343,6 +343,6 @@ SET ${fieldValues.map((value, field) => `${field} = ${value}`).join(', ')}${wher
 `;
 };
 
-exports.wrapCommands = function wrapCommands(commands = []) {
+export const wrapCommands = function wrapCommands(commands = []) {
   return Promise.resolve(queryInterface.sequelize.query(`${commands.join('\n')};`));
 };

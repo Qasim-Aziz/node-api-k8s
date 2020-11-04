@@ -4,25 +4,25 @@ import { sequelize } from 'src/orm/database';
 import { Env } from 'src/server/helpers/env';
 import { BackError } from 'src/server/helpers/error';
 import { logger } from 'src/server/helpers/logger';
-import { PromiseUtils } from './promise';
+import { PromiseUtils } from 'src/server/helpers/promise';
 
 export class TransactionContextManager {
-  static _isActivated = true;
+  static isActivatedFlag = true;
 
   static isTransactionChecked(check) {
-    return TransactionContextManager.isActivated ? Env.isTest && check : false;
+    return TransactionContextManager.isActivatedFlag ? Env.isTest && check : false;
   }
 
   static deactivate() {
-    TransactionContextManager._isActivated = false;
+    TransactionContextManager.isActivatedFlag = false;
   }
 
   static reactivate() {
-    TransactionContextManager._isActivated = true;
+    TransactionContextManager.isActivatedFlag = true;
   }
 
   static get isActivated() {
-    return TransactionContextManager._isActivated;
+    return TransactionContextManager.isActivatedFlag;
   }
 }
 
@@ -79,17 +79,16 @@ const runBlock = async (bloc, check, tid) => {
   try {
     const postProcessingList = [];
     const addPostProcessing = (postProc) => postProcessingList.push(postProc);
-    const _block = async (transaction) => {
-      if (checkTransactionIsUsed) stub = makeSequelizeQueryStub(transaction);
-      transaction.addPostProcessing = addPostProcessing; // eslint-disable-line no-param-reassign
-      return bloc(transaction);
-    };
 
-    const rv = await sequelize.transaction({}, _block);
+    const rv = await sequelize.transaction({}, (transaction) => {
+      if (checkTransactionIsUsed) stub = makeSequelizeQueryStub(transaction);
+      Object.assign(transaction, { addPostProcessing });
+      return bloc(transaction);
+    });
 
     return { rv, postProcessingList };
   } finally {
-    if (stub && checkTransactionIsUsed) sinon.restore(stub);
+    if (stub && checkTransactionIsUsed) stub.restore();
   }
 };
 

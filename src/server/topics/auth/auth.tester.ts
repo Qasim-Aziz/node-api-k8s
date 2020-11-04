@@ -1,42 +1,45 @@
 import httpStatus from 'http-status';
 import request from 'supertest';
-import setCookie from 'set-cookie-parser';
 import app from 'src/application';
+import { CookiesManager } from 'src/server/acl/cookies-manager';
+import { checkExpectedStatus } from 'src/server/tests/tester.base';
 
-const extractJwtValue = (res) => {
-  const cookies = setCookie.parse(res, { map: true });
-  return cookies.jwt.value;
+const getToken = (res) => {
+  expect(res.headers['set-cookie']).toBeDefined();
+  const cookies = CookiesManager.extractCookies(res);
+  expect(cookies.token).toBeDefined();
+  return cookies.token;
 };
 
-export const registerUser = async (user, { status = httpStatus.OK } = {}) => {
-  const res = await request(app)
+export const registerUser = (user, { status = httpStatus.OK } = {}) =>
+  request(app)
     .post('/api/auth/register')
     .send(user)
-    .expect(status);
-  const userRes = res.body.user;
-  expect(extractJwtValue(res)).not.toBe(false);
-  user.cookie = res.headers['set-cookie']; // eslint-disable-line no-param-reassign
-  return userRes;
-};
+    .expect(checkExpectedStatus(status))
+    .then((res) => {
+      const token = getToken(res);
+      return Object.assign(user, res.body.user, { token });
+    });
 
-export const loginUser = async (user, { status = httpStatus.OK } = {}) => {
-  const { email, password } = user;
-  const res = await request(app)
+export const loginUser = async (user, { status = httpStatus.OK } = {}) =>
+  request(app)
     .post('/api/auth/login')
-    .send({ email, password })
-    .expect(status);
-  expect(extractJwtValue(res)).not.toBe(false);
-  user.cookie = res.headers['set-cookie']; // eslint-disable-line no-param-reassign
-  return res.body.user;
-};
+    .send(user)
+    .expect(checkExpectedStatus(status))
+    .then((res) => {
+      const token = getToken(res);
+      return Object.assign(user, res.body.user, { token });
+    });
 
-export const logoutUser = async (cookie, { status = httpStatus.OK } = {}) => {
-  const res = await request(app)
+export const logoutUser = async (user, { status = httpStatus.OK } = {}) =>
+  request(app)
     .post('/api/auth/logout')
-    .set('cookie', cookie)
+    .set('Authorization', user.token)
     .send({})
-    .expect(status);
-  const userRes = res.body.user;
-  expect(extractJwtValue(res)).toBe('');
-  return userRes;
-};
+    .expect(checkExpectedStatus(status))
+    .then((res) => {
+      expect(res.body.status).toBe('Ok');
+      const cookies = CookiesManager.extractCookies(res);
+      console.log(cookies);
+      return Object.assign(user, { token: null });
+    });

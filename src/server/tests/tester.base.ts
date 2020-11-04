@@ -19,7 +19,7 @@ export class Checks {
   }
 
   static assertIsActivated() {
-    if (TransactionContextManager.isActivated) return;
+    if (TransactionContextManager.isActivatedFlag) return;
     throw new BackError('Checks are deactivated');
   }
 }
@@ -39,6 +39,11 @@ export const checkExpectedStatus = (status) => ((res) => {
     throw new BackError(msg, res.status, stackContainer);
   }
 });
+
+export const getNumberRetriesSetUp = () => {
+  if (process.env.NO_RETRIES_SET_UP !== undefined) return 0;
+  return 2;
+};
 
 export const setUp = (block, timeout = 200000, message = 'should set up the test') => {
   test(message, async () => {
@@ -62,9 +67,4 @@ export const setUp = (block, timeout = 200000, message = 'should set up the test
     await blockRecursive(getNumberRetriesSetUp());
     Checks.assertIsActivated();
   }, timeout * (getNumberRetriesSetUp() + 1));
-};
-
-export const getNumberRetriesSetUp = () => {
-  if (process.env.NO_RETRIES_SET_UP !== undefined) return 0;
-  return 2;
 };

@@ -1,6 +1,6 @@
 import { createLogger, transports, format } from 'winston';
 import config from 'src/config';
-import { Utils } from 'src/server/helpers';
+import { Utils } from 'src/server/helpers/utils';
 
 const {
   combine, timestamp, label, printf,
@@ -16,7 +16,10 @@ class Logger {
         format: combine(
           label({ label: 'backend' }),
           timestamp(),
-          this.customFormatter(),
+          printf(({
+            level, message, msglabel, msgTimestamp,
+          }) =>
+            `${msgTimestamp} [${msglabel}] ${level}: ${message}`),
         ),
         level: config.get('app.logLevel'),
         handleExceptions: true,
@@ -27,16 +30,6 @@ class Logger {
       });
     }
     this.logger = LOGGER;
-  }
-
-  customFormatter() {
-    return printf(({
-      level, message, label, timestamp,
-    }) => `${timestamp} [${label}] ${level}: ${message}`);
-  }
-
-  tsFormat() {
-    return new Date().toISOString().slice(0, 24).replace('T', ' ');
   }
 
   log(...args) {

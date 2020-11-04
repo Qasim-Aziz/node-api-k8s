@@ -1,19 +1,17 @@
 import { AuthController } from 'src/server/topics/auth/auth.controller';
 import Router from 'src/server/abstracts/router';
 
-const c = new AuthController();
-
 const userRoutes = new Router();
 
 userRoutes
   .addRoute('/login', {
-    post: { handler: c.login },
+    post: { handler: AuthController.login },
   })
   .addRoute('/logout', {
-    post: { handler: c.logout },
+    post: { handler: AuthController.logout },
   })
   .addRoute('/register', {
-    post: { handler: c.register },
+    post: { handler: AuthController.register },
   });
 
 export default userRoutes.getRouter();

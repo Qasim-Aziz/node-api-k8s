@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { ValidationError } from '../helpers';
+import { ValidationError } from 'src/server/helpers';
 
 const defaultOptions = {
   contextRequest: false,
@@ -44,6 +44,7 @@ const validate = (errObj, request, schema, location, allowUnknown, context) => {
         item.types.push(error.type);
         return item;
       }
+      return false;
     });
 
     if (!errorExists) {
@@ -57,7 +58,7 @@ const validate = (errObj, request, schema, location, allowUnknown, context) => {
   });
 };
 
-export default function (schema) {
+export const validateRequestMiddleware = (schema) => {
   if (!schema) throw new Error('Please provide a validation schema');
 
   return function (req, res, next) {
@@ -81,4 +82,4 @@ export default function (schema) {
 
     return next(new ValidationError(errors, options));
   };
-}
+};

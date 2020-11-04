@@ -1,8 +1,7 @@
-import bcrypt from 'bcrypt';
-import httpStatus from 'http-status';
-import { validation, Joi, BackError } from 'src/server/helpers';
-import { User } from 'src/orm';
+import { validation, Joi, Auth } from 'src/server/helpers';
 import { AuthService } from 'src/server/topics/auth/auth.service';
+import { CookiesManager } from 'src/server/acl/cookies-manager';
+import { SessionManager } from 'src/server/acl/session-manager';
 
 export class AuthController {
   @validation({
@@ -11,10 +10,11 @@ export class AuthController {
       password: Joi.string().required(),
     },
   })
-  async login(req, res) {
-    const { email, password } = req.body;
-    const { user, token } = await AuthService.login(email, password);
-    res.cookie('jwt', token);
+  @Auth.forAll()
+  static async login(req, res) {
+    const { body: { email, password }, transaction } = req;
+    const { user, token } = await AuthService.login(email, password, { transaction });
+    CookiesManager.setCookies(res, token);
     res.json({ user });
   }
 
@@ -25,20 +25,21 @@ export class AuthController {
       password: Joi.string().required(),
     },
   })
-  async register(req, res) {
-    const { email, pseudo, password } = req.body;
-    const passwordHash = await bcrypt.hash(password, 10);
-    await User.create({ email, pseudo, passwordHash });
-    const { user, token } = await AuthService.login(email, password);
-    res.cookie('jwt', token);
+  @Auth.forAll()
+  static async register(req, res) {
+    const { body: { email, pseudo, password }, transaction } = req;
+    const { user, token } = await AuthService.register({ email, pseudo, password }, { transaction });
+    CookiesManager.setCookies(res, token);
     res.json({ user });
   }
 
   @validation({})
-  async logout(req, res) {
-    // todo list of blacklisted token that are not yet expired
-    res.clearCookie('jwt');
-    res.clearCookie('expires');
-    res.json({});
+  @Auth.forAll()
+  static async logout(req, res) {
+    const { transaction } = req;
+    const token = SessionManager.getToken(req);
+    await AuthService.logout(token, { transaction });
+    CookiesManager.clearCookies(res);
+    res.json({ status: 'Ok' });
   }
 }
