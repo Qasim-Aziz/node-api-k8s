@@ -5,6 +5,9 @@
     "object-shorthand": ["off"],
     "comma-dangle": ["off"],
     "func-names": ["off"],
-    "no-unused-vars": ["off"] // this rule may stay
+    "max-len": ["off"],
+    "no-unused-vars": ["off"], // this rule may stay
+    "@typescript-eslint/no-unused-vars": "off",
+    "no-restricted-imports": "off"
   }
 }

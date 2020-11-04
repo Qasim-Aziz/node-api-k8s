@@ -73,4 +73,48 @@ export default {
       env: 'FORCE_UNIQUE_TRANSACTION',
     },
   },
+  session: {
+    envCookieName: {
+      doc: 'session ttl',
+      format: String,
+      default: 'env',
+      env: 'SESSION_TTL',
+    },
+    infosCookieName: {
+      doc: 'session ttl',
+      format: String,
+      default: 'info',
+      env: 'SESSION_TTL',
+    },
+    ssoCookieName: {
+      doc: 'session ttl',
+      format: String,
+      default: 'sso',
+      env: 'SESSION_TTL',
+    },
+    tokenCookieName: {
+      doc: 'session ttl',
+      format: String,
+      default: 'token',
+      env: 'SESSION_TTL',
+    },
+    ttl: {
+      doc: 'session ttl hours',
+      format: Number,
+      default: 12,
+      env: 'SESSION_TTL',
+    },
+    ssoCookieDomain: {
+      doc: 'session endoint',
+      format: String,
+      default: '.jardinsecret.fr',
+      env: 'SESSION_ENDPOINT',
+    },
+    maxSimultaneous: {
+      doc: 'Max Simultaneous Session',
+      format: Number,
+      default: 5,
+      env: 'SESSION_MAX_SIMULTANEOUS',
+    },
+  },
 };

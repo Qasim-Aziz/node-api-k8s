@@ -20,6 +20,17 @@ module.exports = {
   "rules": {
     "max-len": ["error", { "code": 145 }],
     "import/prefer-default-export": "off",
+    "implicit-arrow-linebreak": "off",
+    "max-classes-per-file": "off",
+    "no-restricted-imports": ["error", {
+      "patterns": ["../*", "./*"],
+      "paths": [
+        {
+          "name": "moment",
+          "message": "Please use \"import moment from 'src/server/helpers/moment'\" instead"
+        }
+      ]
+    }],
   },
   "settings": {
     "import/parsers": {

@@ -1,4 +1,4 @@
-import { Model, Sequelize } from 'sequelize';
+import { Model, Sequelize, Op } from 'sequelize';
 import config from 'src/config';
 import { logger } from 'src/server/helpers/logger';
 
@@ -24,6 +24,10 @@ export const sequelize = new Sequelize(databaseUrl, {
     idle: 1000,
   },
 });
+
+export {
+  Op,
+};
 
 export class OrmModel extends Model {
   public readonly createdAt!: Date;

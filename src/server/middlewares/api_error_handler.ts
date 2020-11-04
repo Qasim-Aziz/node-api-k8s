@@ -1,4 +1,3 @@
-import statuses from 'statuses';
 import httpStatus from 'http-status';
 import { BackError, Env } from 'src/server/helpers';
 
@@ -25,7 +24,7 @@ export default function apiErrorHandler(err, req, res) { // eslint-disable-line 
   };
   // internal server errors
   if (status >= 500) {
-    return res.status(status).json({ ...body, message: statuses[status] });
+    return res.status(status).json({ ...body, message: httpStatus[status] });
   }
 
   return res.status(status).json({

@@ -1,8 +1,8 @@
-import ScriptAbstract from './script-abstract';
-import { runMigrations } from '../migrations/lib/migrate-runner';
+import ScriptAbstract from 'src/scripts/script-abstract';
+import { runMigrations } from 'src/migrations/lib/migrate-runner';
 
 export default class DbMigrate extends ScriptAbstract {
-  async getScript() {
+  getScript = async () => {
     await runMigrations();
-  }
+  };
 }

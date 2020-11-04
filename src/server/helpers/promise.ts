@@ -6,7 +6,9 @@ export class PromiseUtils {
   static promiseMapSeries = async (input = [], callback = (val, ind = null, inp = null) => (val)) => {
     const results = [];
     const n = input.length;
-    for (const [index, value] of input.entries()) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [index, value] of Object.keys((input))) {
+      // eslint-disable-next-line no-await-in-loop
       const result = await callback(value, index, n);
       results.push(result);
     }
@@ -29,6 +31,7 @@ export class PromiseUtils {
           running -= 1;
           completed += 1;
           results[index] = result;
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
           replenish();
         }).catch(reject);
     };

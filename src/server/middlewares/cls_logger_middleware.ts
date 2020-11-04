@@ -3,13 +3,33 @@ import { clsProxifyExpressMiddleware } from 'cls-proxify/integration/express';
 import { CLS_NAMESPACE } from 'src/server/constants';
 import { logger } from 'src/server/helpers';
 
-export default function clsLoggerMiddleware() {
+const baseReqLog = (req) => {
+  const idGenerator = hyperid();
+  const reqId = req.reqId || req.header('x-traefik-reqid') || req.header('x-request-id') || idGenerator();
+  req.reqId = reqId;
+  return {
+    reqId,
+    method: req.method,
+    path: req.originalUrl,
+    referer: req.headers.referer,
+  };
+};
+
+export function clsLoggerMiddleware() {
   return clsProxifyExpressMiddleware(CLS_NAMESPACE, (req) => {
-    const idGenerator = hyperid();
-    return logger.logger.child({
-      reqId: req.header('x-traefik-reqid') || req.header('x-request-id') || idGenerator(),
-      method: req.method,
-      path: req.originalUrl,
+    const child = logger.logger.child({
+      ...baseReqLog(req),
     });
+    return child;
+  });
+}
+
+export function clsUserLoggerMiddleware() {
+  return clsProxifyExpressMiddleware(CLS_NAMESPACE, (req) => {
+    const child = logger.logger.child({
+      ...baseReqLog(req),
+      user_id: req.user.id,
+    });
+    return child;
   });
 }

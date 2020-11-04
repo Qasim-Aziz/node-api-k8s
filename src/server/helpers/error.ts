@@ -1,5 +1,5 @@
 import httpStatus from 'http-status';
-import { Env } from 'src/server/helpers';
+import { Env } from 'src/server/helpers/env';
 
 export class BackError extends Error {
   constructor(message, public status = httpStatus.INTERNAL_SERVER_ERROR, public stack = null) {

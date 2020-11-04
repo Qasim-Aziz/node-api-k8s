@@ -1,5 +1,7 @@
-import momentBase from 'moment-timezone';
+import moment from 'moment-timezone';
 import 'moment/locale/fr';
 
-momentBase.locale('fr');
-export const moment = momentBase;
+moment().locale('fr');
+export {
+  moment,
+};
