@@ -17,7 +17,7 @@ class Logger {
           label({ label: 'backend' }),
           timestamp(),
           printf(({
-            level, message, msglabel, msgTimestamp,
+            level, message, label: msglabel, timestamp: msgTimestamp,
           }) =>
             `${msgTimestamp} [${msglabel}] ${level}: ${message}`),
         ),

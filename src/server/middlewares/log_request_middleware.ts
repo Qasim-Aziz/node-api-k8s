@@ -1,9 +1,9 @@
-import { logger } from 'src/server/helpers';
+import { logger, Utils } from 'src/server/helpers';
 
 const getRequestDataKeys = () => ['method', 'path', 'originalUrl', 'query', 'headers', 'body'];
 
 const getRequestData = (req, res) => ({
-  ..._.pick(req, getRequestDataKeys()),
+  ...Utils.pick(req, getRequestDataKeys()),
   route: res.locals.routeName,
   status: res.statusCode,
   // eslint-disable-next-line no-underscore-dangle
@@ -25,7 +25,7 @@ const connectionInfo = (data) => ({
 
 export default function logRequestMiddleware(req, res, next) {
   logInCommingRequest({
-    ..._.pick(req, getRequestDataKeys()),
+    ...Utils.pick(req, getRequestDataKeys()),
     ...connectionInfo(req),
     state: 'incoming',
   });
