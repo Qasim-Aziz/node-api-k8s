@@ -6,4 +6,8 @@ export class Utils {
   static isNil(obj) {
     return obj == null;
   }
+
+  static pick(object, fileds) {
+    return fileds.reduce((o, k) => { Object.assign(o, { [k]: object[k] }); return o; }, {});
+  }
 }

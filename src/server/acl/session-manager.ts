@@ -1,4 +1,5 @@
-import { BackError, logger, moment } from 'src/server/helpers';
+import * as jwt from 'jsonwebtoken';
+import { BackError, moment } from 'src/server/helpers';
 import config from 'src/config';
 import { SESSION_ERRORS } from 'src/server/constants';
 import { Session } from 'src/orm';
@@ -17,14 +18,8 @@ export class SessionManager {
   };
 
   static async getUserSession(req) {
-    logger.info('here');
     const session = await SessionManager.getSession(req);
-    logger.info('here');
     await req.user.getUserSession(session.userId);
-    logger.info('here');
-    if (session.sessionOfImpersonator) {
-      await req.impersonator.getUserSession(session.sessionOfImpersonator.userId);
-    }
     Object.assign(req, { session });
   }
 
