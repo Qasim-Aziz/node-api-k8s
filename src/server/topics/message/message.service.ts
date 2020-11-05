@@ -29,6 +29,7 @@ export class MessageService {
       order: [['publishedAt', 'desc']],
       where: { userId: requestedId, privacy: { [Op.in]: requiredPrivacy } },
       raw: true,
+      nest: true,
     });
   }
 
@@ -52,11 +53,22 @@ export class MessageService {
       ],
       group: ['Message.id'],
       transaction,
+      raw: true,
+      nest: true,
       logging: console.log
     });
     console.log('here 6')
     if (message.isPrivate && reqUserId) await MessageService.checkUserRight(reqUserId, messageId, { transaction });
-    console.log('here 7')
+    console.log('here 7', await Tag.unscoped().findAll({
+      attributes: [],
+      where: { messageId },
+      include: [
+        { model: Trait.unscoped(), attributes: ['name'], required: true },
+      ],
+      raw: true,
+      nest: true,
+      transaction,
+    }))
     const traitNames = (await Tag.unscoped().findAll({
       attributes: [],
       where: { messageId },
@@ -64,7 +76,7 @@ export class MessageService {
         { model: Trait.unscoped(), attributes: ['name'], required: true },
       ],
       transaction,
-    })).map((tag) => tag.trait.name);
+    })).map((tag) => tag.Trait.name);
     console.log('here 8')
     if (reqUserId && reqUserId !== message.userId) {
       await MessageService.createView(messageId, reqUserId, { transaction });

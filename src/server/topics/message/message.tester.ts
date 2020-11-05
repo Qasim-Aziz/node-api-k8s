@@ -15,11 +15,16 @@ export const publishMessage = async (user, message, { status = httpStatus.OK } =
   expect(messageRes.nbLoves).to.equal(0);
   expect(messageRes.nbViews).to.equal(0);
   expect(messageRes.userId).to.equal(user.id);
+  console.log('messageRes : ', messageRes)
   message.id = messageRes.id;
+  console.log('message : ', message)
   return messageRes;
 };
 
 export const updateMessage = async (user, messageId, messageData, { status = httpStatus.OK, nbLoves = null, nbViews = null } = {}) => {
+  console.log(messageId)
+  console.log(user)
+  console.log(messageData)
   const res = await request(app)
     .put(`/api/messages/${messageId}`)
     .set('cookie', user.token)
