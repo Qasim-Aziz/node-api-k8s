@@ -1,5 +1,5 @@
 import httpStatus from 'http-status';
-import { setUp } from 'src/server/tests/tester.base';
+import {Checks, setUp} from 'src/server/tests/tester.base';
 import { InitDBService } from 'src/initdb/initdb.service';
 import * as Testers from 'src/server/tests/testers';
 import { EMOTION_CODE, PRIVACY_LEVEL } from 'src/server/constants';
@@ -17,7 +17,10 @@ const message2Update = { content: 'message 2 content update', traitNames: ['depr
 describe('# Message Tests', () => {
   setUp(async () => {
     await InitDBService.truncateTables();
+    Checks.deactivate();
     await Promise.all([user1, user2, user3].map(p => Testers.registerUser(p)));
+    Checks.reactivate();
+    console.log('user1 : ', user1)
   }, 40000);
   test('should publish a new message', () =>
     Testers.publishMessage(user1, message1));
