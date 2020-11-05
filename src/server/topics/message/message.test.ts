@@ -22,13 +22,13 @@ describe('# Message Tests', () => {
     Checks.reactivate();
     console.log('user1 : ', user1)
   }, 40000);
-  test('should publish a new message', () =>
+  test('should publish a new message', async () =>
     Testers.publishMessage(user1, message1));
-  test('should publish a new message with tags', () =>
+  test('should publish a new message with tags', async () =>
     Testers.publishMessage(user2, message2));
-  test('shouldnt update an existing message if not mine', () =>
+  test('shouldnt update an existing message if not mine', async () =>
     Testers.updateMessage(user1, message2.id, {}, { status: httpStatus.FORBIDDEN }));
-  test('should update an existing message only if mine', () =>
+  test('should update an existing message only if mine', async () =>
     Testers.updateMessage(user2, message2.id, message2Update, { nbLoves: 0, nbViews: 0 }));
   test('shouldnt get a private message if not mine', () =>
     Testers.getMessage(user2, message1.id, { status: httpStatus.FORBIDDEN }));

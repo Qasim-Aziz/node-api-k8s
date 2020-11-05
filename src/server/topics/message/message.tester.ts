@@ -4,22 +4,22 @@ import app from 'src/application';
 import { Message, Tag, View, Love } from 'src/orm';
 import { PRIVACY_LEVEL } from 'src/server/constants';
 
-export const publishMessage = async (user, message, { status = httpStatus.OK } = {}) => {
-  const res = await request(app)
-    .post('/api/messages')
-    .set('cookie', user.token)
-    .send({ ...message, userId: user.id })
-    .expect(status);
-  const messageRes = res.body.message;
-  expect(messageRes).to.containSubset(message);
-  expect(messageRes.nbLoves).to.equal(0);
-  expect(messageRes.nbViews).to.equal(0);
-  expect(messageRes.userId).to.equal(user.id);
-  console.log('messageRes : ', messageRes)
-  message.id = messageRes.id;
-  console.log('message : ', message)
-  return messageRes;
-};
+export const publishMessage = async (user, message, { status = httpStatus.OK } = {}) => request(app)
+  .post('/api/messages')
+  .set('cookie', user.token)
+  .send({ ...message, userId: user.id })
+  .expect(status)
+  .then((res) => {
+    const messageRes = res.body.message;
+    expect(messageRes).toMatchObject(message);
+    expect(messageRes.nbLoves).toEqual(0);
+    expect(messageRes.nbViews).toEqual(0);
+    expect(messageRes.userId).toEqual(user.id);
+    console.log('messageRes : ', messageRes)
+    message.id = messageRes.id;
+    console.log('message : ', message)
+    return Object.assign(message, messageRes);
+  });
 
 export const updateMessage = async (user, messageId, messageData, { status = httpStatus.OK, nbLoves = null, nbViews = null } = {}) => {
   console.log(messageId)
@@ -32,11 +32,11 @@ export const updateMessage = async (user, messageId, messageData, { status = htt
     .expect(status);
   if (status !== httpStatus.OK) return null;
   const messageRes = res.body.message;
-  expect(messageRes).to.containSubset(messageData);
+  expect(messageRes).to.toMatchObject(messageData);
   if (messageData.traitNames) expect(messageRes.traitNames.sort()).to.deep.equal(messageData.traitNames.sort());
-  expect(messageRes.nbLoves).to.equal(nbLoves);
-  expect(messageRes.nbViews).to.equal(nbViews);
-  expect(messageRes.userId).to.equal(user.id);
+  expect(messageRes.nbLoves).toEqual(nbLoves);
+  expect(messageRes.nbViews).toEqual(nbViews);
+  expect(messageRes.userId).toEqual(user.id);
   return messageRes;
 };
 
@@ -47,8 +47,8 @@ export const getMessage = async (user, messageId, { status = httpStatus.OK, nbLo
     .expect(status);
   if (status !== httpStatus.OK) return null;
   const messageRes = res.body.message;
-  expect(messageRes.nbLoves).to.equal(nbLoves);
-  expect(messageRes.nbViews).to.equal(nbViews);
+  expect(messageRes.nbLoves).toEqual(nbLoves);
+  expect(messageRes.nbViews).toEqual(nbViews);
   return messageRes;
 };
 
@@ -59,8 +59,8 @@ export const getNextMessage = async (user, { status = httpStatus.OK, expectedMes
     .expect(status);
   if (status !== httpStatus.OK) return null;
   const messageRes = res.body.message;
-  expect(messageRes.nbViews).to.equal(nbViews);
-  expect(messageRes.id).to.equal(expectedMessageId);
+  expect(messageRes.nbViews).toEqual(nbViews);
+  expect(messageRes.id).toEqual(expectedMessageId);
   return messageRes;
 };
 
@@ -71,8 +71,8 @@ export const loveMessage = async (user, messageId, { status = httpStatus.OK, nbL
     .expect(status);
   if (status !== httpStatus.OK) return null;
   const messageRes = res.body.message;
-  expect(messageRes.nbLoves).to.equal(nbLoves);
-  expect(messageRes.nbViews).to.equal(nbViews);
+  expect(messageRes.nbLoves).toEqual(nbLoves);
+  expect(messageRes.nbViews).toEqual(nbViews);
   return messageRes;
 };
 
