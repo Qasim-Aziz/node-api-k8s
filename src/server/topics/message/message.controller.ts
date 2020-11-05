@@ -6,8 +6,9 @@ export class MessageController {
   @validation({
     params: { messageId: Joi.number().integer().required() },
   })
-  @Auth.forAll()
+  @Auth.forLogged()
   static async get(req, res) {
+    console.log('reqUserId : ', req.user.id)
     const message = await MessageService.get(req.params.messageId, { reqUserId: req.user.id });
     res.json({ message });
   }
@@ -15,15 +16,16 @@ export class MessageController {
   @validation({
     query: { userId: Joi.number().integer().required() },
   })
-  @Auth.forAll()
+  @Auth.forLogged()
   static async getAll(req, res) {
     const messages = await MessageService.getAll(req.user.id, req.query.userId);
     res.json({ messages });
   }
 
   @validation({})
-  @Auth.forAll()
+  @Auth.forLogged()
   static async getNext(req, res) {
+    console.log('reqUserId in getNext : ', req.user.id)
     const message = await MessageService.getNext(req.user.id);
     res.json({ message });
   }
@@ -31,7 +33,7 @@ export class MessageController {
   @validation({
     query: { q: Joi.string().optional() },
   })
-  @Auth.forAll()
+  @Auth.forLogged()
   static async searchTraits(req, res) {
     const traits = await MessageService.searchTraits(req.query.q);
     res.json({ traits });
@@ -46,7 +48,7 @@ export class MessageController {
       userId: Joi.number().required(),
     },
   })
-  @Auth.forAll()
+  @Auth.forLogged()
   static async create(req, res) {
     const { body: messageData, transaction } = req;
     const message = await MessageService.create(messageData, { transaction });
@@ -62,7 +64,7 @@ export class MessageController {
     },
     params: { messageId: Joi.number().integer().required() },
   })
-  @Auth.forAll()
+  @Auth.forLogged()
   static async update(req, res) {
     const { params: { messageId }, body: messageData, transaction } = req;
     await MessageService.checkUserRight(req.user.id, messageId);
@@ -73,7 +75,7 @@ export class MessageController {
   @validation({
     params: { messageId: Joi.number().integer().required() },
   })
-  @Auth.forAll()
+  @Auth.forLogged()
   static async loveOrUnlove(req, res) {
     const { params: { messageId }, user: { id: reqUserId }, transaction } = req;
     const message = await MessageService.loveOrUnlove(messageId, reqUserId, { transaction });
@@ -83,7 +85,7 @@ export class MessageController {
   @validation({
     params: { messageId: Joi.number().integer().required() },
   })
-  @Auth.forAll()
+  @Auth.forLogged()
   static async delete(req, res) {
     const { params: { messageId }, user: { id: reqUserId }, transaction } = req;
     await MessageService.delete(messageId, reqUserId, { transaction });

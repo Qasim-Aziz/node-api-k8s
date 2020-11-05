@@ -13,10 +13,6 @@ export class Message extends OrmModel {
   public emotionCode!: string;
 
   public privacy!: string;
-
-  public isPrivate!: boolean;
-
-  public isPublic!: boolean;
 }
 
 Message.init({
@@ -41,18 +37,6 @@ Message.init({
     values: Object.values(PRIVACY_LEVEL),
     field: 'privacy',
     allowNull: false,
-  },
-  isPrivate: {
-    type: DataTypes.VIRTUAL(DataTypes.BOOLEAN, ['privacy']),
-    get() {
-      return this.get('privacy') === PRIVACY_LEVEL.PRIVATE;
-    },
-  },
-  isPublic: {
-    type: DataTypes.VIRTUAL(DataTypes.BOOLEAN, ['privacy']),
-    get() {
-      return this.get('privacy') === PRIVACY_LEVEL.PUBLIC;
-    },
   },
 }, {
   sequelize,

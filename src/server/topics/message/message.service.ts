@@ -7,7 +7,7 @@ import { getNextMessageQuery } from 'src/server/topics/message/message.query';
 import { PRIVACY_LEVEL } from 'src/server/constants';
 
 export class MessageService {
-  static async getAll(requesterId, requestedId) {
+  static async getAll(requesterId, requestedId, { transaction = null } = {}) {
     const requiredPrivacy = (requesterId === requestedId) ? [PRIVACY_LEVEL.PRIVATE, PRIVACY_LEVEL.PUBLIC] : [PRIVACY_LEVEL.PUBLIC];
     return Message.unscoped().findAll({
       attributes: [
@@ -17,7 +17,6 @@ export class MessageService {
         'privacy',
         'content',
         'userId',
-        'isPrivate',
         [sequelize.cast(sequelize.fn('COUNT', sequelize.col('"Loves"."id"')), 'int'), 'nbLoves'],
         [sequelize.cast(sequelize.fn('COUNT', sequelize.col('"Views"."id"')), 'int'), 'nbViews'],
       ],
@@ -30,11 +29,11 @@ export class MessageService {
       where: { userId: requestedId, privacy: { [Op.in]: requiredPrivacy } },
       raw: true,
       nest: true,
+      transaction,
     });
   }
 
   static async get(messageId, { transaction = null, reqUserId = null } = {}) {
-    console.log('here 5')
     const message = await Message.unscoped().findByPk(messageId, {
       attributes: [
         'id',
@@ -43,7 +42,6 @@ export class MessageService {
         'privacy',
         'content',
         'userId',
-        'isPrivate',
         [sequelize.cast(sequelize.fn('COUNT', sequelize.col('"Loves"."id"')), 'int'), 'nbLoves'],
         [sequelize.cast(sequelize.fn('COUNT', sequelize.col('"Views"."id"')), 'int'), 'nbViews'],
       ],
@@ -55,20 +53,9 @@ export class MessageService {
       transaction,
       raw: true,
       nest: true,
-      logging: console.log
     });
-    console.log('here 6')
-    if (message.isPrivate && reqUserId) await MessageService.checkUserRight(reqUserId, messageId, { transaction });
-    console.log('here 7', await Tag.unscoped().findAll({
-      attributes: [],
-      where: { messageId },
-      include: [
-        { model: Trait.unscoped(), attributes: ['name'], required: true },
-      ],
-      raw: true,
-      nest: true,
-      transaction,
-    }))
+    console.log('reqUserId : ', reqUserId)
+    if (message.privacy === PRIVACY_LEVEL.PRIVATE && reqUserId) await MessageService.checkUserRight(reqUserId, messageId, { transaction });
     const traitNames = (await Tag.unscoped().findAll({
       attributes: [],
       where: { messageId },
@@ -77,18 +64,14 @@ export class MessageService {
       ],
       transaction,
     })).map((tag) => tag.Trait.name);
-    console.log('here 8')
     if (reqUserId && reqUserId !== message.userId) {
       await MessageService.createView(messageId, reqUserId, { transaction });
       message.nbViews += 1;
     }
-    console.log('here 9')
-    console.log('traitNames', traitNames)
-    console.log('message', message)
     return { ...message, traitNames };
   }
 
-  static async getNext(reqUserId) {
+  static async getNext(reqUserId, { transaction = null } = {}) {
     // for now, very simple getNext function based on view and most recent messages others than mine.
     // later, when we will have more data, it will be based on user similarity
     // Useful variables/features : messages written by reqUser, tags used by reqUser,
@@ -97,8 +80,9 @@ export class MessageService {
       type: sequelize.QueryTypes.SELECT,
       raw: true,
       replacements: { reqUserId },
+      transaction,
     });
-    return MessageService.get(id, { reqUserId });
+    return MessageService.get(id, { reqUserId, transaction });
   }
 
   static async createView(messageId, viewerId, { transaction = null } = {}) {
@@ -149,13 +133,9 @@ export class MessageService {
   }
 
   static async create(messageData, { transaction = null } = {}) {
-    console.log('here 1')
     const publishedAt = moment().toISOString();
-    console.log('here 2')
     const message = await Message.create({ ...messageData, publishedAt }, { transaction });
-    console.log('here 3')
     await MessageService.createOrUpdateTagsAndTraits(message.id, messageData.traitNames, { transaction });
-    console.log('here 4')
     return MessageService.get(message.id, { transaction });
   }
 
@@ -173,8 +153,8 @@ export class MessageService {
   }
 
   static async loveOrUnlove(messageId, reqUserId, { transaction = null } = {}) {
-    const message = await Message.unscoped().findByPk(messageId, { attributes: ['isPrivate'], transaction });
-    if (message.isPrivate) throw new BackError('Cannot love a private message', httpStatus.BAD_REQUEST);
+    const message = await Message.unscoped().findByPk(messageId, { attributes: ['privacy'], transaction });
+    if (message.privacy === PRIVACY_LEVEL.PRIVATE) throw new BackError('Cannot love a private message', httpStatus.BAD_REQUEST);
     const isAlreadyLove = await Love.findOne({ where: { messageId, userId: reqUserId }, transaction });
     if (isAlreadyLove) {
       await isAlreadyLove.destroy({ transaction });
@@ -192,7 +172,10 @@ export class MessageService {
     await Love.destroy({ where: { messageId }, transaction });
   }
 
-  static async searchTraits(q) {
-    return (await Trait.unscoped().findAll({ where: { name: { [Op.iLike]: `%${q}%` } } })).map((t) => t.name);
+  static async searchTraits(q, { transaction = null } = {}) {
+    return (await Trait.unscoped().findAll({
+      transaction,
+      where: { name: { [Op.iLike]: `%${q}%` } },
+    })).map((t) => t.name);
   }
 }

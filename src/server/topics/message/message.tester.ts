@@ -15,16 +15,10 @@ export const publishMessage = async (user, message, { status = httpStatus.OK } =
     expect(messageRes.nbLoves).toEqual(0);
     expect(messageRes.nbViews).toEqual(0);
     expect(messageRes.userId).toEqual(user.id);
-    console.log('messageRes : ', messageRes)
-    message.id = messageRes.id;
-    console.log('message : ', message)
     return Object.assign(message, messageRes);
   });
 
 export const updateMessage = async (user, messageId, messageData, { status = httpStatus.OK, nbLoves = null, nbViews = null } = {}) => {
-  console.log(messageId)
-  console.log(user)
-  console.log(messageData)
   const res = await request(app)
     .put(`/api/messages/${messageId}`)
     .set('cookie', user.token)
@@ -32,8 +26,9 @@ export const updateMessage = async (user, messageId, messageData, { status = htt
     .expect(status);
   if (status !== httpStatus.OK) return null;
   const messageRes = res.body.message;
-  expect(messageRes).to.toMatchObject(messageData);
-  if (messageData.traitNames) expect(messageRes.traitNames.sort()).to.deep.equal(messageData.traitNames.sort());
+  const { traitNames, ...otherAttributes } = messageData;
+  expect(messageRes).toMatchObject(otherAttributes);
+  if (messageData.traitNames) expect(messageRes.traitNames.sort()).toEqual(messageData.traitNames.sort());
   expect(messageRes.nbLoves).toEqual(nbLoves);
   expect(messageRes.nbViews).toEqual(nbViews);
   expect(messageRes.userId).toEqual(user.id);
@@ -101,7 +96,7 @@ export const searchTraits = async (user, q, { status = httpStatus.OK, expectedRe
     .expect(status);
   if (status !== httpStatus.OK) return null;
   const traitsRes = res.body.traits;
-  expect(traitsRes).to.deep.equal(expectedResults);
+  expect(traitsRes).toEqual(expectedResults);
   return traitsRes;
 };
 
@@ -113,7 +108,7 @@ export const getAllMessages = async (user, requestedUser, { status = httpStatus.
     .expect(status);
   if (status !== httpStatus.OK) return null;
   const messagesRes = res.body.messages;
-  expect(messagesRes.map(m => m.id)).to.deep.equal(expectedMessagesIds);
-  if (user.id !== requestedUser.id) expect([...new Set(messagesRes.map(m => m.privacy))]).to.deep.equal([PRIVACY_LEVEL.PUBLIC]);
+  expect(messagesRes.map(m => m.id)).toEqual(expectedMessagesIds);
+  if (user.id !== requestedUser.id) expect([...new Set(messagesRes.map(m => m.privacy))]).toEqual([PRIVACY_LEVEL.PUBLIC]);
   return messagesRes;
 };

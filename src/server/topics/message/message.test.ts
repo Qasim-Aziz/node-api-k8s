@@ -12,7 +12,7 @@ const message2 = { content: 'message 2 content', privacy: PRIVACY_LEVEL.PUBLIC, 
 const message3 = { content: 'message 3', privacy: PRIVACY_LEVEL.PUBLIC, emotionCode: EMOTION_CODE.NERVEUX, traitNames: [] };
 const message4 = { content: 'message 4', privacy: PRIVACY_LEVEL.PUBLIC, emotionCode: EMOTION_CODE.NERVEUX, traitNames: [] };
 const message5 = { content: 'message 5', privacy: PRIVACY_LEVEL.PRIVATE, emotionCode: EMOTION_CODE.NERVEUX, traitNames: [] };
-const message2Update = { content: 'message 2 content update', traitNames: ['depression', 'phobie'] };
+const message2Update = { content: 'message 2 content update', traitNames: ['phobie', 'depression'] };
 
 describe('# Message Tests', () => {
   setUp(async () => {
@@ -20,7 +20,6 @@ describe('# Message Tests', () => {
     Checks.deactivate();
     await Promise.all([user1, user2, user3].map(p => Testers.registerUser(p)));
     Checks.reactivate();
-    console.log('user1 : ', user1)
   }, 40000);
   test('should publish a new message', async () =>
     Testers.publishMessage(user1, message1));
