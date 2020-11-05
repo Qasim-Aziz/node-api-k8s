@@ -17,7 +17,11 @@ Trait.hasMany(Tag, {
   foreignKey: 'traitId',
 });
 
+Tag.belongsTo(Trait);
+
 Message.hasMany(Tag, {
   sourceKey: 'id',
   foreignKey: 'messageId',
 });
+
+Tag.belongsTo(Message);

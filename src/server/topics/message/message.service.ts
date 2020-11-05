@@ -18,22 +18,22 @@ export class MessageService {
         'content',
         'userId',
         'isPrivate',
-        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('loves.id')), 'int'), 'nbLoves'],
-        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('views.id')), 'int'), 'nbViews'],
+        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('"Loves"."id"')), 'int'), 'nbLoves'],
+        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('"Views"."id"')), 'int'), 'nbViews'],
       ],
       include: [
-        { model: Love.unscoped(), attributes: [], required: false },
-        { model: View.unscoped(), attributes: [], required: false },
+        { model: Love.unscoped(), attributes: [] },
+        { model: View.unscoped(), attributes: [] },
       ],
-      group: ['message.id'],
+      group: ['Message.id'],
       order: [['publishedAt', 'desc']],
       where: { userId: requestedId, privacy: { [Op.in]: requiredPrivacy } },
       raw: true,
-      nest: true,
     });
   }
 
   static async get(messageId, { transaction = null, reqUserId = null } = {}) {
+    console.log('here 5')
     const message = await Message.unscoped().findByPk(messageId, {
       attributes: [
         'id',
@@ -43,19 +43,20 @@ export class MessageService {
         'content',
         'userId',
         'isPrivate',
-        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('loves.id')), 'int'), 'nbLoves'],
-        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('views.id')), 'int'), 'nbViews'],
+        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('"Loves"."id"')), 'int'), 'nbLoves'],
+        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('"Views"."id"')), 'int'), 'nbViews'],
       ],
       include: [
-        { model: Love.unscoped(), attributes: [], required: false },
-        { model: View.unscoped(), attributes: [], required: false },
+        { model: Love.unscoped(), attributes: [] },
+        { model: View.unscoped(), attributes: [] },
       ],
-      group: ['message.id'],
+      group: ['Message.id'],
       transaction,
-      raw: true,
-      nest: true,
+      logging: console.log
     });
+    console.log('here 6')
     if (message.isPrivate && reqUserId) await MessageService.checkUserRight(reqUserId, messageId, { transaction });
+    console.log('here 7')
     const traitNames = (await Tag.unscoped().findAll({
       attributes: [],
       where: { messageId },
@@ -64,10 +65,14 @@ export class MessageService {
       ],
       transaction,
     })).map((tag) => tag.trait.name);
+    console.log('here 8')
     if (reqUserId && reqUserId !== message.userId) {
       await MessageService.createView(messageId, reqUserId, { transaction });
       message.nbViews += 1;
     }
+    console.log('here 9')
+    console.log('traitNames', traitNames)
+    console.log('message', message)
     return { ...message, traitNames };
   }
 
@@ -132,9 +137,13 @@ export class MessageService {
   }
 
   static async create(messageData, { transaction = null } = {}) {
+    console.log('here 1')
     const publishedAt = moment().toISOString();
+    console.log('here 2')
     const message = await Message.create({ ...messageData, publishedAt }, { transaction });
+    console.log('here 3')
     await MessageService.createOrUpdateTagsAndTraits(message.id, messageData.traitNames, { transaction });
+    console.log('here 4')
     return MessageService.get(message.id, { transaction });
   }
 
