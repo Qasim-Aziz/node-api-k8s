@@ -74,9 +74,9 @@ export class MessageController {
     params: { messageId: Joi.number().integer().required() },
   })
   @Auth.forAll()
-  static async likeOrUnlike(req, res) {
+  static async loveOrUnlove(req, res) {
     const { params: { messageId }, user: { id: reqUserId }, transaction } = req;
-    const message = await MessageService.likeOrUnlike(messageId, reqUserId, { transaction });
+    const message = await MessageService.loveOrUnlove(messageId, reqUserId, { transaction });
     res.json({ message });
   }
 

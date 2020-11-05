@@ -19,8 +19,8 @@ messageRoutes
     put: { handler: MessageController.update },
     delete: { handler: MessageController.delete },
   })
-  .addRoute('/:messageId/likeOrUnlike', {
-    post: { handler: MessageController.likeOrUnlike },
+  .addRoute('/:messageId/loveOrUnlove', {
+    post: { handler: MessageController.loveOrUnlove },
   });
 
 export default messageRoutes.getRouter();

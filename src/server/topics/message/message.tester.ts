@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
 import request from 'supertest';
 import app from 'src/application';
-import { Message, Tag, View, Like } from 'src/orm';
+import { Message, Tag, View, Love } from 'src/orm';
 import { PRIVACY_LEVEL } from 'src/server/constants';
 
 export const publishMessage = async (user, message, { status = httpStatus.OK } = {}) => {
@@ -12,14 +12,14 @@ export const publishMessage = async (user, message, { status = httpStatus.OK } =
     .expect(status);
   const messageRes = res.body.message;
   expect(messageRes).to.containSubset(message);
-  expect(messageRes.nbLikes).to.equal(0);
+  expect(messageRes.nbLoves).to.equal(0);
   expect(messageRes.nbViews).to.equal(0);
   expect(messageRes.userId).to.equal(user.id);
   message.id = messageRes.id;
   return messageRes;
 };
 
-export const updateMessage = async (user, messageId, messageData, { status = httpStatus.OK, nbLikes = null, nbViews = null } = {}) => {
+export const updateMessage = async (user, messageId, messageData, { status = httpStatus.OK, nbLoves = null, nbViews = null } = {}) => {
   const res = await request(app)
     .put(`/api/messages/${messageId}`)
     .set('cookie', user.token)
@@ -29,20 +29,20 @@ export const updateMessage = async (user, messageId, messageData, { status = htt
   const messageRes = res.body.message;
   expect(messageRes).to.containSubset(messageData);
   if (messageData.traitNames) expect(messageRes.traitNames.sort()).to.deep.equal(messageData.traitNames.sort());
-  expect(messageRes.nbLikes).to.equal(nbLikes);
+  expect(messageRes.nbLoves).to.equal(nbLoves);
   expect(messageRes.nbViews).to.equal(nbViews);
   expect(messageRes.userId).to.equal(user.id);
   return messageRes;
 };
 
-export const getMessage = async (user, messageId, { status = httpStatus.OK, nbLikes = null, nbViews = null } = {}) => {
+export const getMessage = async (user, messageId, { status = httpStatus.OK, nbLoves = null, nbViews = null } = {}) => {
   const res = await request(app)
     .get(`/api/messages/${messageId}`)
     .set('cookie', user.token)
     .expect(status);
   if (status !== httpStatus.OK) return null;
   const messageRes = res.body.message;
-  expect(messageRes.nbLikes).to.equal(nbLikes);
+  expect(messageRes.nbLoves).to.equal(nbLoves);
   expect(messageRes.nbViews).to.equal(nbViews);
   return messageRes;
 };
@@ -59,14 +59,14 @@ export const getNextMessage = async (user, { status = httpStatus.OK, expectedMes
   return messageRes;
 };
 
-export const likeMessage = async (user, messageId, { status = httpStatus.OK, nbLikes = null, nbViews = null } = {}) => {
+export const loveMessage = async (user, messageId, { status = httpStatus.OK, nbLoves = null, nbViews = null } = {}) => {
   const res = await request(app)
-    .post(`/api/messages/${messageId}/likeOrUnlike`)
+    .post(`/api/messages/${messageId}/loveOrUnlove`)
     .set('cookie', user.token)
     .expect(status);
   if (status !== httpStatus.OK) return null;
   const messageRes = res.body.message;
-  expect(messageRes.nbLikes).to.equal(nbLikes);
+  expect(messageRes.nbLoves).to.equal(nbLoves);
   expect(messageRes.nbViews).to.equal(nbViews);
   return messageRes;
 };
@@ -81,8 +81,8 @@ export const deleteMessage = async (user, messageId, { status = httpStatus.OK } 
   expect(message).to.be.null();
   const tags = await Tag.findAll({ where: { messageId } });
   expect(tags).to.be.empty();
-  const likes = await Like.findAll({ where: { messageId } });
-  expect(likes).to.be.empty();
+  const loves = await Love.findAll({ where: { messageId } });
+  expect(loves).to.be.empty();
   const views = await View.findAll({ where: { messageId } });
   expect(views).to.be.empty();
   return null;

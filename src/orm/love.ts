@@ -3,33 +3,33 @@ import { OrmModel, sequelize } from 'src/orm/database';
 import { User } from 'src/orm/user';
 import { Message } from 'src/orm/message';
 
-export class Like extends OrmModel {
+export class Love extends OrmModel {
   public id!: number;
 
-  public likedAt!: Date;
+  public lovedAt!: Date;
 
   public userId!: number;
 
   public messageId!: number;
 }
 
-Like.init({
-  likedAt: {
+Love.init({
+  lovedAt: {
     type: DataTypes.DATE,
-    field: 'liked_at',
+    field: 'loved_at',
     allowNull: false,
   },
 }, {
   sequelize,
-  tableName: 'like',
+  tableName: 'love',
 });
 
-User.hasMany(Like, {
+User.hasMany(Love, {
   sourceKey: 'id',
   foreignKey: 'userId',
 });
 
-Message.hasMany(Like, {
+Message.hasMany(Love, {
   sourceKey: 'id',
   foreignKey: 'messageId',
 });

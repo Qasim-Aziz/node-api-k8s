@@ -7,9 +7,9 @@ describe('# Auth Tests', () => {
 
   setUp(async () => InitDBService.truncateTables());
 
-  test('should register the user', () => Testers.registerUser(user1));
+  test('should register the user', async () => Testers.registerUser(user1));
 
-  test('should logout the user', () => Testers.logoutUser(user1));
+  test('should logout the user', async () => Testers.logoutUser(user1));
 
-  test('should login again the user', () => Testers.loginUser(user1));
+  test('should login again the user', async () => Testers.loginUser(user1));
 });

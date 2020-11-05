@@ -185,7 +185,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      liked_at: {
+      loved_at: {
         type: Sequelize.DATE,
         allowNull: false,
       },
@@ -195,7 +195,7 @@ module.exports = {
     await lib.createTable('trait', traitFields);
     await lib.createTable('tag', tagFields);
     await lib.createTable('view', viewingFields);
-    await lib.createTable('like', heartFields);
+    await lib.createTable('love', heartFields);
   },
 
   down: (queryInterface, Sequelize) => {

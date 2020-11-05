@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 import httpStatus from 'http-status'; // eslint-disable-line no-unused-vars
 import { sequelize } from 'src/orm/database';
-import { Message, Tag, Trait, Like, View } from 'src/orm';
+import { Message, Tag, Trait, Love, View } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import { getNextMessageQuery } from 'src/server/topics/message/message.query';
 import { PRIVACY_LEVEL } from 'src/server/constants';
@@ -18,11 +18,11 @@ export class MessageService {
         'content',
         'userId',
         'isPrivate',
-        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('likes.id')), 'int'), 'nbLikes'],
+        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('loves.id')), 'int'), 'nbLoves'],
         [sequelize.cast(sequelize.fn('COUNT', sequelize.col('views.id')), 'int'), 'nbViews'],
       ],
       include: [
-        { model: Like.unscoped(), attributes: [], required: false },
+        { model: Love.unscoped(), attributes: [], required: false },
         { model: View.unscoped(), attributes: [], required: false },
       ],
       group: ['message.id'],
@@ -43,11 +43,11 @@ export class MessageService {
         'content',
         'userId',
         'isPrivate',
-        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('likes.id')), 'int'), 'nbLikes'],
+        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('loves.id')), 'int'), 'nbLoves'],
         [sequelize.cast(sequelize.fn('COUNT', sequelize.col('views.id')), 'int'), 'nbViews'],
       ],
       include: [
-        { model: Like.unscoped(), attributes: [], required: false },
+        { model: Love.unscoped(), attributes: [], required: false },
         { model: View.unscoped(), attributes: [], required: false },
       ],
       group: ['message.id'],
@@ -75,7 +75,7 @@ export class MessageService {
     // for now, very simple getNext function based on view and most recent messages others than mine.
     // later, when we will have more data, it will be based on user similarity
     // Useful variables/features : messages written by reqUser, tags used by reqUser,
-    // views duration, messages liked, users subscribed, saved messages
+    // views duration, messages loved, users subscribed, saved messages
     const [{ id }] = await sequelize.query(getNextMessageQuery(), {
       type: sequelize.QueryTypes.SELECT,
       raw: true,
@@ -151,14 +151,14 @@ export class MessageService {
     }
   }
 
-  static async likeOrUnlike(messageId, reqUserId, { transaction = null } = {}) {
+  static async loveOrUnlove(messageId, reqUserId, { transaction = null } = {}) {
     const message = await Message.unscoped().findByPk(messageId, { attributes: ['isPrivate'], transaction });
-    if (message.isPrivate) throw new BackError('Cannot like a private message', httpStatus.BAD_REQUEST);
-    const isAlreadyLike = await Like.findOne({ where: { messageId, userId: reqUserId }, transaction });
-    if (isAlreadyLike) {
-      await isAlreadyLike.destroy({ transaction });
+    if (message.isPrivate) throw new BackError('Cannot love a private message', httpStatus.BAD_REQUEST);
+    const isAlreadyLove = await Love.findOne({ where: { messageId, userId: reqUserId }, transaction });
+    if (isAlreadyLove) {
+      await isAlreadyLove.destroy({ transaction });
     } else {
-      await Like.create({ messageId, userId: reqUserId, likedAt: moment().toISOString() }, { transaction });
+      await Love.create({ messageId, userId: reqUserId, lovedAt: moment().toISOString() }, { transaction });
     }
     return MessageService.get(messageId, { transaction });
   }
@@ -168,7 +168,7 @@ export class MessageService {
     await Message.destroy({ where: { id: messageId }, transaction });
     await Tag.destroy({ where: { messageId }, transaction });
     await View.destroy({ where: { messageId }, transaction });
-    await Like.destroy({ where: { messageId }, transaction });
+    await Love.destroy({ where: { messageId }, transaction });
   }
 
   static async searchTraits(q) {
