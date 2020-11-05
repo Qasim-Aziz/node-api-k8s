@@ -166,10 +166,10 @@ export class MessageService {
 
   static async delete(messageId, reqUserId, { transaction = null } = {}) {
     await MessageService.checkUserRight(reqUserId, messageId, { transaction });
-    await Message.destroy({ where: { id: messageId }, transaction });
     await Tag.destroy({ where: { messageId }, transaction });
     await View.destroy({ where: { messageId }, transaction });
     await Love.destroy({ where: { messageId }, transaction });
+    await Message.destroy({ where: { id: messageId }, transaction });
   }
 
   static async searchTraits(q, { transaction = null } = {}) {

@@ -29,7 +29,11 @@ User.hasMany(Love, {
   foreignKey: 'userId',
 });
 
+Love.belongsTo(User);
+
 Message.hasMany(Love, {
   sourceKey: 'id',
   foreignKey: 'messageId',
 });
+
+Love.belongsTo(Message);

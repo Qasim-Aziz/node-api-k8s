@@ -29,7 +29,11 @@ User.hasMany(View, {
   foreignKey: 'userId',
 });
 
+View.belongsTo(User);
+
 Message.hasMany(View, {
   sourceKey: 'id',
   foreignKey: 'messageId',
 });
+
+View.belongsTo(Message);
