@@ -2,6 +2,7 @@ import express from 'express';
 
 import userRoutes from 'src/server/topics/user/user.route';
 import authRoutes from 'src/server/topics/auth/auth.route';
+import messageRoutes from 'src/server/topics/message/message.route';
 
 import { Env } from 'src/server/helpers';
 
@@ -17,5 +18,6 @@ router.use((req, res, next) => {
 
 router.use('/users', userRoutes);
 router.use('/auth', authRoutes);
+router.use('/messages', messageRoutes);
 
 export default router;

@@ -30,11 +30,9 @@ WHERE parse_serial_name = get_serial_name;
 export class InitDBService {
   /**
    * Truncates all tables and resets ES indices
-   * @param withWorkRelationHashTags
-   * @param reload Do not reload every time to prevent memory leak in jest
    * @returns {Promise<void>}
    */
-  static async truncateTables({ withWorkRelationHashTags = false, reload = false } = {}) {
+  static async truncateTables() {
     const tables = Object.values(sequelize.models)
       .map((model) => model.getTableName())
       .filter((tableName) => tableName !== 'SequelizeMeta') as string[];

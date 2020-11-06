@@ -11,7 +11,7 @@ const getToken = (res) => {
   return cookies.token;
 };
 
-export const registerUser = (user, { status = httpStatus.OK } = {}) =>
+export const registerUser = async (user, { status = httpStatus.OK } = {}) =>
   request(app)
     .post('/api/auth/register')
     .send(user)

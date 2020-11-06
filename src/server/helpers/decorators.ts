@@ -18,4 +18,11 @@ export class Auth {
       forAll: true,
     });
   }
+
+  static forLogged() {
+    return (target, property) => Object.assign(target[property], {
+      forAll: false,
+      forLogged: true,
+    });
+  }
 }

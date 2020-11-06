@@ -27,7 +27,6 @@ export default class Router {
       addExpiresHeaderMiddleware,
       initSessionUser,
     ];
-
     if (!method.forAll) {
       middlewares.push(sessionManager);
     }

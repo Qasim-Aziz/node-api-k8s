@@ -15,7 +15,6 @@ export const sessionManager = express.Router();
 sessionManager.use([
   async (req, res, next) => {
     try {
-      console.log('here');
       await SessionManager.getUserSession(req);
       next();
     } catch (error) {

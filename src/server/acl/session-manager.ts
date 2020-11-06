@@ -7,7 +7,7 @@ import { Session } from 'src/orm';
 const makeError = (errorObject): BackError => new BackError(errorObject.MSG, errorObject.STATUS, { code: errorObject.CODE });
 
 export class SessionManager {
-  static getToken = (req): string => req.header('Authorization') || req.cookies.token;
+  static getToken = (req): string => req.header('Authorization') || req.cookies.token || req.headers.cookie;
 
   static decipherSession = (token) => {
     try {
@@ -25,7 +25,6 @@ export class SessionManager {
 
   static async getSession(req) {
     const token = SessionManager.getToken(req);
-    console.log(token);
     return SessionManager.getSessionByToken(token);
   }
 
