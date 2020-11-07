@@ -59,7 +59,7 @@ export const setUp = (block, timeout = 200000, message = 'should set up the test
             ---------  Now retrying test setUp. retries left: ${numberOfRetriesLeft}  ---------
             --------------------------------------------------------------
           `;
-        console.log(msg); // eslint-disable-line no-console
+        logger.error(msg); // eslint-disable-line no-console
         Checks.counter = 0;
         await blockRecursive(numberOfRetriesLeft - 1, firstError || e);
       }

@@ -1,5 +1,5 @@
 import httpStatus from 'http-status';
-import {Checks, setUp} from 'src/server/tests/tester.base';
+import { Checks, setUp } from 'src/server/tests/tester.base';
 import { InitDBService } from 'src/initdb/initdb.service';
 import * as Testers from 'src/server/tests/testers';
 import { EMOTION_CODE, PRIVACY_LEVEL } from 'src/server/constants';
@@ -8,17 +8,25 @@ const user1 = { email: 'user1@yopmail.com', pseudo: 'user1', password: 'pwd' };
 const user2 = { email: 'user2@yopmail.com', pseudo: 'user2', password: 'pwd' };
 const user3 = { email: 'user3@yopmail.com', pseudo: 'user3', password: 'pwd' };
 const message1 = { content: 'message 1 content', privacy: PRIVACY_LEVEL.PRIVATE, emotionCode: EMOTION_CODE.APAISE };
-const message2 = { content: 'message 2 content', privacy: PRIVACY_LEVEL.PUBLIC, emotionCode: EMOTION_CODE.NERVEUX, traitNames: ['anxiete'] };
-const message3 = { content: 'message 3', privacy: PRIVACY_LEVEL.PUBLIC, emotionCode: EMOTION_CODE.NERVEUX, traitNames: [] };
-const message4 = { content: 'message 4', privacy: PRIVACY_LEVEL.PUBLIC, emotionCode: EMOTION_CODE.NERVEUX, traitNames: [] };
-const message5 = { content: 'message 5', privacy: PRIVACY_LEVEL.PRIVATE, emotionCode: EMOTION_CODE.NERVEUX, traitNames: [] };
+const message2 = {
+  content: 'message 2 content', privacy: PRIVACY_LEVEL.PUBLIC, emotionCode: EMOTION_CODE.NERVEUX, traitNames: ['anxiete'],
+};
+const message3 = {
+  content: 'message 3', privacy: PRIVACY_LEVEL.PUBLIC, emotionCode: EMOTION_CODE.NERVEUX, traitNames: [],
+};
+const message4 = {
+  content: 'message 4', privacy: PRIVACY_LEVEL.PUBLIC, emotionCode: EMOTION_CODE.NERVEUX, traitNames: [],
+};
+const message5 = {
+  content: 'message 5', privacy: PRIVACY_LEVEL.PRIVATE, emotionCode: EMOTION_CODE.NERVEUX, traitNames: [],
+};
 const message2Update = { content: 'message 2 content update', traitNames: ['phobie', 'depression'] };
 
 describe('# Message Tests', () => {
   setUp(async () => {
     await InitDBService.truncateTables();
     Checks.deactivate();
-    await Promise.all([user1, user2, user3].map(p => Testers.registerUser(p)));
+    await Promise.all([user1, user2, user3].map((p) => Testers.registerUser(p)));
     Checks.reactivate();
   }, 40000);
   test('should publish a new message', async () =>
@@ -67,4 +75,3 @@ describe('# Message Tests', () => {
   test('should search traits', () =>
     Testers.searchTraits(user1, 'dep', { expectedResults: ['depression'] }));
 });
-

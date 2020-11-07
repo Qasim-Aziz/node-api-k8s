@@ -28,7 +28,7 @@ export class TransactionContextManager {
 
 const getErrorMessageEnd = (options) => {
   try {
-    console.log('options : ', options)
+    console.log('options : ', options);
     const modelName = options.model.getTableName();
     const { type } = options;
     return ` while doing ${type} on ${modelName}.`;

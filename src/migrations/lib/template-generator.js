@@ -14,7 +14,7 @@ module.exports = function templateGenerator(opts = {}, cb) {
   const name = opts.name;
   const templateFile = opts.templateFile || path.join(__dirname, 'template.js');
   const migrationsDirectory = opts.migrationsDirectory || 'migrations';
-  const extension = opts.extension || '.ts';
+  const extension = '.ts';
 
   loadTemplate(templateFile, (err, template) => {
     if (err) {

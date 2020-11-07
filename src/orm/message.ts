@@ -1,11 +1,9 @@
 import { DataTypes } from 'sequelize';
-import { OrmModel, sequelize } from 'src/orm/database';
+import { makeOneToMany, OrmModel, sequelize } from 'src/orm/database';
 import { EMOTION_CODE, PRIVACY_LEVEL } from 'src/server/constants';
 import { User } from 'src/orm/user';
 
 export class Message extends OrmModel {
-  public id!: number;
-
   public content!: string;
 
   public publishedAt!: Date;
@@ -13,6 +11,8 @@ export class Message extends OrmModel {
   public emotionCode!: string;
 
   public privacy!: string;
+
+  public user!: User;
 }
 
 Message.init({
@@ -43,7 +43,4 @@ Message.init({
   tableName: 'message',
 });
 
-User.hasMany(Message, {
-  sourceKey: 'id',
-  foreignKey: 'userId',
-});
+makeOneToMany(User, Message, 'userId', true);

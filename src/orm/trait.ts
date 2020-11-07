@@ -2,8 +2,6 @@ import { DataTypes } from 'sequelize';
 import { OrmModel, sequelize } from 'src/orm/database';
 
 export class Trait extends OrmModel {
-  public id!: number;
-
   public name!: string;
 }
 

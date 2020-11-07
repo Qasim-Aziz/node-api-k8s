@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import { OrmModel, sequelize } from 'src/orm/database';
+import { makeOneToMany, OrmModel, sequelize } from 'src/orm/database';
 import { User } from 'src/orm/user';
 
 export class Session extends OrmModel {
@@ -13,7 +13,7 @@ export class Session extends OrmModel {
 
   public logoutAt!: Date;
 
-  public userId!: Date;
+  public user!: User;
 }
 
 Session.init({
@@ -45,7 +45,4 @@ Session.init({
   tableName: 'session',
 });
 
-User.hasMany(Session, {
-  sourceKey: 'id',
-  foreignKey: 'userId',
-});
+makeOneToMany(User, Session, 'userId', false);

@@ -17,7 +17,7 @@
     "lint": "eslint --quiet --fix --cache .",
     "migrate": "FORCE_UNIQUE_TRANSACTION=true ./run-script.js db.migrate",
     "init-data": "NODE_ENV=test FORCE_UNIQUE_TRANSACTION=true ./run-script.js init-data",
-    "migration:create": "migrate create --template-file $(pwd)/src/migrations/lib/template.js --generator $(pwd)/src/migrations/lib/template-generator.js",
+    "migration:create": "migrate create --chdir $(pwd)/src --template-file $(pwd)/src/migrations/lib/template.js --generator $(pwd)/src/migrations/lib/template-generator.js",
     "reinstall": "yarn cache clean && rm -rf node_modules && yarn",
     "spec": "NODE_ENV=test mocha --bail --require babel-register.js",
     "serve": "nodemon",

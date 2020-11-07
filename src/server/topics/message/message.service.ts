@@ -1,7 +1,9 @@
 import { Op, cast, fn, col, QueryTypes, literal } from 'sequelize';
 import httpStatus from 'http-status'; // eslint-disable-line no-unused-vars
 import { sequelize } from 'src/orm/database';
-import { Message, Tag, Trait, Love, View } from 'src/orm';
+import {
+  Message, Tag, Trait, Love, View,
+} from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import { getNextMessageQuery } from 'src/server/topics/message/message.query';
 import { PRIVACY_LEVEL } from 'src/server/constants';

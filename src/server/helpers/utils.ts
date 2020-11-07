@@ -10,4 +10,11 @@ export class Utils {
   static pick(object, fileds) {
     return fileds.reduce((o, k) => { Object.assign(o, { [k]: object[k] }); return o; }, {});
   }
+
+  static snakeCase(str: string) {
+    return str.replace(/\W+/g, ' ')
+      .split(/ |\B(?=[A-Z])/)
+      .map((word) => word.toLowerCase())
+      .join('_');
+  }
 }
