@@ -1,11 +1,13 @@
-import { DataTypes } from 'sequelize';
-import { makeOneToMany, OrmModel, sequelize } from 'src/orm/database';
+import { moment } from 'src/server/helpers';
+import {
+  DataTypes, makeOneToMany, OrmModel, sequelize,
+} from 'src/orm/database';
 import { User } from 'src/orm/user';
 import { Message } from 'src/orm/message';
 import { Comment } from 'src/orm/comment';
 
 export class Love extends OrmModel {
-  public lovedAt!: Date;
+  public lovedAt = moment();
 
   public user!: User;
 
@@ -23,6 +25,7 @@ Love.init({
 }, {
   sequelize,
   tableName: 'love',
+  modelName: 'love',
 });
 
 makeOneToMany(User, Love, 'userId', false);

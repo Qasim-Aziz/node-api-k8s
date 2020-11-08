@@ -43,6 +43,7 @@ Session.init({
 }, {
   sequelize,
   tableName: 'session',
+  modelName: 'session',
 });
 
 makeOneToMany(User, Session, 'userId', false);

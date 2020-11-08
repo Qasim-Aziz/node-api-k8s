@@ -17,4 +17,14 @@ export class Utils {
       .map((word) => word.toLowerCase())
       .join('_');
   }
+
+  static omit(obj: Record<string, unknown>, keys: string[]) {
+    if (!keys.length) return obj;
+    const { [keys.pop()]: omitted, ...rest } = { ...obj };
+    return Utils.omit(rest, keys);
+  }
+
+  static isEmpty(arr: unknown[]) {
+    return arr.length === 0;
+  }
 }

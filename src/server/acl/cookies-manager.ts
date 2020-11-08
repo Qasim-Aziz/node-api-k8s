@@ -6,14 +6,16 @@ import cookie from 'cookie';
 const SessionConfig = config.get('session');
 
 export class CookiesManager {
-  static setCookies(res, token) {
+  constructor(private res) {}
+
+  setCookies(token) {
     const maxAge = SessionConfig.ttl * HOUR;
     const defaultOptions = { maxAge, secure: Env.isProd };
-    res.cookie(SessionConfig.tokenCookieName, token, defaultOptions);
+    this.res.cookie(SessionConfig.tokenCookieName, token, defaultOptions);
   }
 
-  static clearCookies(res) {
-    res.clearCookie(SessionConfig.tokenCookieName);
+  clearCookies() {
+    this.res.clearCookie(SessionConfig.tokenCookieName);
   }
 
   static extractCookies(res) {

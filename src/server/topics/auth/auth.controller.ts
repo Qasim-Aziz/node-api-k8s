@@ -1,6 +1,5 @@
 import { validation, Joi, Auth } from 'src/server/helpers';
 import { AuthService } from 'src/server/topics/auth/auth.service';
-import { CookiesManager } from 'src/server/acl/cookies-manager';
 import { SessionManager } from 'src/server/acl/session-manager';
 
 export class AuthController {
@@ -11,11 +10,11 @@ export class AuthController {
     },
   })
   @Auth.forAll()
-  static async login(req, res) {
-    const { body: { email, password }, transaction } = req;
+  static async login(req, { transaction = null, cookiesManager = null } = {}) {
+    const { body: { email, password } } = req;
     const { user, token } = await AuthService.login(email, password, { transaction });
-    CookiesManager.setCookies(res, token);
-    res.json({ user });
+    cookiesManager.setCookies(token);
+    return { user };
   }
 
   @validation({
@@ -26,20 +25,19 @@ export class AuthController {
     },
   })
   @Auth.forAll()
-  static async register(req, res) {
-    const { body: { email, pseudo, password }, transaction } = req;
+  static async register(req, { transaction = null, cookiesManager = null } = {}) {
+    const { body: { email, pseudo, password } } = req;
     const { user, token } = await AuthService.register({ email, pseudo, password }, { transaction });
-    CookiesManager.setCookies(res, token);
-    res.json({ user });
+    cookiesManager.setCookies(token);
+    return { user };
   }
 
   @validation({})
   @Auth.forAll()
-  static async logout(req, res) {
-    const { transaction } = req;
+  static async logout(req, { transaction = null, cookiesManager = null } = {}) {
     const token = SessionManager.getToken(req);
     await AuthService.logout(token, { transaction });
-    CookiesManager.clearCookies(res);
-    res.json({ status: 'Ok' });
+    cookiesManager.clearCookies();
+    return { status: 'Ok' };
   }
 }

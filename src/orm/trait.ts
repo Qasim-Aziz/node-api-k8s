@@ -1,8 +1,11 @@
 import { DataTypes } from 'sequelize';
-import { OrmModel, sequelize } from 'src/orm/database';
+import { makeOneToMany, OrmModel, sequelize } from 'src/orm/database';
+import { Tag } from 'src/orm/tag';
 
 export class Trait extends OrmModel {
   public name!: string;
+
+  public tags!: Tag[];
 }
 
 Trait.init({
@@ -14,4 +17,7 @@ Trait.init({
 }, {
   sequelize,
   tableName: 'trait',
+  modelName: 'trait',
 });
+
+makeOneToMany(Trait, Tag, 'traitId', false);

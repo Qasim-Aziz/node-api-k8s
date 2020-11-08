@@ -1,11 +1,10 @@
 import express from 'express';
 import {
-  addExpiresHeaderMiddleware, sessionManager, initSessionUser, validateRequestMiddleware,
+  addExpiresHeaderMiddleware, sessionManager, initSessionUser, validateRequestMiddleware, requestHandlerMiddleware,
 } from 'src/server/middlewares/req.middleware';
-import { transactionContext } from 'src/server/helpers';
 
 interface Action {
-  handler: (res: express.Request, req: express.Response) => void;
+  handler: (req: express.Request, reqOpts) => void;
 }
 
 interface RouteActions {
@@ -35,10 +34,7 @@ export default class Router {
       middlewares.push(validateRequestMiddleware(method.validation));
     }
 
-    middlewares.push((req, res, next) => transactionContext(async (transaction) => {
-      req.transaction = transaction;
-      return Promise.resolve(method.call(null, req, res, next)).catch((e) => next(e));
-    }));
+    middlewares.push(requestHandlerMiddleware(method));
     return middlewares;
   };
 

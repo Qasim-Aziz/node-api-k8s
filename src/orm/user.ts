@@ -46,4 +46,10 @@ User.init({
 }, {
   sequelize,
   tableName: 'user',
+  modelName: 'user',
+});
+
+// Scopes
+User.addScope('userComment', {
+  attributes: ['id', 'pseudo'],
 });

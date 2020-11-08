@@ -6,7 +6,7 @@ const lib = require('./lib/lib');
 module.exports = {
   up: async () => {
     await lib.createTable('comment', {
-      text: {
+      content: {
         type: Sequelize.TEXT,
         allowNull: false,
       },
@@ -15,17 +15,22 @@ module.exports = {
         allowNull: false,
         field: 'posted_at',
       },
-      likesCount: {
+      lovesCount: {
         type: Sequelize.INTEGER,
         allowNull: false,
         defaultValue: 0,
-        field: 'likes_count',
+        field: 'loves_count',
       },
       commentsCount: {
         type: Sequelize.INTEGER,
         allowNull: false,
         defaultValue: 0,
         field: 'comments_count',
+      },
+      messageId: {
+        field: 'message_id',
+        type: Sequelize.INTEGER,
+        allowNull: true,
       },
       userId: {
         field: 'user_id',
@@ -39,6 +44,7 @@ module.exports = {
       }
     })
     await lib.wrapCommands([
+      lib.createFkV3('comment', 'message', lib.FOREIGN_KEY_ACTIONS.CASCADE ),
       lib.createFkV3('comment', 'user', lib.FOREIGN_KEY_ACTIONS.CASCADE ),
       lib.createFkV3('comment', 'comment', lib.FOREIGN_KEY_ACTIONS.CASCADE, { fieldFrom: 'parent_id' }),
       lib.addColumn('love', 'comment_id', Sequelize.INTEGER),

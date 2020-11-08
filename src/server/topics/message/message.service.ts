@@ -1,16 +1,21 @@
 import { Op, cast, fn, col, QueryTypes, literal } from 'sequelize';
 import httpStatus from 'http-status'; // eslint-disable-line no-unused-vars
-import { sequelize } from 'src/orm/database';
+import { Sequelize, sequelize } from 'src/orm/database';
 import {
   Message, Tag, Trait, Love, View,
 } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import { getNextMessageQuery } from 'src/server/topics/message/message.query';
-import { PRIVACY_LEVEL } from 'src/server/constants';
+import { PrivacyLevel } from 'src/server/constants';
 
 export class MessageService {
+  static async isPublicMessage(messageId, { transaction = null } = {}) {
+    return Message.count({ where: { id: messageId, privacy: PrivacyLevel.PUBLIC }, transaction })
+      .then((messagesCount) => messagesCount !== 0);
+  }
+
   static async getAll(requesterId, requestedId, { transaction = null } = {}) {
-    const requiredPrivacy = (requesterId === requestedId) ? [PRIVACY_LEVEL.PRIVATE, PRIVACY_LEVEL.PUBLIC] : [PRIVACY_LEVEL.PUBLIC];
+    const requiredPrivacy = (requesterId === requestedId) ? [PrivacyLevel.PRIVATE, PrivacyLevel.PUBLIC] : [PrivacyLevel.PUBLIC];
     return Message.unscoped().findAll({
       attributes: [
         'id',
@@ -19,8 +24,8 @@ export class MessageService {
         'privacy',
         'content',
         'userId',
-        [cast(fn('COUNT', col('"Loves"."id"')), 'int'), 'nbLoves'],
-        [cast(fn('COUNT', col('"Views"."id"')), 'int'), 'nbViews'],
+        [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"Loves"."id"')), 'int'), 'nbLoves'],
+        [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"Views"."id"')), 'int'), 'nbViews'],
       ],
       include: [
         { model: Love.unscoped(), attributes: [] },
@@ -43,8 +48,8 @@ export class MessageService {
       'privacy',
       'content',
       'userId',
-      [cast(fn('COUNT', col('"Loves"."id"')), 'int'), 'nbLoves'],
-      [cast(fn('COUNT', col('"Views"."id"')), 'int'), 'nbViews'],
+      [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"loves"."id"')), 'int'), 'nbLoves'],
+      [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"views"."id"')), 'int'), 'nbViews'],
     ];
     const customAttributes = [
       [fn('coalesce', (fn('bool_or', literal(`"Loves"."user_id" = ${reqUserId}`))), 'false'), 'loved'],
@@ -56,14 +61,14 @@ export class MessageService {
         { model: Love.unscoped(), attributes: [] },
         { model: View.unscoped(), attributes: [] },
       ],
-      group: ['Message.id'],
+      group: ['message.id'],
       transaction,
       raw: true,
       nest: true,
       logging: console.log,
     });
     console.log('message : ', message)
-    if (message.privacy === PRIVACY_LEVEL.PRIVATE && reqUserId) await MessageService.checkUserRight(reqUserId, messageId, { transaction });
+    if (message.privacy === PrivacyLevel.PRIVATE && reqUserId) await MessageService.checkUserRight(reqUserId, messageId, { transaction });
     const traitNames = (await Tag.unscoped().findAll({
       attributes: [],
       where: { messageId },
@@ -71,7 +76,7 @@ export class MessageService {
         { model: Trait.unscoped(), attributes: ['name'], required: true },
       ],
       transaction,
-    })).map((tag: any) => tag.Trait.name);
+    })).map((tag: any) => tag.trait.name);
     if (updateViewCount && reqUserId && reqUserId !== message.userId) {
       await MessageService.createView(messageId, reqUserId, { transaction });
       message.nbViews += 1;
@@ -162,8 +167,8 @@ export class MessageService {
   }
 
   static async loveOrUnlove(messageId, reqUserId, { transaction = null } = {}) {
-    const message = await Message.unscoped().findByPk(messageId, { attributes: ['privacy'], transaction });
-    if (message.privacy === PRIVACY_LEVEL.PRIVATE) throw new BackError('Cannot love a private message', httpStatus.BAD_REQUEST);
+    const isPublicMessage = await MessageService.isPublicMessage(messageId, { transaction });
+    if (!isPublicMessage) throw new BackError('Cannot love a private message', httpStatus.BAD_REQUEST);
     const isAlreadyLove = await Love.findOne({ where: { messageId, userId: reqUserId }, transaction });
     if (isAlreadyLove) {
       await isAlreadyLove.destroy({ transaction });

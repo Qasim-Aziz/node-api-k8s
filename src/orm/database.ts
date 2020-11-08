@@ -53,12 +53,6 @@ export const makeforeignKey = (name, { allowNull = true } = {}) => ({
 
 export const makeOneToMany = (modelOne: typeof OrmModel, modelMany: typeof OrmModel, fkName, allowNull = true, as = null) => {
   const foreignKey = makeforeignKey(fkName, { allowNull });
-  console.log({
-    foreignKey,
-    onUpdate: 'cascade',
-    onDelete: 'cascade',
-    ...as ? { as } : {},
-  }, { foreignKey, ...as ? { as } : {} })
   modelMany.belongsTo(modelOne, {
     foreignKey,
     onUpdate: 'cascade',

@@ -3,15 +3,16 @@ import {
 } from 'src/orm/database';
 import { moment } from 'src/server/helpers';
 import { User } from 'src/orm/user';
+import { Message } from 'src/orm/message';
 
 export class Comment extends OrmModel {
-  public text!: string;
+  public content!: string;
 
   public user!: User;
 
   public postedAt!: moment.Moment;
 
-  public likesCount!: number;
+  public lovesCount!: number;
 
   public commentsCount!: number;
 
@@ -19,7 +20,7 @@ export class Comment extends OrmModel {
 }
 
 Comment.init({
-  text: {
+  content: {
     type: DataTypes.TEXT,
     allowNull: false,
   },
@@ -28,11 +29,11 @@ Comment.init({
     allowNull: false,
     field: 'posted_at',
   },
-  likesCount: {
+  lovesCount: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,
-    field: 'likes_count',
+    field: 'loves_count',
   },
   commentsCount: {
     type: DataTypes.INTEGER,
@@ -40,8 +41,16 @@ Comment.init({
     defaultValue: 0,
     field: 'comments_count',
   },
-}, { sequelize, tableName: 'comment' });
+}, { sequelize, tableName: 'comment', modelName: 'comment' });
 
+// Associations
+makeOneToMany(Message, Comment, 'messageId', false);
 makeOneToMany(User, Comment, 'userId', false);
 Comment.hasOne(Comment, { as: 'parent', foreignKey: 'parentId' });
 Comment.hasMany(Comment, { as: 'comments', foreignKey: 'parentId' });
+
+// Scopes
+Comment.addScope('messageComment', {
+  attributes: ['id', 'content', 'postedAt', 'lovesCount', 'commentsCount'],
+  order: [['postedAt', 'desc']],
+});

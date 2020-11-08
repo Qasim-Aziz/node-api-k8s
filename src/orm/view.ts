@@ -20,6 +20,7 @@ View.init({
 }, {
   sequelize,
   tableName: 'view',
+  modelName: 'view',
 });
 
 makeOneToMany(User, View, 'userId', false);

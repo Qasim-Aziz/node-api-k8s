@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { makeOneToMany, OrmModel, sequelize } from 'src/orm/database';
-import { EMOTION_CODE, PRIVACY_LEVEL } from 'src/server/constants';
+import { EmotionCode, PrivacyLevel } from 'src/server/constants';
 import { User } from 'src/orm/user';
 
 export class Message extends OrmModel {
@@ -8,11 +8,15 @@ export class Message extends OrmModel {
 
   public publishedAt!: Date;
 
-  public emotionCode!: string;
+  public emotionCode!: EmotionCode;
 
-  public privacy!: string;
+  public privacy!: PrivacyLevel;
 
   public user!: User;
+
+  public userId!: number;
+
+  public nbViews!: number;
 }
 
 Message.init({
@@ -28,19 +32,20 @@ Message.init({
   },
   emotionCode: {
     type: DataTypes.ENUM,
-    values: Object.values(EMOTION_CODE),
+    values: Object.values(EmotionCode),
     field: 'emotion_code',
     allowNull: false,
   },
   privacy: {
     type: DataTypes.ENUM,
-    values: Object.values(PRIVACY_LEVEL),
+    values: Object.values(PrivacyLevel),
     field: 'privacy',
     allowNull: false,
   },
 }, {
   sequelize,
   tableName: 'message',
+  modelName: 'message',
 });
 
 makeOneToMany(User, Message, 'userId', true);
