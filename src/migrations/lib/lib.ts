@@ -261,9 +261,9 @@ export const changeValuesEnumInArray = async function changeValuesEnumInArray(ta
 
 export const createUniqueIndex = function createUniqueIndex(indexName, table, fields) {
   return `\
-CREATE UNIQUE INDEX ${indexName}_deleted_unique ON ${table}
+CREATE UNIQUE INDEX ${indexName}_deleted_unique ON "${table}"
 USING btree (${fields.join(', ')}, deleted_at) WHERE deleted_at IS NOT NULL;
-CREATE UNIQUE INDEX ${indexName}_unique ON ${table} USING btree (${fields.join(', ')}) WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX ${indexName}_unique ON "${table}" USING btree (${fields.join(', ')}) WHERE deleted_at IS NULL;
 `;
 };
 
