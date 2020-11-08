@@ -1,6 +1,7 @@
-import { Op, cast, fn, col, QueryTypes, literal } from 'sequelize';
 import httpStatus from 'http-status'; // eslint-disable-line no-unused-vars
-import { Sequelize, sequelize } from 'src/orm/database';
+import {
+  Op, Sequelize, sequelize, QueryTypes,
+} from 'src/orm/database';
 import {
   Message, Tag, Trait, Love, View,
 } from 'src/orm';
@@ -24,14 +25,14 @@ export class MessageService {
         'privacy',
         'content',
         'userId',
-        [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"Loves"."id"')), 'int'), 'nbLoves'],
-        [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"Views"."id"')), 'int'), 'nbViews'],
+        [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"loves"."id"')), 'int'), 'nbLoves'],
+        [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"views"."id"')), 'int'), 'nbViews'],
       ],
       include: [
         { model: Love.unscoped(), attributes: [] },
         { model: View.unscoped(), attributes: [] },
       ],
-      group: ['Message.id'],
+      group: ['message.id'],
       order: [['publishedAt', 'desc']],
       where: { userId: requestedId, privacy: { [Op.in]: requiredPrivacy } },
       raw: true,
@@ -135,7 +136,8 @@ export class MessageService {
       nest: true,
     });
     const traitsAlreadyCreatedButNotLinked = traitsAlreadyCreated.filter(
-      (trait: any) => trait.tags.length === 0).map((trait) => trait.id);
+      (trait: any) => trait.tags.length === 0,
+    ).map((trait) => trait.id);
     const traitsAlreadyCreatedNames = traitsAlreadyCreated.map((t) => t.name);
     const traitsNotExisting = traitNames.filter((trait) => !traitsAlreadyCreatedNames.includes(trait.name));
     const newTraits = await Trait.bulkCreate(traitsNotExisting.map((name) => ({ name })), { returning: true, transaction });

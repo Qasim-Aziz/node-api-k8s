@@ -1,5 +1,5 @@
 import {
-  Model, Sequelize, Op, DataTypes,
+  Model, Sequelize, Op, DataTypes, QueryTypes,
 } from 'sequelize';
 import config from 'src/config';
 import { logger } from 'src/server/helpers/logger';
@@ -28,12 +28,6 @@ export const sequelize = new Sequelize(databaseUrl, {
     idle: 1000,
   },
 });
-
-export {
-  Op,
-  DataTypes,
-  Sequelize,
-};
 
 export class OrmModel extends Model {
   public readonly id!: number;
@@ -74,4 +68,11 @@ export const makeOneToOne = (modelPointed: typeof OrmModel, modelPointer: typeof
     foreignKey,
     ...(as && modelPointed !== modelPointer) ? { as } : {},
   });
+};
+
+export {
+  Op,
+  DataTypes,
+  Sequelize,
+  QueryTypes,
 };

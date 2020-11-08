@@ -1,6 +1,5 @@
 import { validation, Joi, Auth } from 'src/server/helpers';
 import { AuthService } from 'src/server/topics/auth/auth.service';
-import { SessionManager } from 'src/server/acl/session-manager';
 
 export class AuthController {
   @validation({
@@ -35,7 +34,7 @@ export class AuthController {
   @validation({})
   @Auth.forAll()
   static async logout(req, { transaction = null, cookiesManager = null } = {}) {
-    const token = SessionManager.getToken(req);
+    const { token } = req;
     await AuthService.logout(token, { transaction });
     cookiesManager.clearCookies();
     return { status: 'Ok' };

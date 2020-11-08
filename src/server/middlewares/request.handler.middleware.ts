@@ -1,5 +1,6 @@
 import { transactionContext } from 'src/server/helpers';
 import { CookiesManager } from 'src/server/acl/cookies-manager';
+import { SessionManager } from 'src/server/acl/session-manager';
 
 export const requestHandlerMiddleware = (method) =>
   async (req, res, next) => {
@@ -10,6 +11,7 @@ export const requestHandlerMiddleware = (method) =>
           params: req.params,
           query: req.query,
           user: req.user,
+          token: SessionManager.getToken(req),
         };
         const controllerOpts = {
           transaction,
