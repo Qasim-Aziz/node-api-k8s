@@ -1,9 +1,7 @@
 import httpStatus from 'http-status';
 import request from 'supertest';
 import app from 'src/application';
-import { Message, Tag, View, Love } from 'src/orm';
 import { PRIVACY_LEVEL } from 'src/server/constants';
-import {Checks} from "../../tests/tester.base";
 
 export const publishMessage = async (user, message, { status = httpStatus.OK } = {}) => request(app)
   .post('/api/messages')
@@ -78,16 +76,6 @@ export const deleteMessage = async (user, messageId, { status = httpStatus.OK } 
     .set('cookie', user.token)
     .expect(status);
   if (status !== httpStatus.OK) return null;
-  /*Checks.deactivate();
-  const message = await Message.findByPk(messageId);
-  expect(message).to.be.null();
-  const tags = await Tag.findAll({ where: { messageId } });
-  expect(tags).to.be.empty();
-  const loves = await Love.findAll({ where: { messageId } });
-  expect(loves).to.be.empty();
-  const views = await View.findAll({ where: { messageId } });
-  expect(views).to.be.empty();
-  Checks.reactivate();*/
   return null;
 };
 
@@ -111,7 +99,7 @@ export const getAllMessages = async (user, requestedUser, { status = httpStatus.
     .expect(status);
   if (status !== httpStatus.OK) return null;
   const messagesRes = res.body.messages;
-  expect(messagesRes.map(m => m.id)).toEqual(expectedMessagesIds);
-  if (user.id !== requestedUser.id) expect([...new Set(messagesRes.map(m => m.privacy))]).toEqual([PRIVACY_LEVEL.PUBLIC]);
+  expect(messagesRes.map((m) => m.id)).toEqual(expectedMessagesIds);
+  if (user.id !== requestedUser.id) expect([...new Set(messagesRes.map((m) => m.privacy))]).toEqual([PRIVACY_LEVEL.PUBLIC]);
   return messagesRes;
 };

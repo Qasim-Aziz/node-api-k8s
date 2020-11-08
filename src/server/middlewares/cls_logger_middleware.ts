@@ -25,7 +25,7 @@ export function clsLoggerMiddleware() {
 }
 
 export function clsUserLoggerMiddleware() {
-  return clsProxifyExpressMiddleware(CLS_NAMESPACE, (req) => {
+  return clsProxifyExpressMiddleware(CLS_NAMESPACE, (req: any) => {
     const child = logger.logger.child({
       ...baseReqLog(req),
       user_id: req.user.id,

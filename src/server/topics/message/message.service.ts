@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+import { Op, cast, fn, col, QueryTypes } from 'sequelize';
 import httpStatus from 'http-status'; // eslint-disable-line no-unused-vars
 import { sequelize } from 'src/orm/database';
 import { Message, Tag, Trait, Love, View } from 'src/orm';
@@ -17,8 +17,8 @@ export class MessageService {
         'privacy',
         'content',
         'userId',
-        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('"Loves"."id"')), 'int'), 'nbLoves'],
-        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('"Views"."id"')), 'int'), 'nbViews'],
+        [cast(fn('COUNT', col('"Loves"."id"')), 'int'), 'nbLoves'],
+        [cast(fn('COUNT', col('"Views"."id"')), 'int'), 'nbViews'],
       ],
       include: [
         { model: Love.unscoped(), attributes: [] },
@@ -34,7 +34,7 @@ export class MessageService {
   }
 
   static async get(messageId, { transaction = null, reqUserId = null } = {}) {
-    const message = await Message.unscoped().findByPk(messageId, {
+    const message: any = await Message.unscoped().findByPk(messageId, {
       attributes: [
         'id',
         'publishedAt',
@@ -42,8 +42,8 @@ export class MessageService {
         'privacy',
         'content',
         'userId',
-        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('"Loves"."id"')), 'int'), 'nbLoves'],
-        [sequelize.cast(sequelize.fn('COUNT', sequelize.col('"Views"."id"')), 'int'), 'nbViews'],
+        [cast(fn('COUNT', col('"Loves"."id"')), 'int'), 'nbLoves'],
+        [cast(fn('COUNT', col('"Views"."id"')), 'int'), 'nbViews'],
       ],
       include: [
         { model: Love.unscoped(), attributes: [] },
@@ -54,7 +54,6 @@ export class MessageService {
       raw: true,
       nest: true,
     });
-    console.log('reqUserId : ', reqUserId)
     if (message.privacy === PRIVACY_LEVEL.PRIVATE && reqUserId) await MessageService.checkUserRight(reqUserId, messageId, { transaction });
     const traitNames = (await Tag.unscoped().findAll({
       attributes: [],
@@ -63,7 +62,7 @@ export class MessageService {
         { model: Trait.unscoped(), attributes: ['name'], required: true },
       ],
       transaction,
-    })).map((tag) => tag.Trait.name);
+    })).map((tag: any) => tag.Trait.name);
     if (reqUserId && reqUserId !== message.userId) {
       await MessageService.createView(messageId, reqUserId, { transaction });
       message.nbViews += 1;
@@ -76,8 +75,8 @@ export class MessageService {
     // later, when we will have more data, it will be based on user similarity
     // Useful variables/features : messages written by reqUser, tags used by reqUser,
     // views duration, messages loved, users subscribed, saved messages
-    const [{ id }] = await sequelize.query(getNextMessageQuery(), {
-      type: sequelize.QueryTypes.SELECT,
+    const [{ id }]: any = await sequelize.query(getNextMessageQuery(), {
+      type: QueryTypes.SELECT,
       raw: true,
       replacements: { reqUserId },
       transaction,
@@ -121,7 +120,8 @@ export class MessageService {
       raw: true,
       nest: true,
     });
-    const traitsAlreadyCreatedButNotLinked = traitsAlreadyCreated.filter((trait) => trait.tags.length === 0).map((trait) => trait.id);
+    const traitsAlreadyCreatedButNotLinked = traitsAlreadyCreated.filter(
+      (trait: any) => trait.tags.length === 0).map((trait) => trait.id);
     const traitsAlreadyCreatedNames = traitsAlreadyCreated.map((t) => t.name);
     const traitsNotExisting = traitNames.filter((trait) => !traitsAlreadyCreatedNames.includes(trait.name));
     const newTraits = await Trait.bulkCreate(traitsNotExisting.map((name) => ({ name })), { returning: true, transaction });

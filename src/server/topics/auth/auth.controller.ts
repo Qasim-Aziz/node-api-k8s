@@ -21,7 +21,7 @@ export class AuthController {
   @validation({
     body: {
       email: Joi.string().lowercase().email().required(),
-      pseudo: Joi.string().required(),
+      pseudo: Joi.string().lowercase().required(),
       password: Joi.string().required(),
     },
   })

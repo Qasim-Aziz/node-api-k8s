@@ -6,7 +6,7 @@ import SessionService from 'src/server/topics/auth/session.service';
 import { SessionManager } from 'src/server/acl/session-manager';
 
 export class AuthService {
-  static async register({ email, pseudo, password }, { transaction }) {
+  static async register({ email, pseudo, password }, { transaction = null } = {}) {
     const passwordHash = await bcrypt.hash(password, 10);
     await User.create({ email, pseudo, passwordHash }, { transaction });
     return AuthService.login(email, password, { transaction });
