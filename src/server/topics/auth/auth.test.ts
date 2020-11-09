@@ -2,8 +2,10 @@ import { setUp } from 'src/server/tests/tester.base';
 import { InitDBService } from 'src/initdb/initdb.service';
 import * as Testers from 'src/server/tests/testers';
 
+//todo make some tests with uppercase pseudo or email, since everything is constraint into lowercase in the server
+
 describe('# Auth Tests', () => {
-  const user1 = { email: 'user1@yopmail.com', pseudo: 'MH', password: 'pwd' };
+  const user1 = { email: 'userauthtest@yopmail.com', pseudo: 'mh', password: 'pwd' };
 
   setUp(async () => InitDBService.truncateTables());
 
