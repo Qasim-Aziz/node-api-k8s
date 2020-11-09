@@ -1,10 +1,9 @@
 import { createLogger, transports, format } from 'winston';
+import { clsProxify } from 'cls-proxify';
 import config from 'src/config';
 import { Utils } from 'src/server/helpers/utils';
+import { CLS_NAMESPACE } from 'src/server/constants';
 
-const {
-  combine, timestamp, label, printf,
-} = format;
 let LOGGER;
 
 class Logger {
@@ -13,18 +12,16 @@ class Logger {
   constructor() {
     if (!LOGGER) {
       LOGGER = createLogger({
-        format: combine(
-          label({ label: 'backend' }),
-          timestamp(),
-          printf(({
-            level, message, label: msglabel, timestamp: msgTimestamp,
-          }) =>
-            `${msgTimestamp} [${msglabel}] ${level}: ${message}`),
+        format: format.combine(
+          format.label({ label: 'backend' }),
+          format.timestamp(),
+          format.json(),
         ),
         level: config.get('app.logLevel'),
         handleExceptions: true,
         transports: [
-          new transports.Console(),
+          new transports.Console({
+          }),
         ],
         exitOnError: false,
       });
@@ -67,6 +64,17 @@ class Logger {
     });
     this.logger.log(type, messages.join(' | '));
   }
+
+  child(opts) {
+    this.logger = this.logger.child(opts);
+    return this;
+  }
 }
 
-export const logger = new Logger();
+const loggerBase = new Logger();
+const logger = clsProxify(CLS_NAMESPACE, loggerBase);
+
+export {
+  loggerBase,
+  logger,
+};

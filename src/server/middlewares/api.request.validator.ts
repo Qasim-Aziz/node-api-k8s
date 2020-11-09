@@ -58,7 +58,7 @@ const validate = (errObj, request, schema, location, allowUnknown, context) => {
   });
 };
 
-export const validateRequestMiddleware = (schema) => {
+export const apiRequestValidator = (schema) => {
   if (!schema) throw new Error('Please provide a validation schema');
 
   return function (req, res, next) {

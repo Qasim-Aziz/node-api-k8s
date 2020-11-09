@@ -1,7 +1,7 @@
 import { BackError, ValidationError } from 'src/server/helpers';
 
 // if error is not an instanceOf BackError, convert it.
-const converterErrorHandler = function converterErrorHandler(err, req, res, next) {
+export const appErrorConverter = (err, req, res, next) => {
   if (err instanceof ValidationError) {
     // validation error contains errors which is an array of error each containing message[]
     const unifiedErrorMessage = err.errors.map((error) => error.messages.join('. ')).join(' and ');
@@ -11,5 +11,3 @@ const converterErrorHandler = function converterErrorHandler(err, req, res, next
   }
   return next(err);
 };
-
-export default converterErrorHandler;

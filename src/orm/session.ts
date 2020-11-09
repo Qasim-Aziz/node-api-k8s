@@ -14,6 +14,8 @@ export class Session extends OrmModel {
   public logoutAt!: Date;
 
   public user!: User;
+
+  public userId!: number;
 }
 
 Session.init({

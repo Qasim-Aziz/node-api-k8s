@@ -2,7 +2,7 @@ import { transactionContext } from 'src/server/helpers';
 import { CookiesManager } from 'src/server/acl/cookies-manager';
 import { SessionManager } from 'src/server/acl/session-manager';
 
-export const requestHandlerMiddleware = (method) =>
+export const apiRequest = (method) =>
   async (req, res, next) => {
     try {
       const response = await transactionContext(async (transaction) => {
@@ -17,7 +17,8 @@ export const requestHandlerMiddleware = (method) =>
           transaction,
           cookiesManager: new CookiesManager(res),
         };
-        return method(request, controllerOpts);
+        const resp = await method(request, controllerOpts);
+        return resp;
       });
       res.json(response || {});
     } catch (error) {

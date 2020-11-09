@@ -1,7 +1,7 @@
 import express from 'express';
 import {
-  addExpiresHeaderMiddleware, sessionManager, initSessionUser, validateRequestMiddleware, requestHandlerMiddleware,
-} from 'src/server/middlewares/req.middleware';
+  apiExpireHeader, apiSessionManager, initSessionUser, apiRequestValidator, apiRequest,
+} from 'src/server/middlewares/api.middlewares';
 
 interface Action {
   handler: (req: express.Request, reqOpts) => void;
@@ -23,18 +23,18 @@ export default class Router {
 
   routeTo = (method) => {
     const middlewares = [
-      addExpiresHeaderMiddleware,
+      apiExpireHeader,
       initSessionUser,
     ];
     if (!method.forAll) {
-      middlewares.push(sessionManager);
+      middlewares.push(apiSessionManager);
     }
 
     if (method.validation) {
-      middlewares.push(validateRequestMiddleware(method.validation));
+      middlewares.push(apiRequestValidator(method.validation));
     }
 
-    middlewares.push(requestHandlerMiddleware(method));
+    middlewares.push(apiRequest(method));
     return middlewares;
   };
 

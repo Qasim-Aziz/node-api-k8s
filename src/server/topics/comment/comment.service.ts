@@ -44,7 +44,6 @@ export default class CommentService {
       throw new BackError('Cannot update comment', httpStatus.FORBIDDEN);
     }
     await comment.update({ content }, { transaction });
-    console.log(comment.toJSON());
     return comment;
   }
 
@@ -59,7 +58,6 @@ export default class CommentService {
       comment.lovesCount += 1;
     }
     await comment.save({ transaction });
-    console.log(comment.toJSON());
     return comment;
   }
 

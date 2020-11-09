@@ -8,6 +8,7 @@ import {
 import { BackError, moment } from 'src/server/helpers';
 import { getNextMessageQuery } from 'src/server/topics/message/message.query';
 import { PrivacyLevel } from 'src/server/constants';
+import { FindAttributeOptions } from 'sequelize';
 
 export class MessageService {
   static async isPublicMessage(messageId, { transaction = null } = {}) {
@@ -53,11 +54,11 @@ export class MessageService {
       [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"views"."id"')), 'int'), 'nbViews'],
     ];
     const customAttributes = [
-      [fn('coalesce', (fn('bool_or', literal(`"Loves"."user_id" = ${reqUserId}`))), 'false'), 'loved'],
+      [Sequelize.fn('coalesce', (Sequelize.fn('bool_or', Sequelize.literal(`"loves"."user_id" = ${reqUserId}`))), 'false'), 'loved'],
     ];
     const messageAttributes = reqUserId ? [...baseAttributes, ...customAttributes] : baseAttributes;
     const message: any = await Message.unscoped().findByPk(messageId, {
-      attributes: messageAttributes,
+      attributes: messageAttributes as FindAttributeOptions,
       include: [
         { model: Love.unscoped(), attributes: [] },
         { model: View.unscoped(), attributes: [] },
@@ -66,9 +67,7 @@ export class MessageService {
       transaction,
       raw: true,
       nest: true,
-      logging: console.log,
     });
-    console.log('message : ', message)
     if (message.privacy === PrivacyLevel.PRIVATE && reqUserId) await MessageService.checkUserRight(reqUserId, messageId, { transaction });
     const traitNames = (await Tag.unscoped().findAll({
       attributes: [],

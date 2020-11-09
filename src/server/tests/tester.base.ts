@@ -42,7 +42,7 @@ export const checkExpectedStatus = (status) => ((res) => {
 
 export const getNumberRetriesSetUp = () => {
   if (process.env.NO_RETRIES_SET_UP !== undefined) return 0;
-  return 2;
+  return 0;
 };
 
 export const setUp = (block, timeout = 200000, message = 'should set up the test') => {

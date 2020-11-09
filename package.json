@@ -21,7 +21,7 @@
     "reinstall": "yarn cache clean && rm -rf node_modules && yarn",
     "spec": "NODE_ENV=test mocha --bail --require babel-register.js",
     "serve": "nodemon",
-    "test": "jest",
+    "test": "jest --bail --runInBand",
     "yarn": "yarn install --frozen-lockfile"
   },
   "dependencies": {

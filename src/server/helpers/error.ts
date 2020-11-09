@@ -7,7 +7,6 @@ export class BackError extends Error {
   }
 
   toJSON() {
-    console.log();
     return {
       message: this.message,
       status: this.status,
