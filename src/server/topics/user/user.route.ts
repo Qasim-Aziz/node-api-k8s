@@ -9,6 +9,12 @@ userRoutes
   })
   .addRoute('/by-pseudo', {
     get: { handler: UserController.getByPseudo },
+  })
+  .addRoute('/:userId', {
+    get: { handler: UserController.getUser },
+  })
+  .addRoute('/:userId/refreshUserLastConnexionDate', {
+    post: { handler: UserController.refreshUserLastConnexionDate },
   });
 
 export default userRoutes.getRouter();

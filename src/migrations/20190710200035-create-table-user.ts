@@ -17,6 +17,22 @@ module.exports = {
       allowNull: false,
       field: 'pseudo',
     },
+    description: {
+      type: Sequelize.TEXT,
+      allowNull: true,
+      field: 'description',
+    },
+    lastConnexionDate: {
+      type: Sequelize.DATE,
+      allowNull: false,
+      field: 'last_connexion_date',
+    },
+    nbConsecutiveConnexionDays: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      field: 'nb_consecutive_connexion_days',
+    },
     isAdmin: {
       type: Sequelize.BOOLEAN,
       allowNull: false,

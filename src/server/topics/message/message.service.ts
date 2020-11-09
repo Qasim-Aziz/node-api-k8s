@@ -60,7 +60,6 @@ export class MessageService {
       nest: true,
       logging: console.log,
     });
-    console.log('message : ', message)
     if (message.privacy === PRIVACY_LEVEL.PRIVATE && reqUserId) await MessageService.checkUserRight(reqUserId, messageId, { transaction });
     const traitNames = (await Tag.unscoped().findAll({
       attributes: [],

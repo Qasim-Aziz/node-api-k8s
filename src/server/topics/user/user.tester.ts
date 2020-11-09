@@ -20,3 +20,28 @@ export const isPseudoUsed = async (pseudo, { status = httpStatus.OK, pseudoUsed 
     .then((res) => {
       expect(res.body.pseudoUsed).toBe(pseudoUsed);
     });
+
+export const refreshUserLastConnexionDate = async (userId, { status = httpStatus.OK, connexionCount = 0 } = {}) =>
+  request(app)
+    .post(`/api/users/${userId}/refreshUserLastConnexionDate`)
+    .expect(checkExpectedStatus(status))
+    .then((res) => {
+      const resUser = res.body.user;
+      expect(resUser.nbConsecutiveConnexionDays).toEqual(connexionCount);
+    });
+
+export const getUser = async (userId, {
+  status = httpStatus.OK,
+  expectedUser = null,
+  connexionCount = null,
+  nbMessages = null,
+} = {}) =>
+  request(app)
+    .get(`/api/users/${userId}`)
+    .expect(checkExpectedStatus(status))
+    .then((res) => {
+      const userRes = res.body.user;
+      if (nbMessages) expect(userRes.nbMessages).toBe(nbMessages);
+      if (connexionCount) expect(userRes.nbConsecutiveConnexionDays).toEqual(connexionCount);
+      if (expectedUser) expect(userRes).toMatchObject(expectedUser);
+    });

@@ -8,7 +8,6 @@ export class MessageController {
   })
   @Auth.forLogged()
   static async get(req, res) {
-    console.log('reqUserId : ', req.user.id)
     const message = await MessageService.get(req.params.messageId, { reqUserId: req.user.id, updateViewCount: true });
     res.json({ message });
   }
@@ -25,7 +24,6 @@ export class MessageController {
   @validation({})
   @Auth.forLogged()
   static async getNext(req, res) {
-    console.log('reqUserId in getNext : ', req.user.id)
     const message = await MessageService.getNext(req.user.id);
     res.json({ message });
   }

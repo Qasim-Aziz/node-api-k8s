@@ -11,7 +11,13 @@ export class User extends OrmModel {
 
   public pseudo!: string;
 
+  public description!: string;
+
   public isAdmin!: boolean;
+
+  public nbConsecutiveConnexionDays!: number;
+
+  public lastConnexionDate!: Date;
 }
 
 User.init({
@@ -38,6 +44,22 @@ User.init({
     type: DataTypes.TEXT,
     allowNull: false,
     field: 'pseudo',
+  },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'description',
+  },
+  lastConnexionDate: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    field: 'last_connexion_date',
+  },
+  nbConsecutiveConnexionDays: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    field: 'nb_consecutive_connexion_days',
   },
   isAdmin: {
     type: DataTypes.BOOLEAN,
