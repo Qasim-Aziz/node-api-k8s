@@ -40,7 +40,7 @@ describe('# Message Tests', () => {
   test('should love a public message and update nbLoves', () =>
     Testers.loveMessage(user1, message2.id, { nbLoves: 1, nbViews: 1 }));
   test('should unlove a public message', () =>
-    Testers.loveMessage(user1, message2.id, { nbLoves: 0, nbViews: 1 }));
+    Testers.loveMessage(user1, message2.id, { nbLoves: 0, nbViews: 1, loved: false }));
   test('should get the right next messages', async () => {
     // I don't use Promise all here because th&²²e time creation is important
     await Testers.publishMessage(user3, message3);

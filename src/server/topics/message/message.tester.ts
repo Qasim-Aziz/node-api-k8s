@@ -34,7 +34,12 @@ export const updateMessage = async (user, messageId, messageData, { status = htt
   return messageRes;
 };
 
-export const getMessage = async (user, messageId, { status = httpStatus.OK, nbLoves = null, nbViews = null } = {}) => {
+export const getMessage = async (user, messageId, {
+  status = httpStatus.OK,
+  nbLoves = null,
+  nbViews = null,
+  loved = false,
+} = {}) => {
   const res = await request(app)
     .get(`/api/messages/${messageId}`)
     .set('cookie', user.token)
@@ -43,6 +48,7 @@ export const getMessage = async (user, messageId, { status = httpStatus.OK, nbLo
   const messageRes = res.body.message;
   expect(messageRes.nbLoves).toEqual(nbLoves);
   expect(messageRes.nbViews).toEqual(nbViews);
+  expect(messageRes.loved).toEqual(loved);
   return messageRes;
 };
 
@@ -58,7 +64,7 @@ export const getNextMessage = async (user, { status = httpStatus.OK, expectedMes
   return messageRes;
 };
 
-export const loveMessage = async (user, messageId, { status = httpStatus.OK, nbLoves = null, nbViews = null } = {}) => {
+export const loveMessage = async (user, messageId, { status = httpStatus.OK, nbLoves = null, nbViews = null, loved = true } = {}) => {
   const res = await request(app)
     .post(`/api/messages/${messageId}/loveOrUnlove`)
     .set('cookie', user.token)
@@ -67,6 +73,7 @@ export const loveMessage = async (user, messageId, { status = httpStatus.OK, nbL
   const messageRes = res.body.message;
   expect(messageRes.nbLoves).toEqual(nbLoves);
   expect(messageRes.nbViews).toEqual(nbViews);
+  expect(messageRes.loved).toEqual(loved);
   return messageRes;
 };
 

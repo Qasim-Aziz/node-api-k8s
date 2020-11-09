@@ -1,4 +1,4 @@
-import { Op, cast, fn, col, QueryTypes } from 'sequelize';
+import { Op, cast, fn, col, QueryTypes, literal } from 'sequelize';
 import httpStatus from 'http-status'; // eslint-disable-line no-unused-vars
 import { sequelize } from 'src/orm/database';
 import { Message, Tag, Trait, Love, View } from 'src/orm';
@@ -33,18 +33,23 @@ export class MessageService {
     });
   }
 
-  static async get(messageId, { transaction = null, reqUserId = null } = {}) {
+  static async get(messageId, { transaction = null, reqUserId = null, updateViewCount = false } = {}) {
+    const baseAttributes = [
+      'id',
+      'publishedAt',
+      'emotionCode',
+      'privacy',
+      'content',
+      'userId',
+      [cast(fn('COUNT', col('"Loves"."id"')), 'int'), 'nbLoves'],
+      [cast(fn('COUNT', col('"Views"."id"')), 'int'), 'nbViews'],
+    ];
+    const customAttributes = [
+      [fn('coalesce', (fn('bool_or', literal(`"Loves"."user_id" = ${reqUserId}`))), 'false'), 'loved'],
+    ];
+    const messageAttributes = reqUserId ? [...baseAttributes, ...customAttributes] : baseAttributes;
     const message: any = await Message.unscoped().findByPk(messageId, {
-      attributes: [
-        'id',
-        'publishedAt',
-        'emotionCode',
-        'privacy',
-        'content',
-        'userId',
-        [cast(fn('COUNT', col('"Loves"."id"')), 'int'), 'nbLoves'],
-        [cast(fn('COUNT', col('"Views"."id"')), 'int'), 'nbViews'],
-      ],
+      attributes: messageAttributes,
       include: [
         { model: Love.unscoped(), attributes: [] },
         { model: View.unscoped(), attributes: [] },
@@ -53,7 +58,9 @@ export class MessageService {
       transaction,
       raw: true,
       nest: true,
+      logging: console.log,
     });
+    console.log('message : ', message)
     if (message.privacy === PRIVACY_LEVEL.PRIVATE && reqUserId) await MessageService.checkUserRight(reqUserId, messageId, { transaction });
     const traitNames = (await Tag.unscoped().findAll({
       attributes: [],
@@ -63,7 +70,7 @@ export class MessageService {
       ],
       transaction,
     })).map((tag: any) => tag.Trait.name);
-    if (reqUserId && reqUserId !== message.userId) {
+    if (updateViewCount && reqUserId && reqUserId !== message.userId) {
       await MessageService.createView(messageId, reqUserId, { transaction });
       message.nbViews += 1;
     }
@@ -81,7 +88,7 @@ export class MessageService {
       replacements: { reqUserId },
       transaction,
     });
-    return MessageService.get(id, { reqUserId, transaction });
+    return MessageService.get(id, { reqUserId, updateViewCount: true, transaction });
   }
 
   static async createView(messageId, viewerId, { transaction = null } = {}) {
@@ -161,7 +168,7 @@ export class MessageService {
     } else {
       await Love.create({ messageId, userId: reqUserId, lovedAt: moment().toISOString() }, { transaction });
     }
-    return MessageService.get(messageId, { transaction });
+    return MessageService.get(messageId, { transaction, reqUserId });
   }
 
   static async delete(messageId, reqUserId, { transaction = null } = {}) {
