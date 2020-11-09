@@ -3,8 +3,6 @@ import { OrmModel, sequelize } from 'src/orm/database';
 import { Utils } from 'src/server/helpers';
 
 export class User extends OrmModel {
-  public id!: number;
-
   public email!: string;
 
   public passwordHash!: string;
@@ -30,12 +28,12 @@ User.init({
     },
   },
   passwordHash: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING,
     allowNull: false,
     field: 'password_hash',
   },
   pseudo: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING,
     allowNull: false,
     field: 'pseudo',
   },
@@ -48,4 +46,10 @@ User.init({
 }, {
   sequelize,
   tableName: 'user',
+  modelName: 'user',
+});
+
+// Scopes
+User.addScope('userComment', {
+  attributes: ['id', 'pseudo'],
 });

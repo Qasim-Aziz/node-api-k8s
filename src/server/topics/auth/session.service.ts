@@ -19,7 +19,7 @@ export default class SessionService {
   static async createSession(userId, { transaction = null } = {}) {
     await SessionService.assertNotTooManySessionsOpened(userId, { transaction });
     const now = moment();
-    const session = await Session.create({
+    return Session.create({
       sid: uuid.v4(),
       loginAt: now,
       lastRefreshTime: now,
@@ -27,6 +27,5 @@ export default class SessionService {
       logoutAt: null,
       expires: moment(now).add(config.get('session.ttl')),
     }, { transaction });
-    return session;
   }
 }

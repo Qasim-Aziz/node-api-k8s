@@ -1,9 +1,7 @@
 import httpStatus from 'http-status';
 import { BackError, Env } from 'src/server/helpers';
 
-// copy pasted from https://github.com/expressjs/api-error-handler/blob/master/index.js
-// as they left some ugly console.error in their source code
-export default function apiErrorHandler(err, req, res) { // eslint-disable-line no-unused-vars
+export const appErrorHandler = (err, req, res, next) => {
   let status = err.status || err.statusCode || 500;
   if (status < 400) status = 500;
 
@@ -34,4 +32,4 @@ export default function apiErrorHandler(err, req, res) { // eslint-disable-line 
     ...(err.type) ? { type: err.type } : {},
     ...(err.errors) ? { errors: err.errors } : {},
   });
-}
+};

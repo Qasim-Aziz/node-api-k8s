@@ -14,16 +14,18 @@ const getRequestData = (req, res) => ({
   impersonatorEmail: req.impersonator && req.impersonator.email,
 });
 
-const logInCommingRequest = (data) => logger.info(data, `${data.method} ${data.path} - ${data.status} - Incoming request`);
+const logInCommingRequest = (data) =>
+  logger.child(data).info(`${data.method} ${data.path} - ${data.status} - Incoming request`);
 
-const logDurationRequest = (data, duration) => logger.info(data, `${data.method} ${data.path} - ${data.status} - ${duration.toFixed(2)} ms`);
+const logDurationRequest = (data, duration) =>
+  logger.child(data).info(`${data.method} ${data.path} - ${data.status} - ${duration.toFixed(2)} ms`);
 
 const connectionInfo = (data) => ({
   remoteIp: data.connection.remoteAddress,
   remotePort: data.connection.remotePort,
 });
 
-export default function logRequestMiddleware(req, res, next) {
+export const appLogRequest = (req, res, next) => {
   logInCommingRequest({
     ...Utils.pick(req, getRequestDataKeys()),
     ...connectionInfo(req),
@@ -40,4 +42,4 @@ export default function logRequestMiddleware(req, res, next) {
     }, ms);
   });
   next();
-}
+};

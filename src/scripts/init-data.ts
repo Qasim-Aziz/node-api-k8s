@@ -1,6 +1,6 @@
 import ScriptAbstract from 'src/scripts/script-abstract';
 import { runMigrations } from 'src/migrations/lib/migrate-runner';
-import {logger, transactionContext} from 'src/server/helpers';
+import { logger, transactionContext } from 'src/server/helpers';
 import { InitDBService } from 'src/initdb/initdb.service';
 import { populateInitData } from 'src/init-data/init-data.utils';
 

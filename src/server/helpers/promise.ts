@@ -56,13 +56,13 @@ export class PromiseUtils {
     ],
   );
 
-  static promiseRetry = async (block, { retries = 0, timeout = 200000 } = {}) => {
+  static promiseRetry = async (block, { retries = 1, timeout = 20 } = {}) => {
     await PromiseUtils.promiseTimeout((async () => {
       const blockRecursive = async (numberOfRetriesLeft, firstError = null) => {
         try {
           await block();
         } catch (e) {
-          if (numberOfRetriesLeft === 0) throw firstError || e;
+          if (numberOfRetriesLeft === 1) throw firstError || e;
           logger.error(e);
           logger.debug(`\n${e.name} in test setUp`);
           logger.debug('\n--------------------------------------------------------------');

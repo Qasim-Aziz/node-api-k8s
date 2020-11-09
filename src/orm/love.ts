@@ -1,16 +1,19 @@
-import { DataTypes } from 'sequelize';
-import { OrmModel, sequelize } from 'src/orm/database';
+import { moment } from 'src/server/helpers';
+import {
+  DataTypes, makeOneToMany, OrmModel, sequelize,
+} from 'src/orm/database';
 import { User } from 'src/orm/user';
 import { Message } from 'src/orm/message';
+import { Comment } from 'src/orm/comment';
 
 export class Love extends OrmModel {
-  public id!: number;
+  public lovedAt = moment();
 
-  public lovedAt!: Date;
+  public user!: User;
 
-  public userId!: number;
+  public message!: Message;
 
-  public messageId!: number;
+  public comment!: Comment;
 }
 
 Love.init({
@@ -22,18 +25,9 @@ Love.init({
 }, {
   sequelize,
   tableName: 'love',
+  modelName: 'love',
 });
 
-User.hasMany(Love, {
-  sourceKey: 'id',
-  foreignKey: 'userId',
-});
-
-Love.belongsTo(User);
-
-Message.hasMany(Love, {
-  sourceKey: 'id',
-  foreignKey: 'messageId',
-});
-
-Love.belongsTo(Message);
+makeOneToMany(User, Love, 'userId', false);
+makeOneToMany(Message, Love, 'messageId', true);
+makeOneToMany(Comment, Love, 'commentId', true);
