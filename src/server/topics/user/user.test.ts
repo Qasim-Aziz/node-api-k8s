@@ -9,7 +9,7 @@ const existingEmail = 'existing@yopmail.com';
 const existingPseudo = 'existing';
 const message1 = { content: 'message 1 content', privacy: PRIVACY_LEVEL.PRIVATE, emotionCode: EMOTION_CODE.APAISE };
 let user;
-const pseudo = 'test';
+const pseudo = 'pseudotest';
 
 describe('# Users Tests', () => {
   setUp(async () => {
@@ -31,22 +31,26 @@ describe('# Users Tests', () => {
       Testers.isEmailUsed('nonexisting@yopmail.com', { emailUsed: false }));
 
     test('should refresh nb consecutive connexion days', async () => {
+      console.log('here 1')
       MockDate.set(moment().subtract({ day: 3 }).valueOf());
-      user = await Testers.registerUser({ password: 'pwd', email: 'test@yopmail.com', pseudo });
+      user = await Testers.registerUser({ password: 'pwd', email: 'xfzez@yopmail.com', pseudo });
       MockDate.reset();
+      console.log('here 2')
       MockDate.set(moment().subtract({ day: 2 }).valueOf());
       // connexion 1 day after, should update the counter to +1
-      await Testers.refreshUserLastConnexionDate(user.id, { connexionCount: 1 });
+      await Testers.refreshUserLastConnexionDate(user, user.id, { connexionCount: 1 });
+      console.log('here 3')
       // second connexion the same day : it should find the same count
-      await Testers.refreshUserLastConnexionDate(user.id, { connexionCount: 1 });
+      await Testers.refreshUserLastConnexionDate(user, user.id, { connexionCount: 1 });
       MockDate.reset();
+      console.log('here 4')
       // connexion after two days, should be 0 consecutive days
-      await Testers.refreshUserLastConnexionDate(user.id, { connexionCount: 0 });
+      await Testers.refreshUserLastConnexionDate(user, user.id, { connexionCount: 0 });
     });
 
     test('should compute the right stats for user', async () => {
       await Testers.publishMessage(user, message1);
-      await Testers.getUser(user.id, { nbMessages: 1, connexionCount: 0, expectedUser: { pseudo } });
+      await Testers.getUser(user, user.id, { nbMessages: 1, connexionCount: 0, expectedUser: { pseudo } });
     });
   });
 });
