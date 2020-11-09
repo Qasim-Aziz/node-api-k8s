@@ -67,4 +67,3 @@ describe('# Message Tests', () => {
   test('should search traits', () =>
     Testers.searchTraits(user1, 'dep', { expectedResults: ['depression'] }));
 });
-
