@@ -21,6 +21,9 @@ messageRoutes
   })
   .addRoute('/:messageId/loveOrUnlove', {
     post: { handler: MessageController.loveOrUnlove },
+  })
+  .addRoute('/:messageId/addOrRemoveFavorite', {
+    post: { handler: MessageController.addOrRemoveFavorite },
   });
 
 export default messageRoutes.getRouter();

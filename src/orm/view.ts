@@ -1,4 +1,4 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, fn } from 'sequelize';
 import { OrmModel, sequelize } from 'src/orm/database';
 import { User } from 'src/orm/user';
 import { Message } from 'src/orm/message';
@@ -18,6 +18,7 @@ View.init({
     type: DataTypes.DATE,
     field: 'viewed_at',
     allowNull: false,
+    defaultValue: fn('now'),
   },
 }, {
   sequelize,

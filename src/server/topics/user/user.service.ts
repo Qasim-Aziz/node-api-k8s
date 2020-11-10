@@ -1,5 +1,5 @@
-import { cast, col, fn } from 'sequelize';
-import { Message, User } from 'src/orm';
+import {cast, col, fn, Op} from 'sequelize';
+import {Favorite, Love, Message, User, View} from 'src/orm';
 import { moment } from 'src/server/helpers';
 
 export default class UserService {
@@ -47,5 +47,30 @@ export default class UserService {
       lastConnexionDate: moment().toISOString(),
     }, { where: { id: userId }, transaction });
     return UserService.getUser(userId, { transaction });
+  }
+
+  static async getAllFavorites(userId, { transaction = null } = {}) {
+    return Message.unscoped().findAll({
+      attributes: [
+        'id',
+        'publishedAt',
+        'emotionCode',
+        'privacy',
+        'content',
+        'userId',
+        [cast(fn('COUNT', col('"Loves"."id"')), 'int'), 'nbLoves'],
+        [cast(fn('COUNT', col('"Views"."id"')), 'int'), 'nbViews'],
+      ],
+      include: [
+        { model: Love.unscoped(), attributes: [] },
+        { model: View.unscoped(), attributes: [] },
+        { model: Favorite.unscoped(), attributes: [], required: true, where: { userId } },
+      ],
+      group: ['Message.id'],
+      order: [['publishedAt', 'desc']],
+      raw: true,
+      nest: true,
+      transaction,
+    });
   }
 }

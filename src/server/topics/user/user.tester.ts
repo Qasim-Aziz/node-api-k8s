@@ -31,6 +31,18 @@ export const refreshUserLastConnexionDate = async (user, userId, { status = http
       expect(resUser.nbConsecutiveConnexionDays).toEqual(connexionCount);
     });
 
+export const getAllFavorite = async (user, userId, { status = httpStatus.OK, expectedMessagesIds = [] } = {}) =>
+  request(app)
+    .get(`/api/users/${userId}/favorites`)
+    .set('cookie', user.token)
+    .expect(checkExpectedStatus(status))
+    .then((res) => {
+      if (status !== httpStatus.OK) return null;
+      const messagesRes = res.body.messages;
+      expect(messagesRes.map((m) => m.id).sort()).toEqual(expectedMessagesIds.sort());
+      return messagesRes;
+    });
+
 export const getUser = async (user, userId, {
   status = httpStatus.OK,
   expectedUser = null,

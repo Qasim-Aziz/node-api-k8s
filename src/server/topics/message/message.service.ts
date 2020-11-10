@@ -1,7 +1,7 @@
 import { Op, cast, fn, col, QueryTypes, literal } from 'sequelize';
 import httpStatus from 'http-status'; // eslint-disable-line no-unused-vars
 import { sequelize } from 'src/orm/database';
-import { Message, Tag, Trait, Love, View } from 'src/orm';
+import { Message, Tag, Trait, Love, View, Favorite } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import { getNextMessageQuery } from 'src/server/topics/message/message.query';
 import { PRIVACY_LEVEL } from 'src/server/constants';
@@ -46,6 +46,7 @@ export class MessageService {
     ];
     const customAttributes = [
       [fn('coalesce', (fn('bool_or', literal(`"Loves"."user_id" = ${reqUserId}`))), 'false'), 'loved'],
+      [fn('coalesce', (fn('bool_or', literal(`"Favorites"."user_id" = ${reqUserId}`))), 'false'), 'isFavorite'],
     ];
     const messageAttributes = reqUserId ? [...baseAttributes, ...customAttributes] : baseAttributes;
     const message: any = await Message.unscoped().findByPk(messageId, {
@@ -53,6 +54,7 @@ export class MessageService {
       include: [
         { model: Love.unscoped(), attributes: [] },
         { model: View.unscoped(), attributes: [] },
+        { model: Favorite.unscoped(), attributes: [] },
       ],
       group: ['Message.id'],
       transaction,
@@ -158,16 +160,24 @@ export class MessageService {
     }
   }
 
-  static async loveOrUnlove(messageId, reqUserId, { transaction = null } = {}) {
+  static async addOrRemoveRessource(messageId, reqUserId, { transaction = null, Model = null } = {}) {
     const message = await Message.unscoped().findByPk(messageId, { attributes: ['privacy'], transaction });
-    if (message.privacy === PRIVACY_LEVEL.PRIVATE) throw new BackError('Cannot love a private message', httpStatus.BAD_REQUEST);
-    const isAlreadyLove = await Love.findOne({ where: { messageId, userId: reqUserId }, transaction });
-    if (isAlreadyLove) {
-      await isAlreadyLove.destroy({ transaction });
+    if (message.privacy === PRIVACY_LEVEL.PRIVATE) throw new BackError('Cannot love or save a private message', httpStatus.BAD_REQUEST);
+    const isAlreadyExistingInstance = await Model.findOne({ where: { messageId, userId: reqUserId }, transaction });
+    if (isAlreadyExistingInstance) {
+      await isAlreadyExistingInstance.destroy({ transaction });
     } else {
-      await Love.create({ messageId, userId: reqUserId, lovedAt: moment().toISOString() }, { transaction });
+      await Model.create({ messageId, userId: reqUserId }, { transaction });
     }
     return MessageService.get(messageId, { transaction, reqUserId });
+  }
+
+  static async loveOrUnlove(messageId, reqUserId, { transaction = null } = {}) {
+    return MessageService.addOrRemoveRessource(messageId, reqUserId, { transaction, Model: Love });
+  }
+
+  static async addOrRemoveFavorite(messageId, reqUserId, { transaction = null } = {}) {
+    return MessageService.addOrRemoveRessource(messageId, reqUserId, { transaction, Model: Favorite });
   }
 
   static async delete(messageId, reqUserId, { transaction = null } = {}) {

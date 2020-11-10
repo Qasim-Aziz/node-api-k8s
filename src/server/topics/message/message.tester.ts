@@ -64,7 +64,13 @@ export const getNextMessage = async (user, { status = httpStatus.OK, expectedMes
   return messageRes;
 };
 
-export const loveMessage = async (user, messageId, { status = httpStatus.OK, nbLoves = null, nbViews = null, loved = true } = {}) => {
+export const loveMessage = async (user, messageId, {
+  status = httpStatus.OK,
+  nbLoves = null,
+  nbViews = null,
+  loved = true,
+  isFavorite = false,
+} = {}) => {
   const res = await request(app)
     .post(`/api/messages/${messageId}/loveOrUnlove`)
     .set('cookie', user.token)
@@ -74,6 +80,27 @@ export const loveMessage = async (user, messageId, { status = httpStatus.OK, nbL
   expect(messageRes.nbLoves).toEqual(nbLoves);
   expect(messageRes.nbViews).toEqual(nbViews);
   expect(messageRes.loved).toEqual(loved);
+  expect(messageRes.isFavorite).toEqual(isFavorite);
+  return messageRes;
+};
+
+export const addOrRemoveFavorite = async (user, messageId, {
+  status = httpStatus.OK,
+  nbLoves = null,
+  nbViews = null,
+  loved = true,
+  isFavorite = false,
+} = {}) => {
+  const res = await request(app)
+    .post(`/api/messages/${messageId}/addOrRemoveFavorite`)
+    .set('cookie', user.token)
+    .expect(status);
+  if (status !== httpStatus.OK) return null;
+  const messageRes = res.body.message;
+  expect(messageRes.nbLoves).toEqual(nbLoves);
+  expect(messageRes.nbViews).toEqual(nbViews);
+  expect(messageRes.loved).toEqual(loved);
+  expect(messageRes.isFavorite).toEqual(isFavorite);
   return messageRes;
 };
 

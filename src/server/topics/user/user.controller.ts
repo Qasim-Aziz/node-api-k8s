@@ -25,6 +25,17 @@ export class UserController {
   }
 
   @validation({
+    params: { userId: Joi.number().integer().required() },
+  })
+  @Auth.forLogged()
+  static async getAllFavorite(req, res) {
+    const { transaction, params: { userId }, user: { id: reqUserId } } = req;
+    if (reqUserId !== userId) throw new BackError('Should be the same user id', httpStatus.BAD_REQUEST);
+    const messages = await UserService.getAllFavorites(userId, { transaction });
+    res.json({ messages });
+  }
+
+  @validation({
     query: { email: Joi.string().lowercase().email().required() },
   })
   @Auth.forAll()
