@@ -3,7 +3,7 @@ import {
   Op, Sequelize, sequelize, QueryTypes,
 } from 'src/orm/database';
 import {
-  Message, Tag, Trait, Love, View, Favorite,
+  Message, Tag, Trait, Love, View, Favorite, Comment,
 } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import { getNextMessageQuery } from 'src/server/topics/message/message.query';
@@ -52,6 +52,7 @@ export class MessageService {
       'userId',
       [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"loves"."id"')), 'int'), 'nbLoves'],
       [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"views"."id"')), 'int'), 'nbViews'],
+      [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"comments"."id"')), 'int'), 'nbComments'],
     ];
     const customAttributes = [
       [Sequelize.fn('coalesce',
@@ -66,6 +67,7 @@ export class MessageService {
         { model: Love.unscoped(), attributes: [] },
         { model: View.unscoped(), attributes: [] },
         { model: Favorite.unscoped(), attributes: [] },
+        { model: Comment.unscoped(), attributes: [] },
       ],
       group: ['message.id'],
       transaction,

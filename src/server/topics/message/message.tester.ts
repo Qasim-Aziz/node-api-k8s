@@ -55,6 +55,7 @@ export const getMessage = async (user, messageId, {
   nbLoves = null,
   nbViews = null,
   loved = false,
+  nbComments = null,
 } = {}) => {
   const res = await request(app)
     .get(`/api/messages/${messageId}`)
@@ -62,8 +63,9 @@ export const getMessage = async (user, messageId, {
     .expect(checkExpectedStatus(status));
   if (status !== httpStatus.OK) return null;
   const messageRes = res.body.message;
-  expect(messageRes.nbLoves).toEqual(nbLoves);
-  expect(messageRes.nbViews).toEqual(nbViews);
+  if (nbLoves !== null) expect(messageRes.nbLoves).toEqual(nbLoves);
+  if (nbViews !== null) expect(messageRes.nbViews).toEqual(nbViews);
+  if (nbComments !== null) expect(messageRes.nbComments).toEqual(nbComments);
   expect(messageRes.loved).toEqual(loved);
   return messageRes;
 };

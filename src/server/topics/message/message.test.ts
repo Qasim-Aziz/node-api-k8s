@@ -40,9 +40,9 @@ describe('# Message Tests', () => {
   test('shouldnt get a private message if not mine', () =>
     Testers.getMessage(user2, message1.id, { status: httpStatus.FORBIDDEN }));
   test('should get a private message if mine and not update viewing count', () =>
-    Testers.getMessage(user1, message1.id, { nbViews: 0, nbLoves: 0 }));
+    Testers.getMessage(user1, message1.id, { nbViews: 0, nbLoves: 0, nbComments: 0 }));
   test('should get a public message even if not mine', () =>
-    Testers.getMessage(user1, message2.id, { nbLoves: 0, nbViews: 1 }));
+    Testers.getMessage(user1, message2.id, { nbLoves: 0, nbViews: 1, nbComments: 0 }));
   test('shouldnt be able to love a private message', () =>
     Testers.loveMessage(user2, message1.id, { status: httpStatus.BAD_REQUEST }));
   test('should love a public message and update nbLoves', () =>
