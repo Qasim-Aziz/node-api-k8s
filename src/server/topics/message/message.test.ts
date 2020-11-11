@@ -40,15 +40,29 @@ describe('# Message Tests', () => {
   test('shouldnt get a private message if not mine', () =>
     Testers.getMessage(user2, message1.id, { status: httpStatus.FORBIDDEN }));
   test('should get a private message if mine and not update viewing count', () =>
-    Testers.getMessage(user1, message1.id, { nbViews: 0, nbLoves: 0 }));
+    Testers.getMessage(user1, message1.id, { nbViews: 0, nbLoves: 0, nbComments: 0 }));
   test('should get a public message even if not mine', () =>
-    Testers.getMessage(user1, message2.id, { nbLoves: 0, nbViews: 1 }));
+    Testers.getMessage(user1, message2.id, { nbLoves: 0, nbViews: 1, nbComments: 0 }));
   test('shouldnt be able to love a private message', () =>
     Testers.loveMessage(user2, message1.id, { status: httpStatus.BAD_REQUEST }));
   test('should love a public message and update nbLoves', () =>
     Testers.loveMessage(user1, message2.id, { nbLoves: 1, nbViews: 1 }));
   test('should unlove a public message', () =>
     Testers.loveMessage(user1, message2.id, { nbLoves: 0, nbViews: 1, loved: false }));
+  test('should not have any favorite message', () =>
+    Testers.getAllFavorite(user1, user1.id, { expectedMessagesIds: [] }));
+  test('should add a public message to favorite and update isFavorite', () =>
+    Testers.addOrRemoveFavorite(user1, message2.id, { nbLoves: 0, nbViews: 1, isFavorite: true, loved: false }));
+  test('should not get favorite messages of another user', () =>
+    Testers.getAllFavorite(user1, user2.id, { status: httpStatus.BAD_REQUEST }));
+  test('should have favorite messages', () =>
+    Testers.getAllFavorite(user1, user1.id, { expectedMessagesIds: [message2.id] }));
+  test('shouldnt be able to add to favorite a private message', () =>
+    Testers.addOrRemoveFavorite(user2, message1.id, { status: httpStatus.BAD_REQUEST }));
+  test('should remove a message from favorite and update isFavorite', async () => {
+    await Testers.addOrRemoveFavorite(user1, message2.id, { nbLoves: 0, nbViews: 1, isFavorite: false, loved: false });
+    await Testers.getAllFavorite(user1, user1.id, { expectedMessagesIds: [] });
+  });
   test('should get the right next messages', async () => {
     // I don't use Promise all here because th&²²e time creation is important
     await Testers.publishMessage(user3, message3);

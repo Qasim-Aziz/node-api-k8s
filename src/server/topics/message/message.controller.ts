@@ -84,6 +84,16 @@ export class MessageController {
     params: { messageId: Joi.number().integer().required() },
   })
   @Auth.forLogged()
+  static async addOrRemoveFavorite(req, { transaction = null } = {}) {
+    const { params: { messageId }, user: { id: reqUserId } } = req;
+    const message = await MessageService.addOrRemoveFavorite(messageId, reqUserId, { transaction });
+    return { message };
+  }
+
+  @validation({
+    params: { messageId: Joi.number().integer().required() },
+  })
+  @Auth.forLogged()
   static async delete(req, { transaction = null } = {}) {
     const { params: { messageId }, user: { id: reqUserId } } = req;
     await MessageService.delete(messageId, reqUserId, { transaction });

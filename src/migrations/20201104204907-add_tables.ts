@@ -1,5 +1,5 @@
 /* eslint-disable */
-import Sequelize from "sequelize";
+import Sequelize, { DataTypes } from "sequelize";
 
 const lib = require('./lib/lib');
 
@@ -155,6 +155,7 @@ module.exports = {
       viewed_at: {
         type: Sequelize.DATE,
         allowNull: false,
+        defaultValue: DataTypes.NOW,
       },
     };
 
@@ -188,6 +189,41 @@ module.exports = {
       loved_at: {
         type: Sequelize.DATE,
         allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
+    };
+
+    const favoriteFields = {
+      id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
+      deleted_at: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      message_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      added_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
       },
     };
 
@@ -196,6 +232,7 @@ module.exports = {
     await lib.createTable('tag', tagFields);
     await lib.createTable('view', viewingFields);
     await lib.createTable('love', heartFields);
+    await lib.createTable('favorite', favoriteFields);
   },
 
   down: (queryInterface, Sequelize) => {

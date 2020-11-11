@@ -4,6 +4,7 @@ import { User } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import SessionService from 'src/server/topics/auth/session.service';
 import { SessionManager } from 'src/server/acl/session-manager';
+import UserService from 'src/server/topics/user/user.service';
 
 export class AuthService {
   static async register({ email, pseudo, password }, { transaction = null } = {}) {
@@ -19,7 +20,8 @@ export class AuthService {
     if (!isPwdOk) throw new BackError('Wrong password', httpStatus.BAD_REQUEST);
     const session = await SessionService.createSession(user.id, { transaction });
     const token = SessionManager.makeSession(session);
-    return { user, token };
+    await UserService.refreshUserLastConnexionDate(user.id, { transaction });
+    return { token, user: await UserService.getUser(user.id, { transaction }) };
   }
 
   static async logout(token, { transaction = null } = {}) {

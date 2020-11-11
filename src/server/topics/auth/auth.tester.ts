@@ -3,6 +3,7 @@ import request from 'supertest';
 import app from 'src/application';
 import { CookiesManager } from 'src/server/acl/cookies-manager';
 import { checkExpectedStatus } from 'src/server/tests/tester.base';
+import { moment } from 'src/server/helpers';
 
 const getToken = (res) => {
   expect(res.headers['set-cookie']).toBeDefined();
@@ -18,7 +19,11 @@ export const registerUser = async (user, { status = httpStatus.OK } = {}) =>
     .expect(checkExpectedStatus(status))
     .then((res) => {
       const token = getToken(res);
-      return Object.assign(user, res.body.user, { token });
+      const userRes = res.body.user;
+      expect(userRes.nbConsecutiveConnexionDays).toEqual(0);
+      expect(userRes.nbMessages).toEqual(0);
+      expect(moment().diff(moment(userRes.lastConnexionDate), 'd')).toEqual(0);
+      return Object.assign(user, userRes, { token });
     });
 
 export const loginUser = async (user, { status = httpStatus.OK } = {}) =>

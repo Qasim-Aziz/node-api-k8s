@@ -3,7 +3,7 @@ import {
   Op, Sequelize, sequelize, QueryTypes,
 } from 'src/orm/database';
 import {
-  Message, Tag, Trait, Love, View,
+  Message, Tag, Trait, Love, View, Favorite, Comment,
 } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import { getNextMessageQuery } from 'src/server/topics/message/message.query';
@@ -52,9 +52,13 @@ export class MessageService {
       'userId',
       [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"loves"."id"')), 'int'), 'nbLoves'],
       [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"views"."id"')), 'int'), 'nbViews'],
+      [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"comments"."id"')), 'int'), 'nbComments'],
     ];
     const customAttributes = [
-      [Sequelize.fn('coalesce', (Sequelize.fn('bool_or', Sequelize.literal(`"loves"."user_id" = ${reqUserId}`))), 'false'), 'loved'],
+      [Sequelize.fn('coalesce',
+        (Sequelize.fn('bool_or', Sequelize.literal(`"loves"."user_id" = ${reqUserId}`))), 'false'), 'loved'],
+      [Sequelize.fn('coalesce',
+        (Sequelize.fn('bool_or', Sequelize.literal(`"favorites"."user_id" = ${reqUserId}`))), 'false'), 'isFavorite'],
     ];
     const messageAttributes = reqUserId ? [...baseAttributes, ...customAttributes] : baseAttributes;
     const message: any = await Message.unscoped().findByPk(messageId, {
@@ -62,6 +66,8 @@ export class MessageService {
       include: [
         { model: Love.unscoped(), attributes: [] },
         { model: View.unscoped(), attributes: [] },
+        { model: Favorite.unscoped(), attributes: [] },
+        { model: Comment.unscoped(), attributes: [] },
       ],
       group: ['message.id'],
       transaction,
@@ -167,16 +173,24 @@ export class MessageService {
     }
   }
 
-  static async loveOrUnlove(messageId, reqUserId, { transaction = null } = {}) {
+  static async addOrRemoveRessource(messageId, reqUserId, { transaction = null, Model = null } = {}) {
     const isPublicMessage = await MessageService.isPublicMessage(messageId, { transaction });
-    if (!isPublicMessage) throw new BackError('Cannot love a private message', httpStatus.BAD_REQUEST);
-    const isAlreadyLove = await Love.findOne({ where: { messageId, userId: reqUserId }, transaction });
-    if (isAlreadyLove) {
-      await isAlreadyLove.destroy({ transaction });
+    if (!isPublicMessage) throw new BackError('Cannot love or save a private message', httpStatus.BAD_REQUEST);
+    const isAlreadyExistingInstance = await Model.findOne({ where: { messageId, userId: reqUserId }, transaction });
+    if (isAlreadyExistingInstance) {
+      await isAlreadyExistingInstance.destroy({ transaction });
     } else {
-      await Love.create({ messageId, userId: reqUserId, lovedAt: moment().toISOString() }, { transaction });
+      await Model.create({ messageId, userId: reqUserId }, { transaction });
     }
     return MessageService.get(messageId, { transaction, reqUserId });
+  }
+
+  static async loveOrUnlove(messageId, reqUserId, { transaction = null } = {}) {
+    return MessageService.addOrRemoveRessource(messageId, reqUserId, { transaction, Model: Love });
+  }
+
+  static async addOrRemoveFavorite(messageId, reqUserId, { transaction = null } = {}) {
+    return MessageService.addOrRemoveRessource(messageId, reqUserId, { transaction, Model: Favorite });
   }
 
   static async delete(messageId, reqUserId, { transaction = null } = {}) {

@@ -1,6 +1,6 @@
 import { moment } from 'src/server/helpers';
 import {
-  DataTypes, makeOneToMany, OrmModel, sequelize,
+  DataTypes, makeOneToMany, OrmModel, sequelize, Sequelize,
 } from 'src/orm/database';
 import { User } from 'src/orm/user';
 import { Message } from 'src/orm/message';
@@ -21,6 +21,7 @@ Love.init({
     type: DataTypes.DATE,
     field: 'loved_at',
     allowNull: false,
+    defaultValue: Sequelize.fn('now'),
   },
 }, {
   sequelize,

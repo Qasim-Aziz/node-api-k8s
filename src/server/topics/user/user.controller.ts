@@ -1,7 +1,40 @@
-import { validation, Joi, Auth } from 'src/server/helpers';
+import httpStatus from 'http-status';
+import { validation, Joi, Auth, BackError } from 'src/server/helpers';
 import UserService from 'src/server/topics/user/user.service';
 
 export class UserController {
+  @validation({
+    params: { userId: Joi.number().integer().required() },
+  })
+  @Auth.forLogged()
+  static async getUser(req, { transaction = null } = {}) {
+    const { params: { userId } } = req;
+    const user = await UserService.getUser(userId, { transaction });
+    return { user };
+  }
+
+  @validation({
+    params: { userId: Joi.number().integer().required() },
+  })
+  @Auth.forLogged()
+  static async refreshUserLastConnexionDate(req, { transaction = null } = {}) {
+    const { params: { userId }, user: { id: reqUserId } } = req;
+    if (reqUserId !== userId) throw new BackError('Should be the same user id', httpStatus.BAD_REQUEST);
+    const user = await UserService.refreshUserLastConnexionDate(userId, { transaction });
+    return { user };
+  }
+
+  @validation({
+    params: { userId: Joi.number().integer().required() },
+  })
+  @Auth.forLogged()
+  static async getAllFavorite(req, { transaction = null } = {}) {
+    const { params: { userId }, user: { id: reqUserId } } = req;
+    if (reqUserId !== userId) throw new BackError('Should be the same user id', httpStatus.BAD_REQUEST);
+    const messages = await UserService.getAllFavorites(userId, { transaction });
+    return { messages };
+  }
+
   @validation({
     query: { email: Joi.string().lowercase().email().required() },
   })
