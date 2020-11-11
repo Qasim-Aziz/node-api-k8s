@@ -15,6 +15,14 @@ export class UserController {
     return { user };
   }
 
+  @validation({})
+  @Auth.forLogged()
+  static async getMe(req, { transaction = null } = {}) {
+    const { user: { id: userId } } = req;
+    const user = await UserService.getUser(userId, { transaction });
+    return { user };
+  }
+
   @validation({
     params: { userId: Joi.number().integer().required() },
   })
@@ -55,11 +63,5 @@ export class UserController {
     const { query: { pseudo }, transaction } = req;
     const pseudoUsed = await UserService.checkPseudoExist(pseudo, { transaction });
     return { pseudoUsed };
-  }
-
-  @validation({})
-  @Auth.forLogged()
-  static async getMe(req) {
-    return { user: await UserService.getUser(req.user.id) };
   }
 }

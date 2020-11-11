@@ -50,5 +50,9 @@ describe('# Users Tests', () => {
       await Testers.publishMessage(user, message1);
       await Testers.getUser(user, user.id, { nbMessages: 1, connexionCount: 0, expectedUser: { pseudo } });
     });
+
+    test('should get current user', async () => {
+      await Testers.getMe(user, { nbMessages: 1, connexionCount: 0, expectedUser: { pseudo } });
+    });
   });
 });

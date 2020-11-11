@@ -77,13 +77,17 @@ export const getUser = async (user, userId, {
 
 export const getMe = async (user, {
   status = httpStatus.OK,
-  expectedUserId = null,
+  expectedUser = null,
+  connexionCount = null,
+  nbMessages = null,
 } = {}) =>
   request(app)
-    .get('/api/users/me')
+    .get(`/api/users/me`)
     .set('cookie', user.token)
     .expect(checkExpectedStatus(status))
     .then((res) => {
       const userRes = res.body.user;
-      expect(userRes.id).toBe(expectedUserId);
+      if (nbMessages) expect(userRes.nbMessages).toBe(nbMessages);
+      if (connexionCount) expect(userRes.nbConsecutiveConnexionDays).toEqual(connexionCount);
+      if (expectedUser) expect(userRes).toMatchObject(expectedUser);
     });
