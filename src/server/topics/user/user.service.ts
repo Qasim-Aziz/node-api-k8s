@@ -36,21 +36,29 @@ export default class UserService {
     });
   }
 
+  static async updateConnexionInformation(userId, nbConsecutiveConnexionDays, { transaction = null } = {}) {
+    await User.update({ nbConsecutiveConnexionDays, lastConnexionDate: moment().toISOString() },
+      { where: { id: userId }, transaction });
+    return UserService.getUser(userId, { transaction });
+  }
+
+  static computeNbConsecutiveDays(lastConnexionDate, previousNbConsecutiveConnexionDays) {
+    if (!lastConnexionDate) return 0;
+    const dayDiff = moment(moment().format('MM/DD/YYYY'))
+      .diff(moment(moment(lastConnexionDate).format('MM/DD/YYYY')), 'days');
+    const hasConnectedTwoConsecutiveDays = dayDiff === 1;
+    const isSameDay = dayDiff === 0;
+    const newNbConsecutiveConnexionDays = hasConnectedTwoConsecutiveDays ? previousNbConsecutiveConnexionDays + 1 : 0;
+    return isSameDay ? previousNbConsecutiveConnexionDays : newNbConsecutiveConnexionDays;
+  }
+
   static async refreshUserLastConnexionDate(userId, { transaction = null } = {}) {
     const user = await User.unscoped().findByPk(userId, {
       attributes: ['lastConnexionDate', 'nbConsecutiveConnexionDays'],
       transaction,
     });
-    const dayDiff = moment(moment().format('MM/DD/YYYY'))
-      .diff(moment(moment(user.lastConnexionDate).format('MM/DD/YYYY')), 'days');
-    const hasConnectedTwoConsecutiveDays = dayDiff === 1;
-    const isSameDay = dayDiff === 0;
-    const newNbConsecutiveConnexionDays = hasConnectedTwoConsecutiveDays ? user.nbConsecutiveConnexionDays + 1 : 0;
-    await User.update({
-      nbConsecutiveConnexionDays: isSameDay ? user.nbConsecutiveConnexionDays : newNbConsecutiveConnexionDays,
-      lastConnexionDate: moment().toISOString(),
-    }, { where: { id: userId }, transaction });
-    return UserService.getUser(userId, { transaction });
+    const newNbConsecutiveDays = UserService.computeNbConsecutiveDays(user.lastConnexionDate, user.nbConsecutiveConnexionDays);
+    return UserService.updateConnexionInformation(userId, newNbConsecutiveDays, { transaction });
   }
 
   static async getAllFavorites(userId, { transaction = null } = {}) {

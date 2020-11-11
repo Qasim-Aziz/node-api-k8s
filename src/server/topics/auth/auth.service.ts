@@ -9,10 +9,7 @@ import UserService from 'src/server/topics/user/user.service';
 export class AuthService {
   static async register({ email, pseudo, password }, { transaction = null } = {}) {
     const passwordHash = await bcrypt.hash(password, 10);
-    const lastConnexionDate = moment().toISOString();
-    await User.create({
-      email, pseudo, passwordHash, lastConnexionDate,
-    }, { transaction });
+    await User.create({ email, pseudo, passwordHash }, { transaction });
     return AuthService.login(email, password, { transaction });
   }
 

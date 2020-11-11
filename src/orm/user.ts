@@ -50,7 +50,7 @@ User.init({
   },
   lastConnexionDate: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: true,
     field: 'last_connexion_date',
   },
   nbConsecutiveConnexionDays: {

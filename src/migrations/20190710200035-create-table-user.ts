@@ -24,7 +24,7 @@ module.exports = {
     },
     lastConnexionDate: {
       type: Sequelize.DATE,
-      allowNull: false,
+      allowNull: true,
       field: 'last_connexion_date',
     },
     nbConsecutiveConnexionDays: {
