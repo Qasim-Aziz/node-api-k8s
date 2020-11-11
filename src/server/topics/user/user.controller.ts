@@ -7,32 +7,32 @@ export class UserController {
     params: { userId: Joi.number().integer().required() },
   })
   @Auth.forLogged()
-  static async getUser(req, res) {
-    const { transaction, params: { userId } } = req;
+  static async getUser(req, { transaction = null } = {}) {
+    const { params: { userId } } = req;
     const user = await UserService.getUser(userId, { transaction });
-    res.json({ user });
+    return { user };
   }
 
   @validation({
     params: { userId: Joi.number().integer().required() },
   })
   @Auth.forLogged()
-  static async refreshUserLastConnexionDate(req, res) {
-    const { transaction, params: { userId }, user: { id: reqUserId } } = req;
+  static async refreshUserLastConnexionDate(req, { transaction = null } = {}) {
+    const { params: { userId }, user: { id: reqUserId } } = req;
     if (reqUserId !== userId) throw new BackError('Should be the same user id', httpStatus.BAD_REQUEST);
     const user = await UserService.refreshUserLastConnexionDate(userId, { transaction });
-    res.json({ user });
+    return { user };
   }
 
   @validation({
     params: { userId: Joi.number().integer().required() },
   })
   @Auth.forLogged()
-  static async getAllFavorite(req, res) {
-    const { transaction, params: { userId }, user: { id: reqUserId } } = req;
+  static async getAllFavorite(req, { transaction = null } = {}) {
+    const { params: { userId }, user: { id: reqUserId } } = req;
     if (reqUserId !== userId) throw new BackError('Should be the same user id', httpStatus.BAD_REQUEST);
     const messages = await UserService.getAllFavorites(userId, { transaction });
-    res.json({ messages });
+    return { messages };
   }
 
   @validation({

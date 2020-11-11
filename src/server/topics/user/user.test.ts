@@ -3,11 +3,11 @@ import { InitDBService } from 'src/initdb/initdb.service';
 import * as Testers from 'src/server/tests/testers';
 import { setUp } from 'src/server/tests/tester.base';
 import { moment } from 'src/server/helpers';
-import { EMOTION_CODE, PRIVACY_LEVEL } from 'src/server/constants';
+import { EmotionCode, PrivacyLevel } from 'src/server/constants';
 
 const existingEmail = 'existing@yopmail.com';
 const existingPseudo = 'existing';
-const message1 = { content: 'message 1 content', privacy: PRIVACY_LEVEL.PRIVATE, emotionCode: EMOTION_CODE.APAISE };
+const message1 = { content: 'message 1 content', privacy: PrivacyLevel.PRIVATE, emotionCode: EmotionCode.APAISE };
 let user;
 const pseudo = 'pseudotest';
 
