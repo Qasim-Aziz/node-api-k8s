@@ -1,27 +1,10 @@
-import { OrmModel, sequelize } from 'src/orm/database';
-import { Trait } from 'src/orm/trait';
+import { makeOneToMany, OrmModel, sequelize } from 'src/orm/database';
 import { Message } from 'src/orm/message';
 
 export class Tag extends OrmModel {
-  public id!: number;
-
-  public traitId!: number;
-
-  public messageId!: number;
+  public message!: Message;
 }
 
-Tag.init({}, { sequelize, tableName: 'tag' });
+Tag.init({}, { sequelize, tableName: 'tag', modelName: 'tag' });
 
-Trait.hasMany(Tag, {
-  sourceKey: 'id',
-  foreignKey: 'traitId',
-});
-
-Tag.belongsTo(Trait);
-
-Message.hasMany(Tag, {
-  sourceKey: 'id',
-  foreignKey: 'messageId',
-});
-
-Tag.belongsTo(Message);
+makeOneToMany(Message, Tag, 'messageId', false);

@@ -1,5 +1,9 @@
-import {cast, col, fn, Op} from 'sequelize';
-import {Favorite, Love, Message, User, View} from 'src/orm';
+import {
+  cast, col, fn,
+} from 'sequelize';
+import {
+  Favorite, Love, Message, User, View,
+} from 'src/orm';
 import { moment } from 'src/server/helpers';
 
 export default class UserService {
@@ -64,7 +68,9 @@ export default class UserService {
       include: [
         { model: Love.unscoped(), attributes: [] },
         { model: View.unscoped(), attributes: [] },
-        { model: Favorite.unscoped(), attributes: [], required: true, where: { userId } },
+        {
+          model: Favorite.unscoped(), attributes: [], required: true, where: { userId },
+        },
       ],
       group: ['Message.id'],
       order: [['publishedAt', 'desc']],

@@ -39,19 +39,19 @@ export class UserController {
     query: { email: Joi.string().lowercase().email().required() },
   })
   @Auth.forAll()
-  static async getByEmail(req, res) {
+  static async getByEmail(req) {
     const { query: { email }, transaction } = req;
     const emailUsed = await UserService.checkEmailExist(email, { transaction });
-    res.json({ emailUsed });
+    return { emailUsed };
   }
 
   @validation({
     query: { pseudo: Joi.string().lowercase().required() },
   })
   @Auth.forAll()
-  static async getByPseudo(req, res) {
+  static async getByPseudo(req) {
     const { query: { pseudo }, transaction } = req;
     const pseudoUsed = await UserService.checkPseudoExist(pseudo, { transaction });
-    res.json({ pseudoUsed });
+    return { pseudoUsed };
   }
 }

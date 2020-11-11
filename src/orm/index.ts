@@ -6,3 +6,4 @@ export * from 'src/orm/love';
 export * from 'src/orm/tag';
 export * from 'src/orm/view';
 export * from 'src/orm/favorite';
+export * from 'src/orm/comment';

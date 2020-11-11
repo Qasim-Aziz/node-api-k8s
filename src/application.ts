@@ -8,12 +8,9 @@ import helmet from 'helmet';
 
 import routes from 'src/server/routes';
 import config from 'src/config';
-import converterErrorHandler from 'src/server/middlewares/converter_error_handler';
-import logErrors from 'src/server/middlewares/log_errors';
-import apiErrorHandler from 'src/server/middlewares/api_error_handler';
-import { clsLoggerMiddleware } from 'src/server/middlewares/cls_logger_middleware';
-import notFound from 'src/server/middlewares/not_found';
-import logRequestMiddleware from 'src/server/middlewares/log_request_middleware';
+import {
+  clsLoggerMiddleware, appNotFound, appErrorConverter, appLogErrors, appErrorHandler, appLogRequest,
+} from 'src/server/middlewares/app.middleware';
 
 // SegfaultHandler.registerHandler();
 
@@ -27,7 +24,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // log request
-app.use(logRequestMiddleware);
+app.use(appLogRequest);
 
 app.use(cookieParser(config.get('app.jwtSecret')));
 app.use(compress());
@@ -43,11 +40,11 @@ app.use(cors());
 app.use('/api', routes);
 
 // catch 404 and forward to error handler
-app.use(notFound);
+app.use(appNotFound);
 
 // error handlers
-app.use(converterErrorHandler);
-app.use(logErrors);
-app.use(apiErrorHandler);
+app.use(appErrorConverter);
+app.use(appLogErrors);
+app.use(appErrorHandler);
 
 export default app;

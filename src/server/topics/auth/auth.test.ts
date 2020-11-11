@@ -8,11 +8,13 @@ import * as Testers from 'src/server/tests/testers';
 describe('# Auth Tests', () => {
   const user1 = { email: 'userauthtest@yopmail.com', pseudo: 'mh', password: 'pwd' };
 
-  setUp(async () => InitDBService.truncateTables());
+  setUp(async () => {
+    await InitDBService.truncateTables();
+  });
 
-  test('should register the user', async () => Testers.registerUser(user1));
+  test('should register the user', () => Testers.registerUser(user1));
 
-  test('should logout the user', async () => Testers.logoutUser(user1));
+  test('should logout the user', () => Testers.logoutUser(user1));
 
-  test('should login again the user', async () => Testers.loginUser(user1));
+  test('should login again the user', () => Testers.loginUser(user1));
 });

@@ -1,4 +1,4 @@
-import { EMOTION_CODE, PRIVACY_LEVEL } from 'src/server/constants';
+import { EmotionCode, PrivacyLevel } from 'src/server/constants';
 import { moment } from 'src/server/helpers';
 
 const usersEnum = Object.freeze({
@@ -24,8 +24,8 @@ export const initDataConf = Object.freeze({
             + 'senti bien, chose assez exceptionnel, je trouve que c’est un énorme bon en avant ! J’espère que demain ça '
             + 'va continuer, je vois d’autres personnes mais que je connais moins, ce qui me stresse un peu, '
             + 'mais je pense que ça ira bien, restons positifs !',
-          emotionCode: EMOTION_CODE.APAISE,
-          privacy: PRIVACY_LEVEL.PUBLIC,
+          emotionCode: EmotionCode.APAISE,
+          privacy: PrivacyLevel.PUBLIC,
           tags: ['Anxiété', 'Mon combat', 'Astuce', 'Notre combat', 'Dépression', 'Amour', 'Fun', 'Malheur', 'Communauté'],
         },
         otherData: {
@@ -37,8 +37,8 @@ export const initDataConf = Object.freeze({
       {
         apiData: {
           content: 'Aujourd’hui j’ai revu des amis de lycées, c’était une super journée, sans angoisse !',
-          emotionCode: EMOTION_CODE.CONTENT,
-          privacy: PRIVACY_LEVEL.PUBLIC,
+          emotionCode: EmotionCode.CONTENT,
+          privacy: PrivacyLevel.PUBLIC,
           tags: ['Anxiété', 'Bonheur'],
         },
         otherData: {
@@ -51,8 +51,8 @@ export const initDataConf = Object.freeze({
         apiData: {
           content: 'Personne ne comprend mon anxiété et mon combat quotidien. J\'ai eu une discussion diffile avec '
             + 'des amis, ils ne comprennent pas ce que je ressens.',
-          emotionCode: EMOTION_CODE.DEPRIME,
-          privacy: PRIVACY_LEVEL.PRIVATE,
+          emotionCode: EmotionCode.DEPRIME,
+          privacy: PrivacyLevel.PRIVATE,
           tags: ['Incompréhension', 'Dépression'],
         },
         otherData: {
@@ -62,8 +62,8 @@ export const initDataConf = Object.freeze({
       {
         apiData: {
           content: 'Journée sans difficulté, quelques moments d`anxiété qui sont vite passés heureusement.',
-          emotionCode: EMOTION_CODE.LEGER,
-          privacy: PRIVACY_LEVEL.PUBLIC,
+          emotionCode: EmotionCode.LEGER,
+          privacy: PrivacyLevel.PUBLIC,
           tags: ['RAS', 'Anxiété'],
         },
         otherData: {
@@ -77,8 +77,8 @@ export const initDataConf = Object.freeze({
           content: 'J`aurais aimé demander à la communauté son avis sur cet aspect de ma vie. Que préférez-vous faire'
             + 'lorsque les choses ne vont pas dans le sens que vous voulez ? Personnellement je ne sais jamais comment'
             + 'm`y prendre et me fais toujours avoir. Et vous ?',
-          emotionCode: EMOTION_CODE.LEGER,
-          privacy: PRIVACY_LEVEL.PUBLIC,
+          emotionCode: EmotionCode.LEGER,
+          privacy: PrivacyLevel.PUBLIC,
           tags: ['QuestionALaCommunauté', 'Conseils'],
         },
         otherData: {
@@ -91,8 +91,8 @@ export const initDataConf = Object.freeze({
         apiData: {
           content: 'Bon ben il y a des jours qui ne valent pas le coup d`être vécus, comme aujourd`hui ! Grosse bagarre'
             + 'avec mon voisin sur le niveau de son chez lui à 3h du matin.',
-          emotionCode: EMOTION_CODE.ENERVE,
-          privacy: PRIVACY_LEVEL.PRIVATE,
+          emotionCode: EmotionCode.ENERVE,
+          privacy: PrivacyLevel.PRIVATE,
           tags: [],
         },
         otherData: {
@@ -102,8 +102,8 @@ export const initDataConf = Object.freeze({
       {
         apiData: {
           content: 'Lecture d`un excellent roman, que je conseille à la communauté, autour du dueil...',
-          emotionCode: EMOTION_CODE.APAISE,
-          privacy: PRIVACY_LEVEL.PUBLIC,
+          emotionCode: EmotionCode.APAISE,
+          privacy: PrivacyLevel.PUBLIC,
           tags: ['Conseils', 'Lecture'],
         },
         otherData: {
@@ -116,8 +116,8 @@ export const initDataConf = Object.freeze({
         apiData: {
           content: 'Aujourd`hui je dois reprendre la conduite depuis un accident de la route qui m`avait traumatisé'
             + ' il y a de ça 2 mois. Très inquiets à l`idée d`en faire un autre.',
-          emotionCode: EMOTION_CODE.TRISTE,
-          privacy: PRIVACY_LEVEL.PUBLIC,
+          emotionCode: EmotionCode.TRISTE,
+          privacy: PrivacyLevel.PUBLIC,
           tags: ['Phobie', 'Conduite'],
         },
         otherData: {
@@ -131,8 +131,8 @@ export const initDataConf = Object.freeze({
           content: 'Ce matin, j`ai légérement glissé en voulant sauté plusieurs escaliers à la fois'
             + ', je me suis rattrapé à la dernière minute, j`avais l`impression que tous les gens autour de moi'
             + 'me scrutaient bizaremment.',
-          emotionCode: EMOTION_CODE.SURPRIS,
-          privacy: PRIVACY_LEVEL.PUBLIC,
+          emotionCode: EmotionCode.SURPRIS,
+          privacy: PrivacyLevel.PUBLIC,
           tags: ['SuisJeBizarre'],
         },
         otherData: {
@@ -147,8 +147,8 @@ export const initDataConf = Object.freeze({
             + ' ne répondait pas. J`ai donc ouvert la porte, elle semblait endormie, j`ai essayé de la secouer pour la'
             + ' réveiller, mais rien à faire. Au bout de quelques tentatives, elle a enfin réagi, et j`ai été soulagé.'
             + ' Encore des inquiétudes infondées de mon côté.',
-          emotionCode: EMOTION_CODE.LASSE,
-          privacy: PRIVACY_LEVEL.PRIVATE,
+          emotionCode: EmotionCode.LASSE,
+          privacy: PrivacyLevel.PRIVATE,
           tags: ['Angoisse'],
         },
         otherData: {
@@ -159,8 +159,8 @@ export const initDataConf = Object.freeze({
         apiData: {
           content: 'Je naviguais sur le web aujourd`hui, comme tous les autres jours d`ailleurs, j`ai vraiment l`'
             + 'impression de perdre mon temps tous les jours. Comment faites vous de votre côté ?.',
-          emotionCode: EMOTION_CODE.TRISTE,
-          privacy: PRIVACY_LEVEL.PUBLIC,
+          emotionCode: EmotionCode.TRISTE,
+          privacy: PrivacyLevel.PUBLIC,
           tags: ['Conseils'],
         },
         otherData: {
@@ -177,8 +177,8 @@ export const initDataConf = Object.freeze({
         apiData: {
           content: 'Nouveau dans la communauté, je vais tenter de vous raconter régulièrement mon combat contre'
             + ' mon anorexie qui dure depuis 2 ans et contre laquelle je ne trouve pas encore de solution.',
-          emotionCode: EMOTION_CODE.LEGER,
-          privacy: PRIVACY_LEVEL.PUBLIC,
+          emotionCode: EmotionCode.LEGER,
+          privacy: PrivacyLevel.PUBLIC,
           tags: ['Anorexie', 'Nouveau'],
         },
         otherData: {
@@ -192,8 +192,8 @@ export const initDataConf = Object.freeze({
           content: 'J`ai absolument rien mangé aujourd`hui, et le peu que j`ai mangé je l`ai directement'
             + ' vomi, encore une fois... Ma mère me conseille de manger plus doucement mais je vois bien que ce'
             + ' genre de remarques montre qu`elle n`a rien compris au problème.',
-          emotionCode: EMOTION_CODE.ENERVE,
-          privacy: PRIVACY_LEVEL.PUBLIC,
+          emotionCode: EmotionCode.ENERVE,
+          privacy: PrivacyLevel.PUBLIC,
           tags: ['Anorexie'],
         },
         otherData: {
@@ -210,8 +210,8 @@ export const initDataConf = Object.freeze({
         apiData: {
           content: 'Encore un jour où je me lève sans aucun objectif. Pourriez vous me conseiller sur quelle a'
             + ' été vos approches pour combattre la dépression ?',
-          emotionCode: EMOTION_CODE.DEPRIME,
-          privacy: PRIVACY_LEVEL.PUBLIC,
+          emotionCode: EmotionCode.DEPRIME,
+          privacy: PrivacyLevel.PUBLIC,
           tags: ['Dépression', 'Nouveau'],
         },
         otherData: {

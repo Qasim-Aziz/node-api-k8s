@@ -45,6 +45,6 @@ export const logoutUser = async (user, { status = httpStatus.OK } = {}) =>
     .then((res) => {
       expect(res.body.status).toBe('Ok');
       const cookies = CookiesManager.extractCookies(res);
-      console.log(cookies);
+      expect(cookies.token).toBe('');
       return Object.assign(user, { token: null });
     });

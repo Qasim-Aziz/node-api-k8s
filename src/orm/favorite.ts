@@ -1,5 +1,5 @@
 import { DataTypes, fn } from 'sequelize';
-import { OrmModel, sequelize } from 'src/orm/database';
+import { makeOneToMany, OrmModel, sequelize } from 'src/orm/database';
 import { User } from 'src/orm/user';
 import { Message } from 'src/orm/message';
 
@@ -23,18 +23,8 @@ Favorite.init({
 }, {
   sequelize,
   tableName: 'favorite',
+  modelName: 'favorite',
 });
 
-User.hasMany(Favorite, {
-  sourceKey: 'id',
-  foreignKey: 'userId',
-});
-
-Favorite.belongsTo(User);
-
-Message.hasMany(Favorite, {
-  sourceKey: 'id',
-  foreignKey: 'messageId',
-});
-
-Favorite.belongsTo(Message);
+makeOneToMany(User, Favorite, 'userId', false);
+makeOneToMany(Message, Favorite, 'messageId', false);
