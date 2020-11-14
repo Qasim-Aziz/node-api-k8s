@@ -26,7 +26,7 @@ export const initDataConf = Object.freeze({
             + 'mais je pense que ça ira bien, restons positifs !',
           emotionCode: EmotionCode.APAISE,
           privacy: PrivacyLevel.PUBLIC,
-          tags: ['Anxiété', 'Mon combat', 'Astuce', 'Notre combat', 'Dépression', 'Amour', 'Fun', 'Malheur', 'Communauté'],
+          traitNames: ['Anxiété', 'Mon combat', 'Astuce', 'Notre combat', 'Dépression', 'Amour', 'Fun', 'Malheur', 'Communauté'],
         },
         otherData: {
           publishedAt: moment().subtract({ day: 4 }).toISOString,
@@ -39,7 +39,7 @@ export const initDataConf = Object.freeze({
           content: 'Aujourd’hui j’ai revu des amis de lycées, c’était une super journée, sans angoisse !',
           emotionCode: EmotionCode.CONTENT,
           privacy: PrivacyLevel.PUBLIC,
-          tags: ['Anxiété', 'Bonheur'],
+          traitNames: ['Anxiété', 'Bonheur'],
         },
         otherData: {
           publishedAt: moment().subtract({ day: 3 }).toISOString,
@@ -53,7 +53,7 @@ export const initDataConf = Object.freeze({
             + 'des amis, ils ne comprennent pas ce que je ressens.',
           emotionCode: EmotionCode.DEPRIME,
           privacy: PrivacyLevel.PRIVATE,
-          tags: ['Incompréhension', 'Dépression'],
+          traitNames: ['Incompréhension', 'Dépression'],
         },
         otherData: {
           publishedAt: moment().subtract({ day: 1 }).toISOString,
@@ -64,7 +64,7 @@ export const initDataConf = Object.freeze({
           content: 'Journée sans difficulté, quelques moments d`anxiété qui sont vite passés heureusement.',
           emotionCode: EmotionCode.LEGER,
           privacy: PrivacyLevel.PUBLIC,
-          tags: ['RAS', 'Anxiété'],
+          traitNames: ['RAS', 'Anxiété'],
         },
         otherData: {
           publishedAt: moment().subtract({ day: 6 }).toISOString,
@@ -79,7 +79,7 @@ export const initDataConf = Object.freeze({
             + 'm`y prendre et me fais toujours avoir. Et vous ?',
           emotionCode: EmotionCode.LEGER,
           privacy: PrivacyLevel.PUBLIC,
-          tags: ['QuestionALaCommunauté', 'Conseils'],
+          traitNames: ['QuestionALaCommunauté', 'Conseils'],
         },
         otherData: {
           publishedAt: moment().subtract({ day: 8 }).toISOString,
@@ -93,7 +93,7 @@ export const initDataConf = Object.freeze({
             + 'avec mon voisin sur le niveau de son chez lui à 3h du matin.',
           emotionCode: EmotionCode.ENERVE,
           privacy: PrivacyLevel.PRIVATE,
-          tags: [],
+          traitNames: [],
         },
         otherData: {
           publishedAt: moment().subtract({ day: 10 }).toISOString,
@@ -104,7 +104,7 @@ export const initDataConf = Object.freeze({
           content: 'Lecture d`un excellent roman, que je conseille à la communauté, autour du dueil...',
           emotionCode: EmotionCode.APAISE,
           privacy: PrivacyLevel.PUBLIC,
-          tags: ['Conseils', 'Lecture'],
+          traitNames: ['Conseils', 'Lecture'],
         },
         otherData: {
           publishedAt: moment().subtract({ day: 1 }).toISOString,
@@ -118,7 +118,7 @@ export const initDataConf = Object.freeze({
             + ' il y a de ça 2 mois. Très inquiets à l`idée d`en faire un autre.',
           emotionCode: EmotionCode.TRISTE,
           privacy: PrivacyLevel.PUBLIC,
-          tags: ['Phobie', 'Conduite'],
+          traitNames: ['Phobie', 'Conduite'],
         },
         otherData: {
           publishedAt: moment().subtract({ day: 12 }).toISOString,
@@ -133,7 +133,7 @@ export const initDataConf = Object.freeze({
             + 'me scrutaient bizaremment.',
           emotionCode: EmotionCode.SURPRIS,
           privacy: PrivacyLevel.PUBLIC,
-          tags: ['SuisJeBizarre'],
+          traitNames: ['SuisJeBizarre'],
         },
         otherData: {
           publishedAt: moment().subtract({ day: 15 }).toISOString,
@@ -149,7 +149,7 @@ export const initDataConf = Object.freeze({
             + ' Encore des inquiétudes infondées de mon côté.',
           emotionCode: EmotionCode.LASSE,
           privacy: PrivacyLevel.PRIVATE,
-          tags: ['Angoisse'],
+          traitNames: ['Angoisse'],
         },
         otherData: {
           publishedAt: moment().subtract({ day: 19 }).toISOString,
@@ -161,7 +161,7 @@ export const initDataConf = Object.freeze({
             + 'impression de perdre mon temps tous les jours. Comment faites vous de votre côté ?.',
           emotionCode: EmotionCode.TRISTE,
           privacy: PrivacyLevel.PUBLIC,
-          tags: ['Conseils'],
+          traitNames: ['Conseils'],
         },
         otherData: {
           publishedAt: moment().subtract({ day: 21 }).toISOString,
@@ -179,7 +179,7 @@ export const initDataConf = Object.freeze({
             + ' mon anorexie qui dure depuis 2 ans et contre laquelle je ne trouve pas encore de solution.',
           emotionCode: EmotionCode.LEGER,
           privacy: PrivacyLevel.PUBLIC,
-          tags: ['Anorexie', 'Nouveau'],
+          traitNames: ['Anorexie', 'Nouveau'],
         },
         otherData: {
           publishedAt: moment().subtract({ day: 3 }).toISOString,
@@ -194,7 +194,7 @@ export const initDataConf = Object.freeze({
             + ' genre de remarques montre qu`elle n`a rien compris au problème.',
           emotionCode: EmotionCode.ENERVE,
           privacy: PrivacyLevel.PUBLIC,
-          tags: ['Anorexie'],
+          traitNames: ['Anorexie'],
         },
         otherData: {
           publishedAt: moment().subtract({ day: 1 }).toISOString,
@@ -212,7 +212,7 @@ export const initDataConf = Object.freeze({
             + ' été vos approches pour combattre la dépression ?',
           emotionCode: EmotionCode.DEPRIME,
           privacy: PrivacyLevel.PUBLIC,
-          tags: ['Dépression', 'Nouveau'],
+          traitNames: ['Dépression', 'Nouveau'],
         },
         otherData: {
           publishedAt: moment().subtract({ day: 2 }).toISOString(),
