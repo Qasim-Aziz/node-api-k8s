@@ -15,7 +15,7 @@ export class AuthService {
 
   static async login(email, password, { transaction = null } = {}) {
     const user = await User.findOne({ where: { email }, transaction });
-    if (!user) throw new BackError('User not found');
+    if (!user) throw new BackError('User not found', httpStatus.NOT_FOUND);
     const isPwdOk = await bcrypt.compare(password, user.passwordHash);
     if (!isPwdOk) throw new BackError('Wrong password', httpStatus.BAD_REQUEST);
     const session = await SessionService.createSession(user.id, { transaction });
