@@ -1,5 +1,7 @@
 import httpStatus from 'http-status';
-import { validation, Joi, Auth, BackError } from 'src/server/helpers';
+import {
+  validation, Joi, Auth, BackError,
+} from 'src/server/helpers';
 import UserService from 'src/server/topics/user/user.service';
 
 export class UserController {
@@ -53,5 +55,11 @@ export class UserController {
     const { query: { pseudo }, transaction } = req;
     const pseudoUsed = await UserService.checkPseudoExist(pseudo, { transaction });
     return { pseudoUsed };
+  }
+
+  @validation({})
+  @Auth.forLogged()
+  static async getMe(req) {
+    return { user: await UserService.getUser(req.user.id) };
   }
 }

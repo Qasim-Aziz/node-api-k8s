@@ -13,7 +13,7 @@ export class AuthController {
     const { body: { email, password } } = req;
     const { user, token } = await AuthService.login(email, password, { transaction });
     cookiesManager.setCookies(token);
-    return { user };
+    return { user, token };
   }
 
   @validation({
@@ -28,7 +28,7 @@ export class AuthController {
     const { body: { email, pseudo, password } } = req;
     const { user, token } = await AuthService.register({ email, pseudo, password }, { transaction });
     cookiesManager.setCookies(token);
-    return { user };
+    return { user, token };
   }
 
   @validation({})

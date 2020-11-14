@@ -55,6 +55,7 @@ export const getMessage = async (user, messageId, {
   nbLoves = null,
   nbViews = null,
   loved = false,
+  commented = false,
   nbComments = null,
 } = {}) => {
   const res = await request(app)
@@ -67,6 +68,7 @@ export const getMessage = async (user, messageId, {
   if (nbViews !== null) expect(messageRes.nbViews).toEqual(nbViews);
   if (nbComments !== null) expect(messageRes.nbComments).toEqual(nbComments);
   expect(messageRes.loved).toEqual(loved);
+  expect(messageRes.commented).toEqual(commented);
   return messageRes;
 };
 

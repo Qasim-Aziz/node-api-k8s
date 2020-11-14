@@ -44,6 +44,8 @@ describe('# Users Tests', () => {
       await Testers.refreshUserLastConnexionDate(user, user.id, { connexionCount: 0 });
     });
 
+    test('should get me', () => Testers.getMe(user, { expectedUserId: user.id }));
+
     test('should compute the right stats for user', async () => {
       await Testers.publishMessage(user, message1);
       await Testers.getUser(user, user.id, { nbMessages: 1, connexionCount: 0, expectedUser: { pseudo } });

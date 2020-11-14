@@ -32,6 +32,12 @@ export default {
     },
   },
   app: {
+    host: {
+      doc: 'application host',
+      format: 'ipaddress',
+      default: 'localhost',
+      env: 'APP_HOST',
+    },
     port: {
       doc: 'application port',
       format: 'port',

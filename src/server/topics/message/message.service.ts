@@ -9,6 +9,7 @@ import { BackError, moment } from 'src/server/helpers';
 import { getNextMessageQuery } from 'src/server/topics/message/message.query';
 import { PrivacyLevel } from 'src/server/constants';
 import { FindAttributeOptions } from 'sequelize';
+import UserService from 'src/server/topics/user/user.service';
 
 export class MessageService {
   static async isPublicMessage(messageId, { transaction = null } = {}) {
@@ -59,6 +60,8 @@ export class MessageService {
         (Sequelize.fn('bool_or', Sequelize.literal(`"loves"."user_id" = ${reqUserId}`))), 'false'), 'loved'],
       [Sequelize.fn('coalesce',
         (Sequelize.fn('bool_or', Sequelize.literal(`"favorites"."user_id" = ${reqUserId}`))), 'false'), 'isFavorite'],
+      [Sequelize.fn('coalesce',
+        (Sequelize.fn('bool_or', Sequelize.literal(`"comments"."user_id" = ${reqUserId}`))), 'false'), 'commented'],
     ];
     const messageAttributes = reqUserId ? [...baseAttributes, ...customAttributes] : baseAttributes;
     const message: any = await Message.unscoped().findByPk(messageId, {
@@ -87,7 +90,8 @@ export class MessageService {
       await MessageService.createView(messageId, reqUserId, { transaction });
       message.nbViews += 1;
     }
-    return { ...message, traitNames };
+    const user = await UserService.getUser(message.userId, { transaction });
+    return { ...message, traitNames, user };
   }
 
   static async getNext(reqUserId, { transaction = null } = {}) {

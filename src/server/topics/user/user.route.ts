@@ -10,6 +10,9 @@ userRoutes
   .addRoute('/by-pseudo', {
     get: { handler: UserController.getByPseudo },
   })
+  .addRoute('/me', {
+    get: { handler: UserController.getMe },
+  })
   .addRoute('/:userId', {
     get: { handler: UserController.getUser },
   })

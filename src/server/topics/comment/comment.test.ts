@@ -23,7 +23,7 @@ describe('# Comments', () => {
   test('Should add comments to message', async () => {
     comment1 = await Testers.commentMessage(user2, message, 'this is a comment 1');
     comment2 = await Testers.commentMessage(user2, message, 'this is a comment 2');
-    await Testers.getMessage(user2, message.id, { nbComments: 2 });
+    await Testers.getMessage(user2, message.id, { nbComments: 2, commented: true });
     await Testers.getMessageComments(user2, message, { expectedResults: [comment1, comment2] });
   });
 
