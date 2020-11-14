@@ -51,9 +51,9 @@ export class MessageService {
       'privacy',
       'content',
       'userId',
-      [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"loves"."id"')), 'int'), 'nbLoves'],
-      [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"views"."id"')), 'int'), 'nbViews'],
-      [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"comments"."id"')), 'int'), 'nbComments'],
+      [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.fn('DISTINCT', Sequelize.col('"loves"."id"'))), 'int'), 'nbLoves'],
+      [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.fn('DISTINCT', Sequelize.col('"views"."id"'))), 'int'), 'nbViews'],
+      [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.fn('DISTINCT', Sequelize.col('"comments"."id"'))), 'int'), 'nbComments'],
     ];
     const customAttributes = [
       [Sequelize.fn('coalesce',
