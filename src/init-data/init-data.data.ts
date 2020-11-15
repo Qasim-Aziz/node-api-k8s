@@ -32,6 +32,12 @@ export const initDataConf = Object.freeze({
           publishedAt: moment().subtract({ day: 4 }).toISOString,
           lovedBy: [usersEnum.MEG, usersEnum.YAS, usersEnum.HAK],
           viewedBy: [usersEnum.MEG, usersEnum.YAS, usersEnum.HAK, usersEnum.TAT],
+          comments: [{
+            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vel porta mauris, quis faucibus dolor. '
+              + 'Mauris efficitur elit mollis porta porttitor. Cras elementum, tortor at gravida mattis, nisl mi feugiat.',
+            commentedBy: usersEnum.YAS,
+            lovedBy: [usersEnum.MEG, usersEnum.HAK],
+          }],
         },
       },
       {
@@ -70,6 +76,17 @@ export const initDataConf = Object.freeze({
           publishedAt: moment().subtract({ day: 6 }).toISOString,
           lovedBy: [usersEnum.MEG, usersEnum.YAL],
           viewedBy: [usersEnum.MEG, usersEnum.TAT, usersEnum.YAL],
+          comments: [{
+            content: 'Aenean pulvinar nisi ac libero volutpat, non auctor lectus pharetra. Mauris ullamcorper tortor ac ante posuere cursus.'
+              + ' Maecenas elementum auctor tristique.',
+            commentedBy: usersEnum.YAL,
+            lovedBy: [usersEnum.MEG],
+          }, {
+            content: 'Sed dui arcu, vulputate vehicula enim et, auctor faucibus arcu. Nunc volutpat eget turpis id pretium.'
+              + ' Cras tincidunt turpis vel laoreet mattis.',
+            commentedBy: usersEnum.MEG,
+            lovedBy: [usersEnum.TAT, usersEnum.YAL, usersEnum.HAK],
+          }],
         },
       },
       {
@@ -218,6 +235,17 @@ export const initDataConf = Object.freeze({
           publishedAt: moment().subtract({ day: 2 }).toISOString(),
           lovedBy: [usersEnum.HAK],
           viewedBy: [usersEnum.HAK, usersEnum.MIK],
+          comments: [{
+            content: 'Sed pellentesque pulvinar diam non mattis. Suspendisse id sem ipsum. Vivamus at nunc id risus feugiat pharetra. '
+              + 'Fusce luctus et urna egestas efficitur. Nulla facilisi. Nullam sodales est non ex ornare laoreet nec quis mauris. ',
+            commentedBy: usersEnum.TAT,
+            lovedBy: [usersEnum.MEG, usersEnum.YAL],
+          }, {
+            content: 'Quisque quis mauris non justo ullamcorper ultricies sed ac nisi. Ut cursus, elit id aliquam rutrum, '
+              + 'eros purus iaculis nisi, eu lacinia nibh ligula in ante. Aliquam eget felis pulvinar, pharetra dolor sed, fermentum nunc.',
+            commentedBy: usersEnum.MEG,
+            lovedBy: [usersEnum.TAT, usersEnum.YAL],
+          }],
         },
       },
     ],

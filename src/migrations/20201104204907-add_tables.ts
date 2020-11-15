@@ -184,7 +184,7 @@ module.exports = {
       },
       message_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       loved_at: {
         type: Sequelize.DATE,

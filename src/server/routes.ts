@@ -20,6 +20,6 @@ router.use((req, res, next) => {
 router.use('/users', userRoutes);
 router.use('/auth', authRoutes);
 router.use('/messages', messageRoutes);
-router.use('/messages', commentRoutes);
+router.use('/comments', commentRoutes);
 
 export default router;
