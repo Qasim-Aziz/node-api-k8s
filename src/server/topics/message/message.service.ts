@@ -120,7 +120,7 @@ export class MessageService {
       nest: true,
     });
     const traitsAlreadyCreatedNames = traitsAlreadyCreated.map((t) => t.name);
-    const traitsNotExisting = traitNames.filter((trait) => !traitsAlreadyCreatedNames.includes(trait.name));
+    const traitsNotExisting = traitNames.filter((trait) => !(traitsAlreadyCreatedNames.includes(trait)));
     return Trait.bulkCreate(traitsNotExisting.map((name) => ({ name })), { returning: true, transaction });
   }
 
@@ -162,23 +162,16 @@ export class MessageService {
 
   static async createOrUpdateTagsAndTraits(messageId, traitNames, { transaction = null } = {}) {
     if (traitNames === undefined) return null;
-    console.log('here 1 : ', transaction.id)
+    await sequelize.query('LOCK TABLE trait IN ACCESS EXCLUSIVE MODE;', { transaction });
     await MessageService.createTraitsIfRequired(traitNames, { transaction });
-    console.log('here 2 : ', transaction.id)
     await MessageService.unTag(messageId, traitNames, { transaction });
-    console.log('here 3 : ', transaction.id)
-    await MessageService.setNewTags(messageId, traitNames, { transaction });
-    console.log('here 4 : ', transaction.id)
-    return null;
+    return MessageService.setNewTags(messageId, traitNames, { transaction });
   }
 
   static async create(messageData, { transaction = null } = {}) {
-    await sequelize.query('LOCK TABLE trait IN ACCESS EXCLUSIVE MODE;', { transaction });
-    await sequelize.query('LOCK TABLE tag IN ACCESS EXCLUSIVE MODE;', { transaction });
     const publishedAt = moment().toISOString();
     const message = await Message.create({ ...messageData, publishedAt }, { transaction });
     await MessageService.createOrUpdateTagsAndTraits(message.id, messageData.traitNames, { transaction });
-    console.log('here 2 : ', transaction.id)
     return MessageService.get(message.id, { transaction });
   }
 
