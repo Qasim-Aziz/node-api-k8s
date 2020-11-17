@@ -1,10 +1,6 @@
 import httpStatus from 'http-status'; // eslint-disable-line no-unused-vars
-import {
-  Op, Sequelize, sequelize, QueryTypes,
-} from 'src/orm/database';
-import {
-  Message, Tag, Trait, Love, View, Favorite, Comment,
-} from 'src/orm';
+import { Op, QueryTypes, sequelize, Sequelize } from 'src/orm/database';
+import { Comment, Favorite, Love, Message, Tag, Trait, View } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import { getNextMessageQuery } from 'src/server/topics/message/message.query';
 import { PrivacyLevel } from 'src/server/constants';
@@ -115,8 +111,20 @@ export class MessageService {
     );
   }
 
-  static async createOrUpdateTagsAndTraits(messageId, traitNames, { transaction = null } = {}) {
-    if (traitNames === undefined) return null;
+  static async createTraitsIfRequired(traitNames, { transaction = null } = {}) {
+    const traitsAlreadyCreated = await Trait.unscoped().findAll({
+      attributes: ['id', 'name'],
+      where: { name: traitNames },
+      transaction,
+      raw: true,
+      nest: true,
+    });
+    const traitsAlreadyCreatedNames = traitsAlreadyCreated.map((t) => t.name);
+    const traitsNotExisting = traitNames.filter((trait) => !traitsAlreadyCreatedNames.includes(trait.name));
+    return Trait.bulkCreate(traitsNotExisting.map((name) => ({ name })), { returning: true, transaction });
+  }
+
+  static async unTag(messageId, traitNames, { transaction = null } = {}) {
     const currentTagsToDeleteIds = (await Tag.unscoped().findAll({
       where: { messageId },
       attributes: ['id'],
@@ -131,7 +139,10 @@ export class MessageService {
       nest: true,
     })).map((t) => t.id);
     if (currentTagsToDeleteIds.length) await Tag.destroy({ where: { id: currentTagsToDeleteIds }, transaction });
-    const traitsAlreadyCreated = await Trait.unscoped().findAll({
+  }
+
+  static async setNewTags(messageId, traitNames, { transaction = null } = {}) {
+    const traits = await Trait.unscoped().findAll({
       attributes: ['id', 'name'],
       include: [{
         model: Tag.unscoped(),
@@ -144,23 +155,30 @@ export class MessageService {
       raw: true,
       nest: true,
     });
-    const traitsAlreadyCreatedButNotLinked = traitsAlreadyCreated.filter(
-      (trait: any) => trait.tags.length === 0,
-    ).map((trait) => trait.id);
-    const traitsAlreadyCreatedNames = traitsAlreadyCreated.map((t) => t.name);
-    const traitsNotExisting = traitNames.filter((trait) => !traitsAlreadyCreatedNames.includes(trait.name));
-    const newTraits = await Trait.bulkCreate(traitsNotExisting.map((name) => ({ name })), { returning: true, transaction });
-    const tagsToCreate = [
-      ...newTraits.map((t) => t.id),
-      ...traitsAlreadyCreatedButNotLinked,
-    ].map((traitId) => ({ traitId, messageId }));
+    const traitsNotLinked = traits.filter((trait: any) => trait.tags.length === 0).map((trait) => trait.id);
+    const tagsToCreate = traitsNotLinked.map((traitId) => ({ traitId, messageId }));
     return Tag.bulkCreate(tagsToCreate, { transaction });
   }
 
+  static async createOrUpdateTagsAndTraits(messageId, traitNames, { transaction = null } = {}) {
+    if (traitNames === undefined) return null;
+    console.log('here 1 : ', transaction.id)
+    await MessageService.createTraitsIfRequired(traitNames, { transaction });
+    console.log('here 2 : ', transaction.id)
+    await MessageService.unTag(messageId, traitNames, { transaction });
+    console.log('here 3 : ', transaction.id)
+    await MessageService.setNewTags(messageId, traitNames, { transaction });
+    console.log('here 4 : ', transaction.id)
+    return null;
+  }
+
   static async create(messageData, { transaction = null } = {}) {
+    await sequelize.query('LOCK TABLE trait IN ACCESS EXCLUSIVE MODE;', { transaction });
+    await sequelize.query('LOCK TABLE tag IN ACCESS EXCLUSIVE MODE;', { transaction });
     const publishedAt = moment().toISOString();
     const message = await Message.create({ ...messageData, publishedAt }, { transaction });
     await MessageService.createOrUpdateTagsAndTraits(message.id, messageData.traitNames, { transaction });
+    console.log('here 2 : ', transaction.id)
     return MessageService.get(message.id, { transaction });
   }
 

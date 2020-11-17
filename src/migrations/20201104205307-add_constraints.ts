@@ -15,7 +15,7 @@ module.exports = {
       lib.createFkV3('favorite', 'user', lib.FOREIGN_KEY_ACTIONS.CASCADE, { onUpdateAction: lib.FOREIGN_KEY_ACTIONS.CASCADE }),
     ]);
     await lib.wrapCommands([
-      lib.createIndex('trait_name', 'trait', ['name']),
+      lib.createUniqueIndex('trait_name', 'trait', ['name']),
       lib.createUniqueIndex('love_user_message', 'love', ['user_id', 'message_id']),
       lib.createUniqueIndex('favorite_user_message', 'favorite', ['user_id', 'message_id']),
       lib.createUniqueIndex('pseudo', 'user', ['pseudo']),

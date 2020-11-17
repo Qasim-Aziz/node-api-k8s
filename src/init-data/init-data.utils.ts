@@ -1,4 +1,4 @@
-import { logger, moment } from 'src/server/helpers';
+import {logger, moment, transactionContext} from 'src/server/helpers';
 import { initDataConf, password } from 'src/init-data/init-data.data';
 import { Message, Love, View } from 'src/orm';
 import { Checks } from 'src/server/tests/tester.base';
@@ -31,23 +31,26 @@ const createMessage = async (pseudo, messageData, users, { transaction = null } 
   }
 };
 
-const createMessages = async (pseudo, messages, users, { transaction = null } = {}) => {
+const createMessages = async (pseudo, messages, users) => {
   logger.info(`Creating messages for user ${pseudo}`);
-  await Promise.all(messages.map((messageData) => createMessage(pseudo, messageData, users, { transaction })));
+  await Promise.all(messages.map((messageData) =>
+    transactionContext((transaction) => createMessage(pseudo, messageData, users, { transaction }))));
 };
 
-export const populateInitData = async ({ transaction = null } = {}) => {
+export const populateInitData = async () => {
   Checks.deactivate();
   logger.info('Creating users');
   const users = (await Promise.all(Object.keys(initDataConf).map((pseudo) => AuthService.register({
     pseudo,
     password,
     email: `${pseudo}@yopmail.com`,
-  }, { transaction })))).map((userRes) => userRes.user);
+  })))).map((userRes) => userRes.user);
   logger.info('Creating messages');
   await Promise.all(Object.entries(initDataConf)
     .map(async ([pseudo, userData]) => {
-      if (userData.messages && userData.messages.length) return createMessages(pseudo, userData.messages, users, { transaction });
+      if (userData.messages && userData.messages.length) {
+        return createMessages(pseudo, userData.messages, users);
+      }
       return null;
     }));
   Checks.reactivate();
