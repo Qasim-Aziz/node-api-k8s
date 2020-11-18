@@ -50,6 +50,8 @@ export class MessageController {
   static async create(req, { transaction = null } = {}) {
     const { body: messageData } = req;
     const message = await MessageService.create(messageData, { transaction });
+    console.log('message')
+    console.log(message)
     return { message };
   }
 

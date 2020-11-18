@@ -142,7 +142,7 @@ export class MessageService {
   }
 
   static async setNewTags(messageId, traitNames, { transaction = null } = {}) {
-    const traits = await Trait.unscoped().findAll({
+    const traitsNotLinked = (await Trait.unscoped().findAll({
       attributes: ['id', 'name'],
       include: [{
         model: Tag.unscoped(),
@@ -150,12 +150,15 @@ export class MessageService {
         required: false,
         where: { messageId },
       }],
-      where: { name: traitNames },
+      where: {
+        [Op.and]: [
+          { name: traitNames },
+          { '$"tags"."id"$': null },
+        ],
+      },
       transaction,
       raw: true,
-      nest: true,
-    });
-    const traitsNotLinked = traits.filter((trait: any) => trait.tags.length === 0).map((trait) => trait.id);
+    })).map((trait) => trait.id);
     const tagsToCreate = traitsNotLinked.map((traitId) => ({ traitId, messageId }));
     return Tag.bulkCreate(tagsToCreate, { transaction });
   }
