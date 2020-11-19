@@ -43,15 +43,12 @@ export class MessageController {
       privacy: Joi.any().valid(...Object.values(PrivacyLevel)).required(),
       content: Joi.string().required(),
       traitNames: Joi.array().items(Joi.string().regex(/^[A-Za-z0-9]+$/)).optional(),
-      userId: Joi.number().required(),
     },
   })
   @Auth.forLogged()
   static async create(req, { transaction = null } = {}) {
-    const { body: messageData } = req;
-    const message = await MessageService.create(messageData, { transaction });
-    console.log('message')
-    console.log(message)
+    const { body: messageData, user: { id: reqUserId } } = req;
+    const message = await MessageService.create({ ...messageData, userId: reqUserId }, { transaction });
     return { message };
   }
 

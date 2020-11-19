@@ -9,7 +9,7 @@ let messageCounter = 0;
 export const publishMessage = async (user, message, { status = httpStatus.OK } = {}) => request(app)
   .post('/api/messages')
   .set('Authorization', user.token)
-  .send({ ...message, userId: user.id })
+  .send(message)
   .expect(checkExpectedStatus(status))
   .then((res) => {
     const messageRes = res.body.message;
