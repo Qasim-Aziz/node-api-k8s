@@ -1,6 +1,10 @@
 import httpStatus from 'http-status'; // eslint-disable-line no-unused-vars
-import { Op, QueryTypes, sequelize, Sequelize } from 'src/orm/database';
-import { Comment, Favorite, Love, Message, Tag, Trait, View } from 'src/orm';
+import {
+  Op, QueryTypes, sequelize, Sequelize,
+} from 'src/orm/database';
+import {
+  Comment, Favorite, Love, Message, Tag, Trait, View,
+} from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import { getNextMessageQuery } from 'src/server/topics/message/message.query';
 import { PrivacyLevel } from 'src/server/constants';

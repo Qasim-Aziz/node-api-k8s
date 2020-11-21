@@ -1,9 +1,10 @@
-import { BackError, ValidationError } from 'src/server/helpers';
+import { BackError, Env, logger, ValidationError } from 'src/server/helpers';
 
-// if error is not an instanceOf BackError, convert it.
 export const appErrorConverter = (err, req, res, next) => {
+  if (Env.isTest) {
+    logger.error(err);
+  }
   if (err instanceof ValidationError) {
-    // validation error contains errors which is an array of error each containing message[]
     const unifiedErrorMessage = err.errors.map((error) => error.messages.join('. ')).join(' and ');
     return next(new BackError(unifiedErrorMessage, err.status));
   } if (!(err instanceof BackError)) {

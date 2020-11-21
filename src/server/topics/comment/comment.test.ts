@@ -28,23 +28,23 @@ describe('# Comments', () => {
   });
 
   test('Should edit comment', () =>
-    Testers.updateMessageComment(user2, message, comment2, 'this is updated message 2'));
+    Testers.updateMessageComment(user2, comment2, 'this is updated message 2'));
 
   test('Should not edit comment if is not owner', () =>
-    Testers.updateMessageComment(user3, message, comment2, 'a comment', { status: httpStatus.FORBIDDEN }));
+    Testers.updateMessageComment(user3, comment2, 'a comment', { status: httpStatus.FORBIDDEN }));
 
   test('Should like comment', async () => {
-    await Testers.loveComment(user3, message, comment1, { lovesCount: 1 });
-    await Testers.loveComment(user2, message, comment1, { lovesCount: 2 });
-    await Testers.loveComment(user3, message, comment1, { lovesCount: 1 });
+    await Testers.loveComment(user3, comment1, { lovesCount: 1 });
+    await Testers.loveComment(user2, comment1, { lovesCount: 2 });
+    await Testers.loveComment(user3, comment1, { lovesCount: 1 });
     await Testers.getMessageComments(user2, message, { expectedResults: [comment1, comment2] });
   });
 
   test('Should not delete comment if is not owner', () =>
-    Testers.deleteMessageComment(user3, message, comment2, { status: httpStatus.FORBIDDEN }));
+    Testers.deleteMessageComment(user3, comment2, { status: httpStatus.FORBIDDEN }));
 
   test('Should delete comment', async () => {
-    await Testers.deleteMessageComment(user2, message, comment2);
+    await Testers.deleteMessageComment(user2, comment2);
     await Testers.getMessageComments(user2, message, { expectedResults: [comment1] });
   });
 });

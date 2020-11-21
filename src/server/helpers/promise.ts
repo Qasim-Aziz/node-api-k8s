@@ -3,13 +3,12 @@ import { logger } from 'src/server/helpers/logger';
 export class PromiseUtils {
   static promiseAll = async (promises) => (promises.length ? Promise.all(promises) : []);
 
-  static promiseMapSeries = async (input = [], callback = (val, ind = null, inp = null) => (val)) => {
+  static promiseMapSeries = async (input = [], callback = (val) => (val)) => {
     const results = [];
-    const n = input.length;
     // eslint-disable-next-line no-restricted-syntax
-    for (const [index, value] of Object.keys((input))) {
+    for (const value of input) {
       // eslint-disable-next-line no-await-in-loop
-      const result = await callback(value, index, n);
+      const result = await callback(value);
       results.push(result);
     }
     return results;
