@@ -1,6 +1,6 @@
 import express from 'express';
 import {
-  apiExpireHeader, apiSessionManager, initSessionUser, apiRequestValidator, apiRequest,
+  apiExpireHeader, apiSessionManager, initSessionUser, apiRequestValidator, apiRequest, checkAuthorization,
 } from 'src/server/middlewares/api.middlewares';
 
 interface Action {
@@ -28,6 +28,7 @@ export default class Router {
     ];
     if (!method.forAll) {
       middlewares.push(apiSessionManager);
+      middlewares.push(checkAuthorization(method));
     }
 
     if (method.validation) {

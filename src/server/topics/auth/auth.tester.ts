@@ -48,3 +48,24 @@ export const logoutUser = async (user, { status = httpStatus.OK } = {}) =>
       expect(cookies.token).toBe('');
       return Object.assign(user, { token: null });
     });
+
+export const forgetPassword = async (email, { status = httpStatus.OK } = {}) =>
+  request(app)
+    .post('/api/users/forget-password')
+    .send({ email })
+    .expect(checkExpectedStatus(status))
+    .then((res) => {
+      expect(res.body.code).not.toBeUndefined();
+      return res.body.code;
+    });
+
+export const resetPassword = async (email, code, { status = httpStatus.OK } = {}) =>
+  request(app)
+    .post('/api/users/reset-password')
+    .send({ email, code })
+    .expect(checkExpectedStatus(status))
+    .then((res) => {
+      const token = getToken(res);
+      expect(res.body.user.shouldResetPassword).toBe(true);
+      return { ...res.body.user, token };
+    });

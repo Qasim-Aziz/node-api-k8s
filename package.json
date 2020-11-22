@@ -24,6 +24,15 @@
     "test": "jest --bail --runInBand --detectOpenHandles",
     "yarn": "yarn install --frozen-lockfile"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "./tools/is_master_branch.sh && lint-staged",
+      "pre-push": "./tools/is_master_branch.sh"
+    }
+  },
+  "lint-staged": {
+    "*.ts": "eslint --cache"
+  },
   "dependencies": {
     "@types/express": "^4.17.8",
     "@types/jest": "^26.0.13",

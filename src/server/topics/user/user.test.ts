@@ -46,7 +46,7 @@ describe('# Users Tests', () => {
       await Testers.refreshUserLastConnexionDate(user, user.id, { connexionCount: 0 });
     });
 
-    test('should get me', () => Testers.getMe(user, { expectedUserId: user.id }));
+    test('should get me', () => Testers.getMe(user, { expectedUser: user }));
 
     test('should update me', () =>
       Testers.updateUser(user, user.id, { description: 'Test' }));
@@ -64,6 +64,11 @@ describe('# Users Tests', () => {
 
     test('should get current user', async () => {
       await Testers.getMe(user, { nbMessages: 1, connexionCount: 0, expectedUser: { pseudo } });
+    });
+
+    test('should resetPassword', async () => {
+      const code = await Testers.forgetPassword(user.email);
+      await Testers.resetPassword(user.email, code);
     });
 
     test('should update correctly user score', async () => {

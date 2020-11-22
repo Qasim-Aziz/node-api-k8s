@@ -85,7 +85,7 @@ export const getMe = async (user, {
   nbMessages = null,
 } = {}) =>
   request(app)
-    .get(`/api/users/me`)
+    .get('/api/users/me')
     .set('cookie', user.token)
     .expect(checkExpectedStatus(status))
     .then((res) => {
