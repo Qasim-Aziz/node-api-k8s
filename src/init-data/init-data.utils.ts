@@ -1,6 +1,6 @@
 import {logger, moment, transactionContext} from 'src/server/helpers';
 import { initDataConf, password } from 'src/init-data/init-data.data';
-import { Message, Love, View } from 'src/orm';
+import {Message, Love, View, User} from 'src/orm';
 import { Checks } from 'src/server/tests/tester.base';
 import { AuthService } from 'src/server/topics/auth/auth.service';
 import { MessageService } from 'src/server/topics/message/message.service';
@@ -40,11 +40,15 @@ const createMessages = async (pseudo, messages, users) => {
 export const populateInitData = async () => {
   Checks.deactivate();
   logger.info('Creating users');
-  const users = (await Promise.all(Object.keys(initDataConf).map((pseudo) => AuthService.register({
-    pseudo,
-    password,
-    email: `${pseudo}@yopmail.com`,
-  })))).map((userRes) => userRes.user);
+  const users = (await Promise.all(Object.keys(initDataConf).map(async (pseudo) => {
+    const u = await AuthService.register({
+      pseudo,
+      password,
+      email: `${pseudo}@yopmail.com`,
+    });
+    await User.update({ description: initDataConf[pseudo].description }, { where: { id: u.user.id } });
+    return u;
+  }))).map((userRes) => userRes.user);
   logger.info('Creating messages');
   await Promise.all(Object.entries(initDataConf)
     .map(async ([pseudo, userData]) => {

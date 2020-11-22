@@ -13,10 +13,17 @@ const usersEnum = Object.freeze({
 export const password = 'azerty123';
 
 export const initDataConf = Object.freeze({
-  [usersEnum.MEG]: {},
-  [usersEnum.TAT]: {},
-  [usersEnum.YAS]: {},
+  [usersEnum.MEG]: {
+    description: 'Burn-out suite à des harcélements au travail, je vous raconte mon quotidien.',
+  },
+  [usersEnum.TAT]: {
+    description: 'Boulimique après avoir été anorexique.',
+  },
+  [usersEnum.YAS]: {
+    description: 'Grosse dépression depuis 2019 suite à un problème au travail.',
+  },
   [usersEnum.MIK]: {
+    description: 'Anxieux depuis 10 ans, cadre dans la grande distribution, j’évolue au gré des hauts et des bas de ma maladie.',
     messages: [
       {
         apiData: {
@@ -172,6 +179,7 @@ export const initDataConf = Object.freeze({
     ],
   },
   [usersEnum.YAL]: {
+    description: 'Anorexique depuis 2018, je me bats contre mes travers.',
     messages: [
       {
         apiData: {
@@ -205,6 +213,7 @@ export const initDataConf = Object.freeze({
     ],
   },
   [usersEnum.HAK]: {
+    description: 'Dépression depuis plusieurs années.',
     messages: [
       {
         apiData: {

@@ -13,33 +13,7 @@ export class MessageService {
       .then((messagesCount) => messagesCount !== 0);
   }
 
-  static async getAll(requesterId, requestedId, { transaction = null } = {}) {
-    const requiredPrivacy = (requesterId === requestedId) ? [PrivacyLevel.PRIVATE, PrivacyLevel.PUBLIC] : [PrivacyLevel.PUBLIC];
-    return Message.unscoped().findAll({
-      attributes: [
-        'id',
-        'publishedAt',
-        'emotionCode',
-        'privacy',
-        'content',
-        'userId',
-        [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"loves"."id"')), 'int'), 'nbLoves'],
-        [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('"views"."id"')), 'int'), 'nbViews'],
-      ],
-      include: [
-        { model: Love.unscoped(), attributes: [] },
-        { model: View.unscoped(), attributes: [] },
-      ],
-      group: ['message.id'],
-      order: [['publishedAt', 'desc']],
-      where: { userId: requestedId, privacy: { [Op.in]: requiredPrivacy } },
-      raw: true,
-      nest: true,
-      transaction,
-    });
-  }
-
-  static async get(messageId, { transaction = null, reqUserId = null, updateViewCount = false } = {}) {
+  static getAttributes({ withCustomAttributes = false, reqUserId = null }) {
     const baseAttributes = [
       'id',
       'publishedAt',
@@ -59,7 +33,64 @@ export class MessageService {
       [Sequelize.fn('coalesce',
         (Sequelize.fn('bool_or', Sequelize.literal(`"comments"."user_id" = ${reqUserId}`))), 'false'), 'commented'],
     ];
-    const messageAttributes = reqUserId ? [...baseAttributes, ...customAttributes] : baseAttributes;
+    return withCustomAttributes ? [...baseAttributes, ...customAttributes] : baseAttributes;
+  }
+
+  static async enrichMessage(message, {
+    requesterId = null,
+    userData = null,
+    transaction = null,
+    updateViewCount = false,
+  } = {}) {
+    if (updateViewCount) await View.create({ userId: requesterId, messageId: message.id }, { transaction });
+    const user = userData || (await UserService.getUser(message.userId, { transaction }));
+    const traitNames = await MessageService.getMessageTraits(message.id, { transaction });
+    return { ...message, user, traitNames };
+  }
+
+  static async getAll(requesterId, requestedId, { transaction = null } = {}) {
+    const requiredPrivacy = (requesterId === requestedId) ? [PrivacyLevel.PRIVATE, PrivacyLevel.PUBLIC] : [PrivacyLevel.PUBLIC];
+    const attributes = MessageService.getAttributes({ withCustomAttributes: true, reqUserId: requesterId }) as string[];
+    const rawMessages = await Message.unscoped().findAll({
+      attributes,
+      include: [
+        { model: Love.unscoped(), attributes: [] },
+        { model: View.unscoped(), attributes: [] },
+        { model: Favorite.unscoped(), attributes: [] },
+        { model: Comment.unscoped(), attributes: [] },
+      ],
+      group: ['message.id'],
+      order: [['publishedAt', 'desc']],
+      where: { userId: requestedId, privacy: { [Op.in]: requiredPrivacy } },
+      raw: true,
+      nest: true,
+      transaction,
+    });
+    const userData = await UserService.getUser(requestedId, { transaction });
+    return Promise.all(rawMessages.map(
+      (m) => MessageService.enrichMessage(m, {
+        requesterId, userData, transaction, updateViewCount: requestedId !== requesterId,
+      })
+    ));
+  }
+
+  static async getMessageTraits(messageId, { transaction = null } = {}) {
+    return (await Tag.unscoped().findAll({
+      attributes: [],
+      where: { messageId },
+      include: [
+        { model: Trait.unscoped(), attributes: ['name'], required: true },
+      ],
+      transaction,
+    })).map((tag: any) => tag.trait.name);
+  }
+
+  static async get(messageId, { transaction = null, reqUserId = null, updateViewCount = false } = {}) {
+    const messageAttributes = MessageService.getAttributes({ withCustomAttributes: !!reqUserId, reqUserId });
+    const { userId } = await Message.unscoped().findByPk(messageId, { transaction, attributes: ['userId'] });
+    if (updateViewCount && reqUserId && reqUserId !== userId) {
+      await MessageService.createView(messageId, reqUserId, { transaction });
+    }
     const message: any = await Message.unscoped().findByPk(messageId, {
       attributes: messageAttributes as FindAttributeOptions,
       include: [
@@ -74,20 +105,7 @@ export class MessageService {
       nest: true,
     });
     if (message.privacy === PrivacyLevel.PRIVATE && reqUserId) await MessageService.checkUserRight(reqUserId, messageId, { transaction });
-    const traitNames = (await Tag.unscoped().findAll({
-      attributes: [],
-      where: { messageId },
-      include: [
-        { model: Trait.unscoped(), attributes: ['name'], required: true },
-      ],
-      transaction,
-    })).map((tag: any) => tag.trait.name);
-    if (updateViewCount && reqUserId && reqUserId !== message.userId) {
-      await MessageService.createView(messageId, reqUserId, { transaction });
-      message.nbViews += 1;
-    }
-    const user = await UserService.getUser(message.userId, { transaction });
-    return { ...message, traitNames, user };
+    return MessageService.enrichMessage(message, { transaction });
   }
 
   static async getNext(reqUserId, { transaction = null } = {}) {
