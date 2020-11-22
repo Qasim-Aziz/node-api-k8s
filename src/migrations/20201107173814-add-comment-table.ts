@@ -49,6 +49,8 @@ module.exports = {
       lib.createFkV3('comment', 'comment', lib.FOREIGN_KEY_ACTIONS.CASCADE, { fieldFrom: 'parent_id' }),
       lib.addColumn('love', 'comment_id', Sequelize.INTEGER),
       lib.createFkV3('love', 'comment', lib.FOREIGN_KEY_ACTIONS.CASCADE, { onUpdateAction: lib.FOREIGN_KEY_ACTIONS.CASCADE }),
+      lib.createUniqueIndex('love_user_comment', 'love', ['user_id', 'comment_id']),
+      lib.addCheck('love', 'validate_love', 'message_id IS NOT NULL OR comment_id IS NOT NULL'),
     ]);
   },
   down: async () => {

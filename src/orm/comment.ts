@@ -16,6 +16,8 @@ export class Comment extends OrmModel {
 
   public commentsCount!: number;
 
+  public loved!: boolean;
+
   public comments!: Comment[];
 }
 
@@ -52,5 +54,5 @@ Comment.hasMany(Comment, { as: 'comments', foreignKey: 'parentId' });
 // Scopes
 Comment.addScope('messageComment', {
   attributes: ['id', 'content', 'postedAt', 'lovesCount', 'commentsCount'],
-  order: [['postedAt', 'desc']],
+  order: [['postedAt', 'asc']],
 });

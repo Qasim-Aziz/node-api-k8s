@@ -8,9 +8,9 @@ const formatComment = ({ updated_at, ...comment }) => comment;
 
 export const commentMessage = (user, message, content, { status = httpStatus.OK } = {}) =>
   request(app)
-    .post(`/api/messages/${message.id}/comment`)
+    .post('/api/comments')
     .set('Authorization', user.token)
-    .send({ content })
+    .send({ content, messageId: message.id })
     .expect(checkExpectedStatus(status))
     .then((res) => {
       expect(res.body.comment).toMatchObject({
@@ -24,7 +24,7 @@ export const commentMessage = (user, message, content, { status = httpStatus.OK 
 
 export const getMessageComments = (user, message, { status = httpStatus.OK, expectedResults = null, msgError = null } = {}) =>
   request(app)
-    .get(`/api/messages/${message.id}/comment`)
+    .get(`/api/comments?messageId=${message.id}`)
     .set('Authorization', user.token)
     .expect(checkExpectedStatus(status))
     .then((res) => {
@@ -36,9 +36,9 @@ export const getMessageComments = (user, message, { status = httpStatus.OK, expe
       return res.body.comments;
     });
 
-export const loveComment = (user, message, comment, { status = httpStatus.OK, lovesCount = 0, msgError = null } = {}) =>
+export const loveComment = (user, comment, { status = httpStatus.OK, lovesCount = 0, msgError = null } = {}) =>
   request(app)
-    .post(`/api/messages/${message.id}/comment/${comment.id}/love`)
+    .post(`/api/comments/${comment.id}/love`)
     .set('Authorization', user.token)
     .expect(checkExpectedStatus(status))
     .then((res) => {
@@ -51,9 +51,9 @@ export const loveComment = (user, message, comment, { status = httpStatus.OK, lo
       return res.body.comment;
     });
 
-export const updateMessageComment = (user, message, comment, content, { status = httpStatus.OK, msgError = null } = {}) =>
+export const updateMessageComment = (user, comment, content, { status = httpStatus.OK, msgError = null } = {}) =>
   request(app)
-    .put(`/api/messages/${message.id}/comment/${comment.id}`)
+    .put(`/api/comments/${comment.id}`)
     .set('Authorization', user.token)
     .send({ content })
     .expect(checkExpectedStatus(status))
@@ -67,9 +67,9 @@ export const updateMessageComment = (user, message, comment, content, { status =
       return res.body.comment;
     });
 
-export const deleteMessageComment = (user, message, comment, { status = httpStatus.OK, msgError = null } = {}) =>
+export const deleteMessageComment = (user, comment, { status = httpStatus.OK, msgError = null } = {}) =>
   request(app)
-    .delete(`/api/messages/${message.id}/comment/${comment.id}`)
+    .delete(`/api/comments/${comment.id}`)
     .set('Authorization', user.token)
     .expect(checkExpectedStatus(status))
     .then((res) => {

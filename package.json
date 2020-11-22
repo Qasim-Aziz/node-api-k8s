@@ -16,11 +16,11 @@
     "init-db": "NODE_ENV=test ./run-script.js db.init",
     "lint": "eslint --quiet --fix --cache .",
     "migrate": "FORCE_UNIQUE_TRANSACTION=true ./run-script.js db.migrate",
-    "init-data": "NODE_ENV=test FORCE_UNIQUE_TRANSACTION=true ./run-script.js init-data",
+    "init-data": "NODE_ENV=test FORCE_UNIQUE_TRANSACTION=true ./run-script.js init-data | pino-pretty -i hostname",
     "migration:create": "migrate create --chdir $(pwd)/src --template-file $(pwd)/src/migrations/lib/template.js --generator $(pwd)/src/migrations/lib/template-generator.js",
     "reinstall": "yarn cache clean && rm -rf node_modules && yarn",
     "spec": "NODE_ENV=test mocha --bail --require babel-register.js",
-    "serve": "nodemon",
+    "serve": "nodemon | pino-pretty -i hostname",
     "test": "jest --bail --runInBand --detectOpenHandles",
     "yarn": "yarn install --frozen-lockfile"
   },
@@ -78,6 +78,7 @@
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.8",
     "nodemon": "^2.0.6",
+    "pino-pretty": "^4.3.0",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0"
   }
