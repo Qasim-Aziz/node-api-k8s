@@ -90,8 +90,9 @@ export class MessageService {
   }
 
   static async get(messageId, { transaction = null, reqUserId = null, updateViewCount = false } = {}) {
+    const { userId, privacy } = await Message.unscoped().findByPk(messageId, { transaction, attributes: ['userId', 'privacy'] });
+    if (privacy === PrivacyLevel.PRIVATE && reqUserId) await MessageService.checkUserRight(reqUserId, messageId, { transaction });
     const messageAttributes = MessageService.getAttributes({ withCustomAttributes: !!reqUserId, reqUserId });
-    const { userId } = await Message.unscoped().findByPk(messageId, { transaction, attributes: ['userId'] });
     if (updateViewCount && reqUserId && reqUserId !== userId) {
       await MessageService.createView(messageId, reqUserId, { transaction });
     }
@@ -108,7 +109,6 @@ export class MessageService {
       raw: true,
       nest: true,
     });
-    if (message.privacy === PrivacyLevel.PRIVATE && reqUserId) await MessageService.checkUserRight(reqUserId, messageId, { transaction });
     return MessageService.enrichMessage(message, { transaction });
   }
 

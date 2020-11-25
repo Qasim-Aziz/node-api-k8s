@@ -45,10 +45,10 @@ describe('# Message Tests', () => {
       Testers.updateMessage(user2, message2.id, message2Update, { nbLoves: 0, nbViews: 0 }));
     test('shouldnt get a private message if not mine', () =>
       Testers.getMessage(user2, message1.id, { status: httpStatus.FORBIDDEN }));
-    test('should get a private message if mine and not update viewing count', () =>
-      Testers.getMessage(user1, message1.id, { nbViews: 0, nbLoves: 0, nbComments: 0 }));
     test('should get a public message even if not mine', () =>
       Testers.getMessage(user1, message2.id, { nbLoves: 0, nbViews: 1, nbComments: 0 }));
+    test('should get a private message if mine and not update viewing count', () =>
+      Testers.getMessage(user1, message1.id, { nbViews: 0, nbLoves: 0, nbComments: 0 }));
     test('shouldnt delete a message if not mine', async () => {
       await Testers.publishMessage(user4, message6);
       await Testers.deleteMessage(user1, message6.id, { status: httpStatus.FORBIDDEN });

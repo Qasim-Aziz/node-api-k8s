@@ -24,7 +24,7 @@ describe('# Comments', () => {
     comment1 = await Testers.commentMessage(user2, message, 'this is a comment 1');
     comment2 = await Testers.commentMessage(user2, message, 'this is a comment 2');
     await Testers.getMessage(user2, message.id, { nbComments: 2, commented: true });
-    await Testers.getMessageComments(user2, message, { expectedResults: [comment1, comment2] });
+    await Testers.getMessageComments(user2, message, { expectedResults: [comment1.id, comment2.id] });
   });
 
   test('Should edit comment', () =>
@@ -35,9 +35,9 @@ describe('# Comments', () => {
 
   test('Should like comment', async () => {
     await Testers.loveComment(user3, comment1, { lovesCount: 1 });
-    await Testers.loveComment(user2, comment1, { lovesCount: 2 });
-    await Testers.loveComment(user3, comment1, { lovesCount: 1 });
-    await Testers.getMessageComments(user2, message, { expectedResults: [comment1, comment2] });
+    await Testers.loveComment(user2, comment1, { lovesCount: 2, isOwner: true });
+    await Testers.loveComment(user3, comment1, { lovesCount: 1, loved: false });
+    await Testers.getMessageComments(user2, message, { expectedResults: [comment1.id, comment2.id] });
   });
 
   test('Should not delete comment if is not owner', () =>
@@ -45,6 +45,6 @@ describe('# Comments', () => {
 
   test('Should delete comment', async () => {
     await Testers.deleteMessageComment(user2, comment2);
-    await Testers.getMessageComments(user2, message, { expectedResults: [comment1] });
+    await Testers.getMessageComments(user2, message, { expectedResults: [comment1.id] });
   });
 });
