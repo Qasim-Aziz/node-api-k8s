@@ -44,8 +44,8 @@ export class AuthController {
     body: { email: Joi.string().email().required() },
   })
   @Auth.forAll()
-  static async forgetPassword(req) {
-    const { body: { email }, transaction } = req;
+  static async forgetPassword(req, { transaction = null } = {}) {
+    const { body: { email } } = req;
     await AuthService.forgetPassword(email, { transaction });
     return { status: 'OK' };
   }
@@ -57,9 +57,10 @@ export class AuthController {
     },
   })
   @Auth.forAll()
-  static async resetPassword(req) {
-    const { body: { email, code }, transaction } = req;
-    await AuthService.resetPassword(email, code, { transaction });
-    return { status: 'OK' };
+  static async resetPassword(req, { transaction, cookiesManager }) {
+    const { body: { email, code } } = req;
+    const { user, token } = await AuthService.resetPassword(email, code, { transaction });
+    cookiesManager.setCookies(token);
+    return { user, token };
   }
 }

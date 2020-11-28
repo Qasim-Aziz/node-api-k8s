@@ -25,6 +25,7 @@ export default class UserService {
         'pseudo',
         'nbConsecutiveConnexionDays',
         'description',
+        'shouldResetPassword',
         'totalScore',
         'remindingScore',
         'dynamic',

@@ -1,6 +1,5 @@
 import { AuthController } from 'src/server/topics/auth/auth.controller';
 import Router from 'src/server/abstracts/router';
-import {UserController} from "../user/user.controller";
 
 const userRoutes = new Router();
 
@@ -15,10 +14,10 @@ userRoutes
     post: { handler: AuthController.register },
   })
   .addRoute('/forget-password', {
-    post: { handler: UserController.forgetPassword },
+    post: { handler: AuthController.forgetPassword },
   })
   .addRoute('/reset-password', {
-    post: { handler: UserController.resetPassword },
+    post: { handler: AuthController.resetPassword },
   });
 
 export default userRoutes.getRouter();

@@ -5,7 +5,7 @@ export const resetPasswordTemplate = ({ pseudo, resetPasswordCode }): EmailTempl
   bodyText: `
     Hello ${pseudo}
 
-    reset password code ${resetPasswordCode}.
+    reset password code '${resetPasswordCode}'.
 
     Merci.
   `,
