@@ -215,7 +215,7 @@ export class MessageService {
 
   static async addOrRemoveRessource(messageId, reqUserId, { transaction = null, Model = null } = {}) {
     const isPublicMessage = await MessageService.isPublicMessage(messageId, { transaction });
-    if (!isPublicMessage) throw new BackError('Cannot love or save a private message', httpStatus.BAD_REQUEST);
+    if (!isPublicMessage && Model === Love) throw new BackError('Cannot love a private message', httpStatus.BAD_REQUEST);
     const isAlreadyExistingInstance = await Model.findOne({ where: { messageId, userId: reqUserId }, transaction });
     if (isAlreadyExistingInstance) {
       await isAlreadyExistingInstance.destroy({ transaction });

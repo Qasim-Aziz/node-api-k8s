@@ -3,6 +3,7 @@ import { BackError, moment } from 'src/server/helpers';
 import config from 'src/config';
 import { SESSION_ERRORS } from 'src/server/constants';
 import { Session } from 'src/orm';
+import UserService from 'src/server/topics/user/user.service';
 
 const makeError = (errorObject): BackError => new BackError(errorObject.MSG, errorObject.STATUS, { code: errorObject.CODE });
 
@@ -20,6 +21,7 @@ export class SessionManager {
   static async getUserSession(req) {
     const session = await SessionManager.getSession(req);
     await req.user.getUserSession(session.userId);
+    await UserService.refreshUserLastConnexionDate(session.userId);
     Object.assign(req, { session });
   }
 
