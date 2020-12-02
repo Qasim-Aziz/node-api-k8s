@@ -57,6 +57,7 @@ export default class UserService {
       attributes: ['lastConnexionDate', 'nbConsecutiveConnexionDays'],
       transaction,
     });
+    if (moment(user.lastConnexionDate).isSameOrAfter(moment().startOf('day'))) return user;
     const newNbConsecutiveDays = UserService.computeNbConsecutiveDays(user.lastConnexionDate, user.nbConsecutiveConnexionDays);
     return UserService.updateConnexionInformation(userId, newNbConsecutiveDays, { transaction });
   }

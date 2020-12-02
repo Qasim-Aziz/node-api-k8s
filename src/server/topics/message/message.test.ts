@@ -72,8 +72,6 @@ describe('# Message Tests', () => {
       Testers.getAllFavorite(user1, user2.id, { status: httpStatus.BAD_REQUEST }));
     test('should have favorite messages', () =>
       Testers.getAllFavorite(user1, user1.id, { expectedMessagesIds: [message2.id] }));
-    test('shouldnt be able to add to favorite a private message', () =>
-      Testers.addOrRemoveFavorite(user2, message1.id, { status: httpStatus.BAD_REQUEST }));
     test('should remove a message from favorite and update isFavorite', async () => {
       await Testers.addOrRemoveFavorite(user1, message2.id, { nbLoves: 0, nbViews: 1, isFavorite: false, loved: false });
       await Testers.getAllFavorite(user1, user1.id, { expectedMessagesIds: [] });
