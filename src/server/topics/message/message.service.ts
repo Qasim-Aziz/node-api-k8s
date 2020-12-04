@@ -52,7 +52,7 @@ export class MessageService {
     return { ...message, user, traitNames };
   }
 
-  static async getAll(requesterId, requestedId, { transaction = null } = {}) {
+  static async getAll(requesterId, requestedId, { transaction = null, favorite = false } = {}) {
     const requiredPrivacy = (requesterId === requestedId) ? [PrivacyLevel.PRIVATE, PrivacyLevel.PUBLIC] : [PrivacyLevel.PUBLIC];
     const attributes = MessageService.getAttributes({ withCustomAttributes: true, reqUserId: requesterId }) as string[];
     const rawMessages = await Message.unscoped().findAll({
@@ -60,16 +60,17 @@ export class MessageService {
       include: [
         { model: Love.unscoped(), attributes: [] },
         { model: View.unscoped(), attributes: [] },
-        { model: Favorite.unscoped(), attributes: [] },
+        { model: Favorite.unscoped(), attributes: [], ...favorite ? { required: true, where: { userId: requesterId } } : {} },
         { model: Comment.unscoped(), attributes: [] },
       ],
-      group: ['message.id'],
-      order: [['publishedAt', 'desc']],
-      where: { userId: requestedId, privacy: { [Op.in]: requiredPrivacy } },
+      group: favorite ? ['message.id', 'favorites.added_at'] : ['message.id'],
+      order: favorite ? [[Sequelize.literal('favorites.added_at'), 'desc']] : [['publishedAt', 'desc']],
+      where: { privacy: { [Op.in]: requiredPrivacy }, ...favorite ? {} : { userId: requestedId } },
       raw: true,
       nest: true,
       transaction,
     });
+    console.log(rawMessages);
     const userData = await UserService.getUser(requestedId, { transaction });
     return Promise.all(rawMessages.map(
       (m) => MessageService.enrichMessage(m, {

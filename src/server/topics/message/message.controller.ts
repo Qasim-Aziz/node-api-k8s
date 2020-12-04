@@ -28,6 +28,16 @@ export class MessageController {
     return { message };
   }
 
+  @validation({})
+  @Auth.forLogged()
+  static async getFavorites(req) {
+    const { user: { id: reqUserId } } = req;
+    console.log('reqUserId')
+    console.log(reqUserId)
+    const messages = await MessageService.getAll(reqUserId, reqUserId, { favorite: true });
+    return { messages };
+  }
+
   @validation({
     query: { q: Joi.string().optional() },
   })

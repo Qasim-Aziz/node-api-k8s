@@ -1,9 +1,7 @@
 import {
   cast, col, fn,
 } from 'sequelize';
-import {
-  Favorite, Love, Message, User, View,
-} from 'src/orm';
+import { Message, User } from 'src/orm';
 import { moment } from 'src/server/helpers';
 
 export default class UserService {
@@ -60,32 +58,5 @@ export default class UserService {
     if (moment(user.lastConnexionDate).isSameOrAfter(moment().startOf('day'))) return user;
     const newNbConsecutiveDays = UserService.computeNbConsecutiveDays(user.lastConnexionDate, user.nbConsecutiveConnexionDays);
     return UserService.updateConnexionInformation(userId, newNbConsecutiveDays, { transaction });
-  }
-
-  static async getAllFavorites(userId, { transaction = null } = {}) {
-    return Message.unscoped().findAll({
-      attributes: [
-        'id',
-        'publishedAt',
-        'emotionCode',
-        'privacy',
-        'content',
-        'userId',
-        [cast(fn('COUNT', col('"loves"."id"')), 'int'), 'nbLoves'],
-        [cast(fn('COUNT', col('"views"."id"')), 'int'), 'nbViews'],
-      ],
-      include: [
-        { model: Love.unscoped(), attributes: [] },
-        { model: View.unscoped(), attributes: [] },
-        {
-          model: Favorite.unscoped(), attributes: [], required: true, where: { userId },
-        },
-      ],
-      group: ['message.id'],
-      order: [['publishedAt', 'desc']],
-      raw: true,
-      nest: true,
-      transaction,
-    });
   }
 }
