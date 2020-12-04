@@ -16,9 +16,6 @@ userRoutes
   .addRoute('/:userId', {
     get: { handler: UserController.getUser },
   })
-  .addRoute('/:userId/favorites', {
-    get: { handler: UserController.getAllFavorite },
-  })
   .addRoute('/:userId/refreshUserLastConnexionDate', {
     post: { handler: UserController.refreshUserLastConnexionDate },
   });

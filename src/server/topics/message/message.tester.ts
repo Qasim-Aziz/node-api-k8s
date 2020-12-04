@@ -157,3 +157,15 @@ export const getAllMessages = async (user, requestedUser, { status = httpStatus.
   if (user.id !== requestedUser.id) expect([...new Set(messagesRes.map((m) => m.privacy))]).toEqual([PrivacyLevel.PUBLIC]);
   return messagesRes;
 };
+
+export const getAllFavorite = async (user, { status = httpStatus.OK, expectedMessagesIds = [] } = {}) =>
+  request(app)
+    .get('/api/messages/favorites')
+    .set('cookie', user.token)
+    .expect(checkExpectedStatus(status))
+    .then((res) => {
+      if (status !== httpStatus.OK) return null;
+      const messagesRes = res.body.messages;
+      expect(messagesRes.map((m) => m.id).sort()).toEqual(expectedMessagesIds.sort());
+      return messagesRes;
+    });

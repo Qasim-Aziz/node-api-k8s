@@ -11,6 +11,9 @@ messageRoutes
   .addRoute('/next', {
     get: { handler: MessageController.getNext },
   })
+  .addRoute('/favorites', {
+    get: { handler: MessageController.getFavorites },
+  })
   .addRoute('/searchTraits', {
     get: { handler: MessageController.searchTraits },
   })
