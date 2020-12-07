@@ -64,6 +64,7 @@
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "pg": "^8.4.2",
+    "react-native-confirmation-code-field": "^6.5.1",
     "seedrandom": "^3.0.5",
     "sequelize": "^6.3.5",
     "set-cookie-parser": "^2.4.6",

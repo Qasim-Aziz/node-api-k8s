@@ -68,14 +68,13 @@ export const forgetPassword = async (email, { status = httpStatus.OK } = {}) => 
     .finally(() => sendEmailStub.restore());
 };
 
-export const resetPassword = async (email, code, { status = httpStatus.OK } = {}) =>
+export const resetPassword = async (email, resetPasswordCode, { status = httpStatus.OK } = {}) =>
   request(app)
     .post('/api/auth/reset-password')
-    .send({ email, code })
+    .send({ email, resetPasswordCode })
     .expect(checkExpectedStatus(status))
     .then((res) => {
       const token = getToken(res);
-      console.log(res.body.user);
       expect(res.body.user.shouldResetPassword).toBe(true);
       return { ...res.body.user, token };
     });

@@ -122,11 +122,15 @@ export default class UserService {
   }
 
   static async updateUser(userId, userData, { transaction = null } = {}) {
+    const user = await User.findByPk(userId, { transaction });
+    if (userData.password && user.shouldResetPassword){
+      Object.assign(userData, { shouldResetPassword: false });
+    }
     if (userData.pseudo) {
       const isPseudoUsed = await UserService.checkPseudoExist(userData.pseudo, { transaction, userId });
       if (isPseudoUsed) throw new BackError('Le pseudo est déjà utilisé', httpStatus.BAD_REQUEST);
     }
-    await User.update(userData, { transaction, where: { id: userId } });
+    await user.update(userData, { transaction });
     return UserService.getUser(userId, { transaction });
   }
 

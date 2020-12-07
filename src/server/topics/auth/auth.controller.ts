@@ -53,13 +53,13 @@ export class AuthController {
   @validation({
     body: {
       email: Joi.string().email().required(),
-      code: Joi.string().min(6).max(8).required(),
+      resetPasswordCode: Joi.string().min(6).max(8).required(),
     },
   })
   @Auth.forAll()
   static async resetPassword(req, { transaction, cookiesManager }) {
-    const { body: { email, code } } = req;
-    const { user, token } = await AuthService.resetPassword(email, code, { transaction });
+    const { body: { email, resetPasswordCode } } = req;
+    const { user, token } = await AuthService.resetPassword(email, resetPasswordCode.toUpperCase(), { transaction });
     cookiesManager.setCookies(token);
     return { user, token };
   }

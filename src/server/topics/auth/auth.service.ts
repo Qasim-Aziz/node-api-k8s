@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
 import bcrypt from 'bcrypt';
 import { User } from 'src/orm';
-import { BackError, moment } from 'src/server/helpers';
+import {BackError, logger, moment} from 'src/server/helpers';
 import SessionService from 'src/server/topics/auth/session.service';
 import { SessionManager } from 'src/server/acl/session-manager';
 import UserService from 'src/server/topics/user/user.service';
@@ -40,9 +40,10 @@ export class AuthService {
   static async forgetPassword(email, { transaction = null } = {}) {
     const user = await User.unscoped().findOne({ where: { email }, transaction });
     if (!user) {
+      logger.info('user with email ' + email + ' not found')
       return;
     }
-    const resetPasswordCode = crypto.randomBytes(6).toString('hex').substr(2, 6);
+    const resetPasswordCode = crypto.randomBytes(6).toString('hex').substr(2, 6).toUpperCase();
     const resetPasswordExpires = moment().add(1, 'hour');
     await user.update({ resetPasswordCode, resetPasswordExpires }, { transaction });
 
@@ -61,9 +62,10 @@ export class AuthService {
       where: {
         email,
         resetPasswordCode,
-        resetPasswordExpires: { [Op.lte]: moment() },
+        resetPasswordExpires: { [Op.lte]: moment.utc() },
       },
       transaction,
+      logging: console.log
     });
     if (!user) {
       throw new BackError('Invalid resetPasswordCode', httpStatus.BAD_REQUEST);
