@@ -1,4 +1,5 @@
 import MockDate from 'mockdate';
+import httpStatus from 'http-status';
 import { InitDBService } from 'src/initdb/initdb.service';
 import * as Testers from 'src/server/tests/testers';
 import { setUp } from 'src/server/tests/tester.base';
@@ -9,12 +10,13 @@ const existingEmail = 'existing@yopmail.com';
 const existingPseudo = 'existing';
 const message1 = { content: 'message 1 content', privacy: PrivacyLevel.PRIVATE, emotionCode: EmotionCode.APAISE };
 let user;
+let anotherUser;
 const pseudo = 'pseudotest';
 
 describe('# Users Tests', () => {
   setUp(async () => {
     await InitDBService.truncateTables();
-    await Testers.registerUser({ password: 'pwd', email: existingEmail, pseudo: existingPseudo });
+    anotherUser = await Testers.registerUser({ password: 'pwd', email: existingEmail, pseudo: existingPseudo });
   }, 40000);
 
   describe('# Users', () => {
@@ -45,6 +47,15 @@ describe('# Users Tests', () => {
     });
 
     test('should get me', () => Testers.getMe(user, { expectedUserId: user.id }));
+
+    test('should update me', () =>
+      Testers.updateUser(user, user.id, { description: 'Test' }));
+
+    test('should not update another user', () =>
+      Testers.updateUser(user, anotherUser.id, {}, { status: httpStatus.FORBIDDEN }));
+
+    test('should not update me with another user pseudo', () =>
+      Testers.updateUser(user, user.id, { pseudo: existingPseudo }, { status: httpStatus.BAD_REQUEST }));
 
     test('should compute the right stats for user', async () => {
       await Testers.publishMessage(user, message1);
