@@ -81,4 +81,15 @@ export class UserController {
     const pseudoUsed = await UserService.checkPseudoExist(pseudo, { transaction });
     return { pseudoUsed };
   }
+
+  @validation({
+    params: { userId: Joi.number().integer().required() },
+  })
+  @Auth.forLogged()
+  static async followOrUnfollow(req) {
+    const { params: { userId: followedId }, user: { id: followerId }, transaction } = req;
+    const user = await UserService.followOrUnfollow(followerId, followedId, { transaction });
+    console.log(user)
+    return { user };
+  }
 }

@@ -66,6 +66,16 @@ describe('# Users Tests', () => {
       await Testers.getMe(user, { nbMessages: 1, connexionCount: 0, expectedUser: { pseudo } });
     });
 
+    test('should follow user', async () => {
+      await Testers.followOrUnfollow(user, anotherUser, { nbFollowers: 1 });
+      await Testers.followOrUnfollow(anotherUser, user, { nbFollowers: 1 });
+    });
+
+    test('should unfollow user', async () => {
+      await Testers.followOrUnfollow(user, anotherUser, { nbFollowers: 0 });
+      await Testers.followOrUnfollow(anotherUser, user, { nbFollowers: 0 });
+    });
+
     test('should resetPassword', async () => {
       const code = await Testers.forgetPassword(user.email);
       await Testers.resetPassword(user.email, code);

@@ -1,9 +1,7 @@
 import {
   cast, col, fn, Op,
 } from 'sequelize';
-import {
-  Message, Tag, User, Comment,
-} from 'src/orm';
+import { Message, User, Tag, Comment, Follower } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import httpStatus from 'http-status';
 import { DynamicLevel, EmotionNote, PrivacyLevel } from 'src/server/constants';
@@ -31,9 +29,15 @@ export default class UserService {
         'remindingScore',
         'dynamic',
         [cast(fn('COUNT', col('"messages"."id"')), 'int'), 'nbMessages'],
+        [cast(fn('COUNT', col('"followers"."id"')), 'int'), 'nbFollowers'],
       ],
       include: [
-        { model: Message.unscoped(), attributes: [], required: false },
+        {
+          model: Message.unscoped(), attributes: [], required: false,
+        },
+        {
+          model: Follower.unscoped(), attributes: [], as: 'followers', required: false,
+        },
       ],
       group: ['"user"."id"'],
       transaction,
@@ -159,6 +163,16 @@ export default class UserService {
     if (moment(user.lastConnexionDate).isSameOrAfter(moment().startOf('day'))) return user;
     const newNbConsecutiveDays = UserService.computeNbConsecutiveDays(user.lastConnexionDate, user.nbConsecutiveConnexionDays);
     return UserService.updateConnexionInformation(userId, newNbConsecutiveDays, { transaction });
+  }
+
+  static async followOrUnfollow(followerId, followedId, { transaction = null } = {}) {
+    const following = await Follower.findOne({ where: { followerId, followedId }, transaction });
+    if (following) {
+      await following.destroy({ transaction });
+    } else {
+      await Follower.create({ followerId, followedId }, { transaction });
+    }
+    return UserService.getUser(followedId, { transaction });
   }
 
   static getDynamicLevel(note) {

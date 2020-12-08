@@ -20,6 +20,9 @@ userRoutes
   })
   .addRoute('/:userId/refreshUserLastConnexionDate', {
     post: { handler: UserController.refreshUserLastConnexionDate },
+  })
+  .addRoute('/:userId/followOrUnfollow', {
+    post: { handler: UserController.followOrUnfollow },
   });
 
 export default userRoutes.getRouter();

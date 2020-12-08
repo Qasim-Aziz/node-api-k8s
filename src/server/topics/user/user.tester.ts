@@ -94,3 +94,15 @@ export const getMe = async (user, {
       if (connexionCount) expect(userRes.nbConsecutiveConnexionDays).toEqual(connexionCount);
       if (expectedUser) expect(userRes).toEqual(expect.objectContaining(expectedUser));
     });
+
+export const followOrUnfollow = async (follower, followed, {
+  status = httpStatus.OK,
+  nbFollowers = null,
+} = {}) =>
+  request(app)
+    .post(`/api/users/${followed.id}/followOrUnfollow`)
+    .set('cookie', follower.token)
+    .expect(checkExpectedStatus(status))
+    .then((res) => {
+      if (nbFollowers) expect(res.body.user.nbFollowers).toBe(nbFollowers);
+    });
