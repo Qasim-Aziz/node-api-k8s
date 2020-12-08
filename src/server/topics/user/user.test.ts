@@ -68,12 +68,14 @@ describe('# Users Tests', () => {
 
     test('should follow user', async () => {
       await Testers.followOrUnfollow(user, anotherUser, { nbFollowers: 1 });
-      await Testers.followOrUnfollow(anotherUser, user, { nbFollowers: 1 });
+      await Testers.getFollowers(anotherUser, { followers: [user] });
+      await Testers.getFollowed(user, { followed: [anotherUser] });
     });
 
     test('should unfollow user', async () => {
       await Testers.followOrUnfollow(user, anotherUser, { nbFollowers: 0 });
-      await Testers.followOrUnfollow(anotherUser, user, { nbFollowers: 0 });
+      await Testers.getFollowers(anotherUser, { followers: [] });
+      await Testers.getFollowed(user, { followed: [] });
     });
 
     test('should resetPassword', async () => {

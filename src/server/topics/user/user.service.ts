@@ -175,6 +175,40 @@ export default class UserService {
     return UserService.getUser(followedId, { transaction });
   }
 
+  static async getFollowers(followedId, { transaction = null } = {}) {
+    return User.unscoped().findAll({
+      attributes: ['pseudo'],
+      include: [
+        {
+          model: Follower.unscoped(),
+          attributes: [],
+          as: 'followed',
+          where: { followedId },
+        },
+      ],
+      transaction,
+      raw: true,
+      nest: true,
+    });
+  }
+
+  static async getFollowed(followerId, { transaction = null } = {}) {
+    return User.unscoped().findAll({
+      attributes: ['pseudo'],
+      include: [
+        {
+          attributes: [],
+          model: Follower.unscoped(),
+          as: 'followers',
+          where: { followerId },
+        },
+      ],
+      transaction,
+      raw: true,
+      nest: true,
+    });
+  }
+
   static getDynamicLevel(note) {
     if (note <= 4) return DynamicLevel.DES_JOURS_MEILLEURS;
     if ((note <= 6) && (note > 4)) return DynamicLevel.COUCI_COUCA;

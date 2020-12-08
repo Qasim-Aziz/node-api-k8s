@@ -86,10 +86,31 @@ export class UserController {
     params: { userId: Joi.number().integer().required() },
   })
   @Auth.forLogged()
-  static async followOrUnfollow(req) {
-    const { params: { userId: followedId }, user: { id: followerId }, transaction } = req;
+  static async followOrUnfollow(req, { transaction = null } = {}) {
+    const { params: { userId: followedId }, user: { id: followerId } } = req;
     const user = await UserService.followOrUnfollow(followerId, followedId, { transaction });
-    console.log(user)
     return { user };
+  }
+
+  @validation({
+    params: { userId: Joi.number().integer().required() },
+  })
+  @Auth.forLogged()
+  static async getFollowers(req, { transaction = null } = {}) {
+    const { params: { userId: followedId } } = req;
+
+    const followers = await UserService.getFollowers(followedId, { transaction });
+    return { followers };
+  }
+
+  @validation({
+    params: { userId: Joi.number().integer().required() },
+  })
+  @Auth.forLogged()
+  static async getFollowed(req, { transaction = null } = {}) {
+    const { params: { userId: followerId } } = req;
+
+    const followed = await UserService.getFollowed(followerId, { transaction });
+    return { followed };
   }
 }
