@@ -10,8 +10,8 @@ export class UserController {
   })
   @Auth.forLogged()
   static async getUser(req, { transaction = null } = {}) {
-    const { params: { userId } } = req;
-    const user = await UserService.getUser(userId, { transaction });
+    const { params: { userId }, user: { id: loggedUserId } } = req;
+    const user = await UserService.getUser(userId, { loggedUserId, transaction });
     return { user };
   }
 

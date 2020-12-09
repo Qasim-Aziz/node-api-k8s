@@ -1,7 +1,9 @@
 import {
-  cast, col, fn, Op,
+  cast, col, fn, Op, literal,
 } from 'sequelize';
-import { Message, User, Tag, Comment, Follower } from 'src/orm';
+import {
+  Message, User, Tag, Comment, Follower,
+} from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import httpStatus from 'http-status';
 import { DynamicLevel, EmotionNote, PrivacyLevel } from 'src/server/constants';
@@ -17,7 +19,7 @@ export default class UserService {
       .then((count) => count !== 0);
   }
 
-  static async getUser(userId, { transaction = null } = {}) {
+  static async getUser(userId, { loggedUserId = null, transaction = null } = {}) {
     return User.unscoped().findByPk(userId, {
       attributes: [
         'id',
@@ -30,6 +32,7 @@ export default class UserService {
         'dynamic',
         [cast(fn('COUNT', col('"messages"."id"')), 'int'), 'nbMessages'],
         [cast(fn('COUNT', col('"followers"."id"')), 'int'), 'nbFollowers'],
+        [literal('"followers".id IS NOT NULL'), 'following'],
       ],
       include: [
         {
@@ -39,7 +42,7 @@ export default class UserService {
           model: Follower.unscoped(), attributes: [], as: 'followers', required: false,
         },
       ],
-      group: ['"user"."id"'],
+      group: ['"user"."id"', '"followers"."id"'],
       transaction,
       raw: true,
       nest: true,
