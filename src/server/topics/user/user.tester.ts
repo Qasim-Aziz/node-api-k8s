@@ -92,5 +92,5 @@ export const getMe = async (user, {
       const userRes = res.body.user;
       if (nbMessages) expect(userRes.nbMessages).toBe(nbMessages);
       if (connexionCount) expect(userRes.nbConsecutiveConnexionDays).toEqual(connexionCount);
-      if (expectedUser) expect(userRes).toMatchObject(expectedUser);
+      if (expectedUser) expect(userRes).toEqual(expect.objectContaining(expectedUser));
     });

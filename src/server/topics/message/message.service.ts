@@ -3,7 +3,7 @@ import {
   Op, QueryTypes, sequelize, Sequelize,
 } from 'src/orm/database';
 import {
-  Comment, Favorite, Love, Message, Tag, Trait, View,
+  Comment, Favorite, Love, Message, Tag, Trait, User, View,
 } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import { getNextMessageQuery } from 'src/server/topics/message/message.query';
@@ -196,14 +196,20 @@ export class MessageService {
 
   static async create(messageData, { transaction = null } = {}) {
     const publishedAt = moment().toISOString();
+    console.log('here 1')
     const message = await Message.create({ ...messageData, publishedAt }, { transaction });
+    console.log('here 2')
+    await MessageService.updateUserScore(message.id, { transaction });
+    console.log('here 3')
     await MessageService.createOrUpdateTagsAndTraits(message.id, messageData.traitNames, { transaction });
+    console.log('here 4')
     return MessageService.get(message.id, { transaction });
   }
 
   static async update(messageId, messageData, { transaction = null } = {}) {
     await Message.update(messageData, { where: { id: messageId }, transaction });
     await MessageService.createOrUpdateTagsAndTraits(messageId, messageData.traitNames, { transaction });
+    await MessageService.updateUserScore(messageId, { transaction });
     return MessageService.get(messageId, { transaction });
   }
 
@@ -236,6 +242,7 @@ export class MessageService {
 
   static async delete(messageId, reqUserId, { transaction = null } = {}) {
     await MessageService.checkUserRight(reqUserId, messageId, { transaction });
+    await MessageService.updateUserScore(messageId, { transaction, deleteCase: true });
     await Tag.destroy({ where: { messageId }, transaction });
     await View.destroy({ where: { messageId }, transaction });
     await Love.destroy({ where: { messageId }, transaction });
@@ -247,5 +254,65 @@ export class MessageService {
       transaction,
       where: { name: { [Op.iLike]: `%${q}%` } },
     })).map((t) => t.name);
+  }
+
+  static computeTraitsScores(traitsLength) {
+    if (traitsLength > 5) {
+      return 2;
+    }
+    if (traitsLength !== 0) {
+      return 1;
+    }
+    return 0;
+  }
+
+  static computeMessageScore(message) {
+    const contentLength = message.content.length;
+    console.log('contentLength : ', contentLength)
+    const traitsLength = message.tags.length;
+    console.log('traitsLength : ', traitsLength)
+    const privacyMultiple = (message.privacy === PrivacyLevel.PUBLIC) ? 2 : 1;
+    console.log('privacyMultiple : ', privacyMultiple)
+    const traitScores = MessageService.computeTraitsScores(traitsLength);
+    console.log('traitScores : ', traitScores)
+    if (contentLength > 1000) {
+      return privacyMultiple * 5 + traitScores;
+    }
+    if (contentLength > 500) {
+      return privacyMultiple * 3 + traitScores;
+    }
+    return privacyMultiple * 1 + traitScores;
+  }
+
+  static async updateUserScore(messageId, { deleteCase = false, transaction = null } = {}) {
+    const message = await Message.unscoped().findByPk(messageId, {
+      attributes: ['addedScore', 'content', 'privacy', 'userId'],
+      include: [
+        { model: Tag.unscoped(), attributes: ['id'], required: false },
+        { model: User.unscoped(), attributes: ['id', 'totalScore', 'remindingScore'] },
+      ],
+      transaction,
+    });
+    console.log('message : ', message)
+    let delta;
+    const messageScore = MessageService.computeMessageScore(message);
+    console.log('messageScore : ', messageScore)
+    if (deleteCase) {
+      delta = 0 - messageScore;
+    } else {
+      delta = messageScore - message.addedScore;
+      await Message.update({ addedScore: messageScore }, { where: { id: messageId }, transaction });
+    }
+    console.log('delta : ', delta)
+    console.log('messageId : ', messageId)
+    console.log('message.user.totalScore + delta : ', message.user.totalScore + delta)
+    console.log('message.user.remindingScore + delta : ', message.user.remindingScore + delta)
+    await User.update(
+      {
+        totalScore: Math.min(message.user.totalScore + delta, 0),
+        remindingScore: Math.min(message.user.remindingScore + delta, 0),
+      },
+      { where: { id: message.user.id }, transaction },
+    );
   }
 }

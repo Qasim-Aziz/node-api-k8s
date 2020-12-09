@@ -65,5 +65,12 @@ describe('# Users Tests', () => {
     test('should get current user', async () => {
       await Testers.getMe(user, { nbMessages: 1, connexionCount: 0, expectedUser: { pseudo } });
     });
+
+    test('should update correctly user score', async () => {
+      const userScore = await Testers.registerUser({ password: 'pwd', email: 'userScore@yopmail.com', pseudo: 'userScore' });
+      // user should not have any score at first
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remindingScore: 0 } });
+
+    });
   });
 });

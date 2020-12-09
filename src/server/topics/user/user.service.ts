@@ -23,6 +23,8 @@ export default class UserService {
         'pseudo',
         'nbConsecutiveConnexionDays',
         'description',
+        'totalScore',
+        'remindingScore',
         [cast(fn('COUNT', col('"messages"."id"')), 'int'), 'nbMessages'],
       ],
       include: [

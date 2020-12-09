@@ -15,6 +15,10 @@ export class User extends OrmModel {
 
   public nbConsecutiveConnexionDays!: number;
 
+  public totalScore!: number;
+
+  public remindingScore!: number;
+
   public lastConnexionDate!: Date;
 }
 
@@ -58,6 +62,18 @@ User.init({
     allowNull: false,
     defaultValue: 0,
     field: 'nb_consecutive_connexion_days',
+  },
+  totalScore: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    field: 'total_score',
+  },
+  remindingScore: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    field: 'reminding_score',
   },
   isAdmin: {
     type: DataTypes.BOOLEAN,

@@ -33,6 +33,18 @@ module.exports = {
       defaultValue: 0,
       field: 'nb_consecutive_connexion_days',
     },
+    totalScore: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      field: 'total_score',
+    },
+    remindingScore: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      field: 'reminding_score',
+    },
     isAdmin: {
       type: Sequelize.BOOLEAN,
       allowNull: false,
