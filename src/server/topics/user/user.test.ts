@@ -68,9 +68,19 @@ describe('# Users Tests', () => {
 
     test('should update correctly user score', async () => {
       const userScore = await Testers.registerUser({ password: 'pwd', email: 'userScore@yopmail.com', pseudo: 'userScore' });
-      // user should not have any score at first
       await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remindingScore: 0 } });
-
+      const message12points = {
+        content: Array(1200).join('x'),
+        privacy: PrivacyLevel.PUBLIC,
+        emotionCode: EmotionCode.APAISE,
+        traitNames: ['A', 'B', 'C', 'D', 'E', 'F'],
+      };
+      await Testers.publishMessage(userScore, message12points);
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 12, remindingScore: 12 } });
+      await Testers.updateMessage(userScore, message12points.id, { content: 'abc', privacy: PrivacyLevel.PRIVATE });
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 3, remindingScore: 3 } });
+      await Testers.deleteMessage(userScore, message12points.id);
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remindingScore: 0 } });
     });
   });
 });

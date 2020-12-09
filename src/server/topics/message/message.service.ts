@@ -199,10 +199,10 @@ export class MessageService {
     console.log('here 1')
     const message = await Message.create({ ...messageData, publishedAt }, { transaction });
     console.log('here 2')
-    await MessageService.updateUserScore(message.id, { transaction });
-    console.log('here 3')
     await MessageService.createOrUpdateTagsAndTraits(message.id, messageData.traitNames, { transaction });
     console.log('here 4')
+    await MessageService.updateUserScore(message.id, { transaction });
+    console.log('here 3')
     return MessageService.get(message.id, { transaction });
   }
 
@@ -309,8 +309,8 @@ export class MessageService {
     console.log('message.user.remindingScore + delta : ', message.user.remindingScore + delta)
     await User.update(
       {
-        totalScore: Math.min(message.user.totalScore + delta, 0),
-        remindingScore: Math.min(message.user.remindingScore + delta, 0),
+        totalScore: Math.max(message.user.totalScore + delta, 0),
+        remindingScore: Math.max(message.user.remindingScore + delta, 0),
       },
       { where: { id: message.user.id }, transaction },
     );
