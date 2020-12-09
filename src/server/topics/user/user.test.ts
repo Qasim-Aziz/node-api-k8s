@@ -4,7 +4,7 @@ import { InitDBService } from 'src/initdb/initdb.service';
 import * as Testers from 'src/server/tests/testers';
 import { setUp } from 'src/server/tests/tester.base';
 import { moment } from 'src/server/helpers';
-import { EmotionCode, PrivacyLevel } from 'src/server/constants';
+import {DynamicLevel, EmotionCode, PrivacyLevel} from 'src/server/constants';
 
 const existingEmail = 'existing@yopmail.com';
 const existingPseudo = 'existing';
@@ -87,6 +87,20 @@ describe('# Users Tests', () => {
       await Testers.getMe(userScore, { expectedUser: { totalScore: 1, remindingScore: 1 } });
       await Testers.deleteMessageComment(userScore, comment2Points);
       await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remindingScore: 0 } });
+    });
+
+    test('should update correctly user score', async () => {
+      const userDynamic = await Testers.registerUser({ password: 'pwd', email: 'dynamic@yopmail.com', pseudo: 'dynamic' });
+      await Testers.getMe(userDynamic, { expectedUser: { dynamic: DynamicLevel.NOUVEAU } });
+      const messageGoodDynamic = { content: 'content', privacy: PrivacyLevel.PUBLIC, emotionCode: EmotionCode.HEUREUX };
+      await Testers.publishMessage(userDynamic, messageGoodDynamic);
+      await Testers.getMe(userDynamic, { expectedUser: { dynamic: DynamicLevel.EN_FORME } });
+      await Testers.publishMessage(userDynamic,
+        { content: 'content', privacy: PrivacyLevel.PUBLIC, emotionCode: EmotionCode.EFFONDRE });
+      await Testers.getMe(userDynamic, { expectedUser: { dynamic: DynamicLevel.COUCI_COUCA } });
+      await Testers.publishMessage(userDynamic,
+        { content: 'content', privacy: PrivacyLevel.PUBLIC, emotionCode: EmotionCode.EFFONDRE });
+      await Testers.getMe(userDynamic, { expectedUser: { dynamic: DynamicLevel.DES_JOURS_MEILLEURS } });
     });
   });
 });

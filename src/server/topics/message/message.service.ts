@@ -3,7 +3,7 @@ import {
   Op, QueryTypes, sequelize, Sequelize,
 } from 'src/orm/database';
 import {
-  Comment, Favorite, Love, Message, Tag, Trait, User, View,
+  Comment, Favorite, Love, Message, Tag, Trait, View,
 } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import { getNextMessageQuery } from 'src/server/topics/message/message.query';
@@ -199,6 +199,7 @@ export class MessageService {
     const message = await Message.create({ ...messageData, publishedAt }, { transaction });
     await MessageService.createOrUpdateTagsAndTraits(message.id, messageData.traitNames, { transaction });
     await UserService.updateUserScore(messageData.userId, { messageId: message.id, transaction });
+    await UserService.updateDynamic(messageData.userId, { transaction });
     return MessageService.get(message.id, { transaction });
   }
 
@@ -206,6 +207,7 @@ export class MessageService {
     await Message.update(messageData, { where: { id: messageId }, transaction });
     await MessageService.createOrUpdateTagsAndTraits(messageId, messageData.traitNames, { transaction });
     await UserService.updateUserScore(userId, { messageId, transaction });
+    await UserService.updateDynamic(userId, { transaction });
     return MessageService.get(messageId, { transaction });
   }
 
@@ -239,6 +241,7 @@ export class MessageService {
   static async delete(messageId, reqUserId, { transaction = null } = {}) {
     await MessageService.checkUserRight(reqUserId, messageId, { transaction });
     await UserService.updateUserScore(reqUserId, { messageId, transaction, deleteCase: true });
+    await UserService.updateDynamic(reqUserId, { transaction });
     await Tag.destroy({ where: { messageId }, transaction });
     await View.destroy({ where: { messageId }, transaction });
     await Love.destroy({ where: { messageId }, transaction });

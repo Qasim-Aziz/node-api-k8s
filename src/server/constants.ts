@@ -59,3 +59,28 @@ export enum PrivacyLevel {
   PUBLIC = 'PUBLIC',
   PRIVATE = 'PRIVATE',
 }
+
+export enum DynamicLevel {
+  COUCI_COUCA = 'COUCI_COUCA',
+  DES_JOURS_MEILLEURS = 'DES_JOURS_MEILLEURS',
+  EN_FORME = 'EN FORME',
+  NOUVEAU = 'NOUVEAU',
+}
+
+export const EmotionNote = {
+  [EmotionCode.APAISE]: 8,
+  [EmotionCode.CONTENT]: 9,
+  [EmotionCode.DECU]: 3,
+  [EmotionCode.CHOQUE]: 4,
+  [EmotionCode.DEPITE]: 3,
+  [EmotionCode.DEPRIME]: 2,
+  [EmotionCode.EFFONDRE]: 1,
+  [EmotionCode.ENERVE]: 4,
+  [EmotionCode.HEUREUX]: 10,
+  [EmotionCode.INCOMPRIS]: 4,
+  [EmotionCode.LASSE]: 5,
+  [EmotionCode.LEGER]: 7,
+  [EmotionCode.NERVEUX]: 4,
+  [EmotionCode.SURPRIS]: 5,
+  [EmotionCode.TRISTE]: 3,
+};

@@ -4,7 +4,8 @@ import {
 import { Message, Tag, User, Comment } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import httpStatus from 'http-status';
-import { PrivacyLevel } from 'src/server/constants';
+import {DynamicLevel, EmotionNote, PrivacyLevel} from 'src/server/constants';
+import {Sequelize} from "../../../orm/database";
 
 export default class UserService {
   static async checkEmailExist(email, { transaction = null } = {}) {
@@ -26,6 +27,7 @@ export default class UserService {
         'description',
         'totalScore',
         'remindingScore',
+        'dynamic',
         [cast(fn('COUNT', col('"messages"."id"')), 'int'), 'nbMessages'],
       ],
       include: [
@@ -151,5 +153,46 @@ export default class UserService {
     if (moment(user.lastConnexionDate).isSameOrAfter(moment().startOf('day'))) return user;
     const newNbConsecutiveDays = UserService.computeNbConsecutiveDays(user.lastConnexionDate, user.nbConsecutiveConnexionDays);
     return UserService.updateConnexionInformation(userId, newNbConsecutiveDays, { transaction });
+  }
+
+  static getDynamicLevel(note) {
+    if (note <= 4) return DynamicLevel.DES_JOURS_MEILLEURS;
+    if ((note <= 6) && (note > 4)) return DynamicLevel.COUCI_COUCA;
+    return DynamicLevel.EN_FORME;
+  }
+
+  static getCoeffAndNote(message, messageOrder, nbMessages) {
+    if (!message) return [0, 0];
+    const nbDaysAgo = moment(message.publicationDate).diff(moment(), 'day');
+    const note = EmotionNote[message.emotionCode];
+    const coeff = Math.sqrt(nbMessages - messageOrder) / (1 + nbDaysAgo);
+    return [note, coeff];
+  }
+
+  static computeAverageNote(messages) {
+    console.log('messages')
+    console.log(messages)
+    const coeffsAndNotes = messages.map((message, messageOrder) => UserService.getCoeffAndNote(message, messageOrder, messages.length));
+    console.log('coeffsAndNotes')
+    console.log(coeffsAndNotes)
+    const [valueSum, weightSum] = coeffsAndNotes.reduce(([vSum, wSum], [value, weight]) =>
+      ([vSum + value * weight, wSum + weight]), [0, 0]);
+    console.log('valueSum / weightSum')
+    console.log(valueSum / weightSum)
+    return valueSum / weightSum;
+  }
+
+  static async updateDynamic(userId, { transaction = null } = {}) {
+    const messages = await Message.unscoped().findAll({
+      transaction,
+      where: { userId },
+      attributes: ['publishedAt', 'emotionCode'],
+      order: [['publishedAt', 'desc']],
+      limit: 3,
+      raw: true,
+    });
+    if (!messages.length) return User.update({ dynamic: DynamicLevel.NOUVEAU }, { transaction, where: { id: userId } });
+    const note = UserService.computeAverageNote(messages);
+    return User.update({ dynamic: UserService.getDynamicLevel(note) }, { transaction, where: { id: userId } });
   }
 }

@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { OrmModel, sequelize } from 'src/orm/database';
 import { Utils } from 'src/server/helpers';
+import { DynamicLevel } from "src/server/constants";
 
 export class User extends OrmModel {
   public email!: string;
@@ -36,6 +37,13 @@ User.init({
     set(value: string) {
       this.setDataValue('email', (Utils.isNil(value)) ? value : value.toLowerCase());
     },
+  },
+  dynamic: {
+    type: DataTypes.ENUM,
+    values: Object.values(DynamicLevel),
+    field: 'dynamic',
+    allowNull: false,
+    defaultValue: DynamicLevel.NOUVEAU,
   },
   passwordHash: {
     type: DataTypes.STRING,
