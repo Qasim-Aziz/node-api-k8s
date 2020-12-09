@@ -170,15 +170,9 @@ export default class UserService {
   }
 
   static computeAverageNote(messages) {
-    console.log('messages')
-    console.log(messages)
     const coeffsAndNotes = messages.map((message, messageOrder) => UserService.getCoeffAndNote(message, messageOrder, messages.length));
-    console.log('coeffsAndNotes')
-    console.log(coeffsAndNotes)
     const [valueSum, weightSum] = coeffsAndNotes.reduce(([vSum, wSum], [value, weight]) =>
       ([vSum + value * weight, wSum + weight]), [0, 0]);
-    console.log('valueSum / weightSum')
-    console.log(valueSum / weightSum)
     return valueSum / weightSum;
   }
 
