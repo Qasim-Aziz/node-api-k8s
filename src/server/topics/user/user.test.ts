@@ -81,6 +81,12 @@ describe('# Users Tests', () => {
       await Testers.getMe(userScore, { expectedUser: { totalScore: 3, remindingScore: 3 } });
       await Testers.deleteMessage(userScore, message12points.id);
       await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remindingScore: 0 } });
+      const comment2Points = await Testers.commentMessage(userScore, message1, Array(160).join('x'));
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 2, remindingScore: 2 } });
+      await Testers.updateMessageComment(userScore, comment2Points, 'short comment');
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 1, remindingScore: 1 } });
+      await Testers.deleteMessageComment(userScore, comment2Points);
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remindingScore: 0 } });
     });
   });
 });

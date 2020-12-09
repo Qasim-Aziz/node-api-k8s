@@ -1,10 +1,10 @@
 import {
   cast, col, fn, Op,
 } from 'sequelize';
-import {Message, Tag, User} from 'src/orm';
+import { Message, Tag, User, Comment } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import httpStatus from 'http-status';
-import {PrivacyLevel} from "../../constants";
+import { PrivacyLevel } from 'src/server/constants';
 
 export default class UserService {
   static async checkEmailExist(email, { transaction = null } = {}) {
@@ -62,6 +62,14 @@ export default class UserService {
     return privacyMultiple * 1 + traitScores;
   }
 
+  static computeCommentScore(comment) {
+    const commentLength = comment.content.length;
+    if (commentLength > 150) {
+      return 2;
+    }
+    return 1;
+  }
+
   static async updateMessageScore(messageId, { deleteCase = false, transaction = null } = {}) {
     const message = await Message.unscoped().findByPk(messageId, {
       attributes: ['addedScore', 'content', 'privacy', 'userId'],
@@ -70,21 +78,36 @@ export default class UserService {
       ],
       transaction,
     });
-    let delta;
     const messageScore = UserService.computeMessageScore(message);
     if (deleteCase) {
-      delta = 0 - messageScore;
-    } else {
-      delta = messageScore - message.addedScore;
-      await Message.update({ addedScore: messageScore }, { where: { id: messageId }, transaction });
+      return 0 - messageScore;
     }
-    return delta;
+    await Message.update({ addedScore: messageScore }, { where: { id: messageId }, transaction });
+    return messageScore - message.addedScore;
   }
 
-  static async updateUserScore(userId, { messageId = null, deleteCase = false, transaction = null } = {}) {
+  static async updateCommentScore(commentId, { deleteCase = false, transaction = null } = {}) {
+    const comment = await Comment.unscoped().findByPk(commentId, {
+      attributes: ['addedScore', 'content'],
+      transaction,
+    });
+    const commentScore = UserService.computeCommentScore(comment);
+    if (deleteCase) {
+      return 0 - commentScore;
+    }
+    await Comment.update({ addedScore: commentScore }, { where: { id: commentId }, transaction });
+    return commentScore - comment.addedScore;
+  }
+
+  static async updateUserScore(userId, {
+    messageId = null,
+    commentId = null,
+    deleteCase = false,
+    transaction = null,
+  } = {}) {
     const delta = messageId
       ? await UserService.updateMessageScore(messageId, { deleteCase, transaction })
-      : 0;
+      : await UserService.updateCommentScore(commentId, { deleteCase, transaction });
     const user = await User.unscoped().findByPk(userId, { attributes: ['id', 'totalScore', 'remindingScore'], transaction });
     await User.update(
       {
