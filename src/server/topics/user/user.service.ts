@@ -1,9 +1,10 @@
 import {
   cast, col, fn, Op,
 } from 'sequelize';
-import { Message, User } from 'src/orm';
+import {Message, Tag, User} from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import httpStatus from 'http-status';
+import {PrivacyLevel} from "../../constants";
 
 export default class UserService {
   static async checkEmailExist(email, { transaction = null } = {}) {
@@ -28,13 +29,70 @@ export default class UserService {
         [cast(fn('COUNT', col('"messages"."id"')), 'int'), 'nbMessages'],
       ],
       include: [
-        { model: Message.unscoped(), attributes: [], required: false },
+        {model: Message.unscoped(), attributes: [], required: false},
       ],
       group: ['"user"."id"'],
       transaction,
       raw: true,
       nest: true,
     });
+  }
+
+  static computeTraitsScores(traitsLength) {
+    if (traitsLength > 5) {
+      return 2;
+    }
+    if (traitsLength !== 0) {
+      return 1;
+    }
+    return 0;
+  }
+
+  static computeMessageScore(message) {
+    const contentLength = message.content.length;
+    const traitsLength = message.tags.length;
+    const privacyMultiple = (message.privacy === PrivacyLevel.PUBLIC) ? 2 : 1;
+    const traitScores = UserService.computeTraitsScores(traitsLength);
+    if (contentLength > 1000) {
+      return privacyMultiple * 5 + traitScores;
+    }
+    if (contentLength > 500) {
+      return privacyMultiple * 3 + traitScores;
+    }
+    return privacyMultiple * 1 + traitScores;
+  }
+
+  static async updateMessageScore(messageId, { deleteCase = false, transaction = null } = {}) {
+    const message = await Message.unscoped().findByPk(messageId, {
+      attributes: ['addedScore', 'content', 'privacy', 'userId'],
+      include: [
+        { model: Tag.unscoped(), attributes: ['id'], required: false },
+      ],
+      transaction,
+    });
+    let delta;
+    const messageScore = UserService.computeMessageScore(message);
+    if (deleteCase) {
+      delta = 0 - messageScore;
+    } else {
+      delta = messageScore - message.addedScore;
+      await Message.update({ addedScore: messageScore }, { where: { id: messageId }, transaction });
+    }
+    return delta;
+  }
+
+  static async updateUserScore(userId, { messageId = null, deleteCase = false, transaction = null } = {}) {
+    const delta = messageId
+      ? await UserService.updateMessageScore(messageId, { deleteCase, transaction })
+      : 0;
+    const user = await User.unscoped().findByPk(userId, { attributes: ['id', 'totalScore', 'remindingScore'], transaction });
+    await User.update(
+      {
+        totalScore: Math.max(user.totalScore + delta, 0),
+        remindingScore: Math.max(user.remindingScore + delta, 0),
+      },
+      { where: { id: user.id }, transaction },
+    );
   }
 
   static async updateUser(userId, userData, { transaction = null } = {}) {

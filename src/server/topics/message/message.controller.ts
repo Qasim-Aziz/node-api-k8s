@@ -73,9 +73,9 @@ export class MessageController {
   })
   @Auth.forLogged()
   static async update(req, { transaction = null } = {}) {
-    const { params: { messageId }, body: messageData } = req;
-    await MessageService.checkUserRight(req.user.id, messageId);
-    const message = await MessageService.update(messageId, messageData, { transaction });
+    const { params: { messageId }, body: messageData, user: { id: reqUserId } } = req;
+    await MessageService.checkUserRight(reqUserId, messageId);
+    const message = await MessageService.update(messageId, messageData, { transaction, userId: reqUserId });
     return { message };
   }
 
