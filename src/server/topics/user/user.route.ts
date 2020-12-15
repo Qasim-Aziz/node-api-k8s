@@ -12,6 +12,7 @@ userRoutes
   })
   .addRoute('/me', {
     get: { handler: UserController.getMe },
+    put: { handler: UserController.updateMe },
   })
   .addRoute('/:userId', {
     get: { handler: UserController.getUser },

@@ -1,4 +1,6 @@
-import { BackError, Env, logger, ValidationError } from 'src/server/helpers';
+import {
+  BackError, Env, logger, ValidationError,
+} from 'src/server/helpers';
 
 export const appErrorConverter = (err, req, res, next) => {
   if (Env.isTest) {

@@ -39,4 +39,28 @@ export class AuthController {
     cookiesManager.clearCookies();
     return { status: 'Ok' };
   }
+
+  @validation({
+    body: { email: Joi.string().email().required() },
+  })
+  @Auth.forAll()
+  static async forgetPassword(req, { transaction = null } = {}) {
+    const { body: { email } } = req;
+    await AuthService.forgetPassword(email, { transaction });
+    return { status: 'OK' };
+  }
+
+  @validation({
+    body: {
+      email: Joi.string().email().required(),
+      resetPasswordCode: Joi.string().min(6).max(8).required(),
+    },
+  })
+  @Auth.forAll()
+  static async resetPassword(req, { transaction, cookiesManager }) {
+    const { body: { email, resetPasswordCode } } = req;
+    const { user, token } = await AuthService.resetPassword(email, resetPasswordCode.toUpperCase(), { transaction });
+    cookiesManager.setCookies(token);
+    return { user, token };
+  }
 }

@@ -1,9 +1,12 @@
 import httpStatus from 'http-status';
+import sinon from 'sinon';
 import request from 'supertest';
 import app from 'src/application';
 import { CookiesManager } from 'src/server/acl/cookies-manager';
 import { checkExpectedStatus } from 'src/server/tests/tester.base';
 import { moment } from 'src/server/helpers';
+import EmailService from 'src/server/topics/email/email.service';
+import { EmailTemplates } from 'src/server/topics/email/templates/templates.enum';
 
 const getToken = (res) => {
   expect(res.headers['set-cookie']).toBeDefined();
@@ -47,4 +50,31 @@ export const logoutUser = async (user, { status = httpStatus.OK } = {}) =>
       const cookies = CookiesManager.extractCookies(res);
       expect(cookies.token).toBe('');
       return Object.assign(user, { token: null });
+    });
+
+export const forgetPassword = async (email, { status = httpStatus.OK } = {}) => {
+  const sendEmailStub = sinon.stub(EmailService, 'sendEmail');
+  return request(app)
+    .post('/api/auth/forget-password')
+    .send({ email })
+    .expect(checkExpectedStatus(status))
+    .then(() => {
+      expect(sendEmailStub.callCount).toBe(1);
+      const { firstArg: { to, template, templateData: { resetPasswordCode } } } = sendEmailStub.getCall(0);
+      expect(to).toEqual(email);
+      expect(template).toEqual(EmailTemplates.RESET_PASSWORD);
+      return resetPasswordCode;
+    })
+    .finally(() => sendEmailStub.restore());
+};
+
+export const resetPassword = async (email, resetPasswordCode, { status = httpStatus.OK } = {}) =>
+  request(app)
+    .post('/api/auth/reset-password')
+    .send({ email, resetPasswordCode })
+    .expect(checkExpectedStatus(status))
+    .then((res) => {
+      const token = getToken(res);
+      expect(res.body.user.shouldResetPassword).toBe(true);
+      return { ...res.body.user, token };
     });

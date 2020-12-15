@@ -12,6 +12,12 @@ userRoutes
   })
   .addRoute('/register', {
     post: { handler: AuthController.register },
+  })
+  .addRoute('/forget-password', {
+    post: { handler: AuthController.forgetPassword },
+  })
+  .addRoute('/reset-password', {
+    post: { handler: AuthController.resetPassword },
   });
 
 export default userRoutes.getRouter();

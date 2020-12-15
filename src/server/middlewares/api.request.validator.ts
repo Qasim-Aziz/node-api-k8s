@@ -30,18 +30,17 @@ const validate = (errObj, request, schema, location, allowUnknown, context) => {
     allowUnknown,
     abortEarly: false,
   };
-
-  const { errors, value } = Joi.object(schema).validate(request, joiOptions);
-  if (!errors || errors.details.length === 0) {
+  const { error, value } = Joi.object(schema).required().validate(request, joiOptions);
+  if (!error || error.details.length === 0) {
     Object.assign(request, value);
     return;
   }
 
-  errors.details.forEach((error) => {
+  error.details.forEach((err) => {
     const errorExists = errObj.find((item) => {
-      if (item && item.field === error.path && item.location === location) {
-        item.messages.push(error.message);
-        item.types.push(error.type);
+      if (item && item.field === err.path && item.location === location) {
+        item.messages.push(err.message);
+        item.types.push(err.type);
         return item;
       }
       return false;
@@ -49,10 +48,10 @@ const validate = (errObj, request, schema, location, allowUnknown, context) => {
 
     if (!errorExists) {
       errObj.push({
-        field: error.path,
+        field: err.path,
         location,
-        messages: [error.message],
-        types: [error.type],
+        messages: [err.message],
+        types: [err.type],
       });
     }
   });

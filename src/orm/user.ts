@@ -21,6 +21,12 @@ export class User extends OrmModel {
   public remindingScore!: number;
 
   public lastConnexionDate!: Date;
+
+  public shouldResetPassword!: boolean;
+
+  public resetPasswordCode!: string;
+
+  public resetPasswordExpires!: Date;
 }
 
 User.init({
@@ -88,6 +94,22 @@ User.init({
     allowNull: false,
     field: 'is_admin',
     defaultValue: false,
+  },
+  shouldResetPassword: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    field: 'should_reset_password',
+  },
+  resetPasswordCode: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'reset_password_code',
+  },
+  resetPasswordExpires: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'reset_password_expires',
   },
 }, {
   sequelize,

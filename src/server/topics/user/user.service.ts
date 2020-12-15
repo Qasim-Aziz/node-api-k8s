@@ -1,11 +1,12 @@
 import {
   cast, col, fn, Op,
 } from 'sequelize';
-import { Message, Tag, User, Comment } from 'src/orm';
+import {
+  Message, Tag, User, Comment,
+} from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import httpStatus from 'http-status';
-import {DynamicLevel, EmotionNote, PrivacyLevel} from 'src/server/constants';
-import {Sequelize} from "../../../orm/database";
+import { DynamicLevel, EmotionNote, PrivacyLevel } from 'src/server/constants';
 
 export default class UserService {
   static async checkEmailExist(email, { transaction = null } = {}) {
@@ -25,13 +26,14 @@ export default class UserService {
         'pseudo',
         'nbConsecutiveConnexionDays',
         'description',
+        'shouldResetPassword',
         'totalScore',
         'remindingScore',
         'dynamic',
         [cast(fn('COUNT', col('"messages"."id"')), 'int'), 'nbMessages'],
       ],
       include: [
-        {model: Message.unscoped(), attributes: [], required: false},
+        { model: Message.unscoped(), attributes: [], required: false },
       ],
       group: ['"user"."id"'],
       transaction,
@@ -121,11 +123,15 @@ export default class UserService {
   }
 
   static async updateUser(userId, userData, { transaction = null } = {}) {
+    const user = await User.findByPk(userId, { transaction });
+    if (userData.password && user.shouldResetPassword) {
+      Object.assign(userData, { shouldResetPassword: false });
+    }
     if (userData.pseudo) {
       const isPseudoUsed = await UserService.checkPseudoExist(userData.pseudo, { transaction, userId });
       if (isPseudoUsed) throw new BackError('Le pseudo est déjà utilisé', httpStatus.BAD_REQUEST);
     }
-    await User.update(userData, { transaction, where: { id: userId } });
+    await user.update(userData, { transaction });
     return UserService.getUser(userId, { transaction });
   }
 
