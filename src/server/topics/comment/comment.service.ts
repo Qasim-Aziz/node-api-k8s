@@ -4,6 +4,7 @@ import {
 import { Sequelize } from 'src/orm/database';
 import { BackError, moment } from 'src/server/helpers';
 import httpStatus from 'http-status';
+import UserService from "../user/user.service";
 
 export default class CommentService {
   static async getComments(messageId, {
@@ -60,7 +61,7 @@ export default class CommentService {
       content,
       postedAt: moment(),
     }, { transaction });
-
+    await UserService.updateUserScore(userId, { commentId, transaction });
     return CommentService.getComment(commentId, { userId, transaction });
   }
 
@@ -70,6 +71,7 @@ export default class CommentService {
       throw new BackError('Cannot update comment', httpStatus.FORBIDDEN);
     }
     await comment.update({ content }, { transaction });
+    await UserService.updateUserScore(userId, { commentId, transaction });
     return comment;
   }
 
@@ -94,6 +96,7 @@ export default class CommentService {
     if (comment.user.id !== userId) {
       throw new BackError('Cannot delete comment', httpStatus.FORBIDDEN);
     }
+    await UserService.updateUserScore(userId, { commentId, transaction, deleteCase: true });
     await comment.destroy({ transaction });
     return comment;
   }

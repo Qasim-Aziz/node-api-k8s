@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { OrmModel, sequelize } from 'src/orm/database';
 import { Utils } from 'src/server/helpers';
+import { DynamicLevel } from "src/server/constants";
 
 export class User extends OrmModel {
   public email!: string;
@@ -14,6 +15,10 @@ export class User extends OrmModel {
   public isAdmin!: boolean;
 
   public nbConsecutiveConnexionDays!: number;
+
+  public totalScore!: number;
+
+  public remindingScore!: number;
 
   public lastConnexionDate!: Date;
 }
@@ -32,6 +37,13 @@ User.init({
     set(value: string) {
       this.setDataValue('email', (Utils.isNil(value)) ? value : value.toLowerCase());
     },
+  },
+  dynamic: {
+    type: DataTypes.ENUM,
+    values: Object.values(DynamicLevel),
+    field: 'dynamic',
+    allowNull: false,
+    defaultValue: DynamicLevel.NOUVEAU,
   },
   passwordHash: {
     type: DataTypes.STRING,
@@ -58,6 +70,18 @@ User.init({
     allowNull: false,
     defaultValue: 0,
     field: 'nb_consecutive_connexion_days',
+  },
+  totalScore: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    field: 'total_score',
+  },
+  remindingScore: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    field: 'reminding_score',
   },
   isAdmin: {
     type: DataTypes.BOOLEAN,

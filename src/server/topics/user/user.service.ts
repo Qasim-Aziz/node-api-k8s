@@ -1,9 +1,11 @@
 import {
   cast, col, fn, Op,
 } from 'sequelize';
-import { Message, User } from 'src/orm';
+import { Message, Tag, User, Comment } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import httpStatus from 'http-status';
+import {DynamicLevel, EmotionNote, PrivacyLevel} from 'src/server/constants';
+import {Sequelize} from "../../../orm/database";
 
 export default class UserService {
   static async checkEmailExist(email, { transaction = null } = {}) {
@@ -23,16 +25,99 @@ export default class UserService {
         'pseudo',
         'nbConsecutiveConnexionDays',
         'description',
+        'totalScore',
+        'remindingScore',
+        'dynamic',
         [cast(fn('COUNT', col('"messages"."id"')), 'int'), 'nbMessages'],
       ],
       include: [
-        { model: Message.unscoped(), attributes: [], required: false },
+        {model: Message.unscoped(), attributes: [], required: false},
       ],
       group: ['"user"."id"'],
       transaction,
       raw: true,
       nest: true,
     });
+  }
+
+  static computeTraitsScores(traitsLength) {
+    if (traitsLength > 5) {
+      return 2;
+    }
+    if (traitsLength !== 0) {
+      return 1;
+    }
+    return 0;
+  }
+
+  static computeMessageScore(message) {
+    const contentLength = message.content.length;
+    const traitsLength = message.tags.length;
+    const privacyMultiple = (message.privacy === PrivacyLevel.PUBLIC) ? 2 : 1;
+    const traitScores = UserService.computeTraitsScores(traitsLength);
+    if (contentLength > 1000) {
+      return privacyMultiple * 5 + traitScores;
+    }
+    if (contentLength > 500) {
+      return privacyMultiple * 3 + traitScores;
+    }
+    return privacyMultiple * 1 + traitScores;
+  }
+
+  static computeCommentScore(comment) {
+    const commentLength = comment.content.length;
+    if (commentLength > 150) {
+      return 2;
+    }
+    return 1;
+  }
+
+  static async updateMessageScore(messageId, { deleteCase = false, transaction = null } = {}) {
+    const message = await Message.unscoped().findByPk(messageId, {
+      attributes: ['addedScore', 'content', 'privacy', 'userId'],
+      include: [
+        { model: Tag.unscoped(), attributes: ['id'], required: false },
+      ],
+      transaction,
+    });
+    const messageScore = UserService.computeMessageScore(message);
+    if (deleteCase) {
+      return 0 - messageScore;
+    }
+    await Message.update({ addedScore: messageScore }, { where: { id: messageId }, transaction });
+    return messageScore - message.addedScore;
+  }
+
+  static async updateCommentScore(commentId, { deleteCase = false, transaction = null } = {}) {
+    const comment = await Comment.unscoped().findByPk(commentId, {
+      attributes: ['addedScore', 'content'],
+      transaction,
+    });
+    const commentScore = UserService.computeCommentScore(comment);
+    if (deleteCase) {
+      return 0 - commentScore;
+    }
+    await Comment.update({ addedScore: commentScore }, { where: { id: commentId }, transaction });
+    return commentScore - comment.addedScore;
+  }
+
+  static async updateUserScore(userId, {
+    messageId = null,
+    commentId = null,
+    deleteCase = false,
+    transaction = null,
+  } = {}) {
+    const delta = messageId
+      ? await UserService.updateMessageScore(messageId, { deleteCase, transaction })
+      : await UserService.updateCommentScore(commentId, { deleteCase, transaction });
+    const user = await User.unscoped().findByPk(userId, { attributes: ['id', 'totalScore', 'remindingScore'], transaction });
+    await User.update(
+      {
+        totalScore: Math.max(user.totalScore + delta, 0),
+        remindingScore: Math.max(user.remindingScore + delta, 0),
+      },
+      { where: { id: user.id }, transaction },
+    );
   }
 
   static async updateUser(userId, userData, { transaction = null } = {}) {
@@ -68,5 +153,40 @@ export default class UserService {
     if (moment(user.lastConnexionDate).isSameOrAfter(moment().startOf('day'))) return user;
     const newNbConsecutiveDays = UserService.computeNbConsecutiveDays(user.lastConnexionDate, user.nbConsecutiveConnexionDays);
     return UserService.updateConnexionInformation(userId, newNbConsecutiveDays, { transaction });
+  }
+
+  static getDynamicLevel(note) {
+    if (note <= 4) return DynamicLevel.DES_JOURS_MEILLEURS;
+    if ((note <= 6) && (note > 4)) return DynamicLevel.COUCI_COUCA;
+    return DynamicLevel.EN_FORME;
+  }
+
+  static getCoeffAndNote(message, messageOrder, nbMessages) {
+    if (!message) return [0, 0];
+    const nbDaysAgo = moment(message.publicationDate).diff(moment(), 'day');
+    const note = EmotionNote[message.emotionCode];
+    const coeff = Math.sqrt(nbMessages - messageOrder) / (1 + nbDaysAgo);
+    return [note, coeff];
+  }
+
+  static computeAverageNote(messages) {
+    const coeffsAndNotes = messages.map((message, messageOrder) => UserService.getCoeffAndNote(message, messageOrder, messages.length));
+    const [valueSum, weightSum] = coeffsAndNotes.reduce(([vSum, wSum], [value, weight]) =>
+      ([vSum + value * weight, wSum + weight]), [0, 0]);
+    return valueSum / weightSum;
+  }
+
+  static async updateDynamic(userId, { transaction = null } = {}) {
+    const messages = await Message.unscoped().findAll({
+      transaction,
+      where: { userId },
+      attributes: ['publishedAt', 'emotionCode'],
+      order: [['publishedAt', 'desc']],
+      limit: 3,
+      raw: true,
+    });
+    if (!messages.length) return User.update({ dynamic: DynamicLevel.NOUVEAU }, { transaction, where: { id: userId } });
+    const note = UserService.computeAverageNote(messages);
+    return User.update({ dynamic: UserService.getDynamicLevel(note) }, { transaction, where: { id: userId } });
   }
 }

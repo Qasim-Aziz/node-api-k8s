@@ -64,6 +64,11 @@ module.exports = {
         values: Object.values(EMOTION_CODES),
         allowNull: false,
       },
+      added_score: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
       privacy: {
         type: Sequelize.ENUM,
         values: Object.values(PRIVACY_LEVEL),

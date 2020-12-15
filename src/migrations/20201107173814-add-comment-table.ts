@@ -27,6 +27,12 @@ module.exports = {
         defaultValue: 0,
         field: 'comments_count',
       },
+      added_score: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+        field: 'added_score',
+      },
       messageId: {
         field: 'message_id',
         type: Sequelize.INTEGER,

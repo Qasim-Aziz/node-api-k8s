@@ -44,8 +44,8 @@ export const updateMessage = async (user, messageId, messageData, { status = htt
   const { traitNames, ...otherAttributes } = messageData;
   expect(messageRes).toMatchObject(otherAttributes);
   if (messageData.traitNames) expect(messageRes.traitNames.sort()).toEqual(messageData.traitNames.sort());
-  expect(messageRes.nbLoves).toEqual(nbLoves);
-  expect(messageRes.nbViews).toEqual(nbViews);
+  if (nbLoves !== null) expect(messageRes.nbLoves).toEqual(nbLoves);
+  if (nbViews !== null) expect(messageRes.nbViews).toEqual(nbViews);
   expect(messageRes.userId).toEqual(user.id);
   return messageRes;
 };

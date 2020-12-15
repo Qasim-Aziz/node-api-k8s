@@ -4,7 +4,7 @@ import { InitDBService } from 'src/initdb/initdb.service';
 import * as Testers from 'src/server/tests/testers';
 import { setUp } from 'src/server/tests/tester.base';
 import { moment } from 'src/server/helpers';
-import { EmotionCode, PrivacyLevel } from 'src/server/constants';
+import {DynamicLevel, EmotionCode, PrivacyLevel} from 'src/server/constants';
 
 const existingEmail = 'existing@yopmail.com';
 const existingPseudo = 'existing';
@@ -64,6 +64,43 @@ describe('# Users Tests', () => {
 
     test('should get current user', async () => {
       await Testers.getMe(user, { nbMessages: 1, connexionCount: 0, expectedUser: { pseudo } });
+    });
+
+    test('should update correctly user score', async () => {
+      const userScore = await Testers.registerUser({ password: 'pwd', email: 'userScore@yopmail.com', pseudo: 'userScore' });
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remindingScore: 0 } });
+      const message12points = {
+        content: Array(1200).join('x'),
+        privacy: PrivacyLevel.PUBLIC,
+        emotionCode: EmotionCode.APAISE,
+        traitNames: ['A', 'B', 'C', 'D', 'E', 'F'],
+      };
+      await Testers.publishMessage(userScore, message12points);
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 12, remindingScore: 12 } });
+      await Testers.updateMessage(userScore, message12points.id, { content: 'abc', privacy: PrivacyLevel.PRIVATE });
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 3, remindingScore: 3 } });
+      await Testers.deleteMessage(userScore, message12points.id);
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remindingScore: 0 } });
+      const comment2Points = await Testers.commentMessage(userScore, message1, Array(160).join('x'));
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 2, remindingScore: 2 } });
+      await Testers.updateMessageComment(userScore, comment2Points, 'short comment');
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 1, remindingScore: 1 } });
+      await Testers.deleteMessageComment(userScore, comment2Points);
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remindingScore: 0 } });
+    });
+
+    test('should update correctly user score', async () => {
+      const userDynamic = await Testers.registerUser({ password: 'pwd', email: 'dynamic@yopmail.com', pseudo: 'dynamic' });
+      await Testers.getMe(userDynamic, { expectedUser: { dynamic: DynamicLevel.NOUVEAU } });
+      const messageGoodDynamic = { content: 'content', privacy: PrivacyLevel.PUBLIC, emotionCode: EmotionCode.HEUREUX };
+      await Testers.publishMessage(userDynamic, messageGoodDynamic);
+      await Testers.getMe(userDynamic, { expectedUser: { dynamic: DynamicLevel.EN_FORME } });
+      await Testers.publishMessage(userDynamic,
+        { content: 'content', privacy: PrivacyLevel.PUBLIC, emotionCode: EmotionCode.EFFONDRE });
+      await Testers.getMe(userDynamic, { expectedUser: { dynamic: DynamicLevel.COUCI_COUCA } });
+      await Testers.publishMessage(userDynamic,
+        { content: 'content', privacy: PrivacyLevel.PUBLIC, emotionCode: EmotionCode.EFFONDRE });
+      await Testers.getMe(userDynamic, { expectedUser: { dynamic: DynamicLevel.DES_JOURS_MEILLEURS } });
     });
   });
 });

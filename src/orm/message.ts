@@ -17,6 +17,8 @@ export class Message extends OrmModel {
   public userId!: number;
 
   public nbViews!: number;
+
+  public addedScore!: number;
 }
 
 Message.init({
@@ -41,6 +43,12 @@ Message.init({
     values: Object.values(PrivacyLevel),
     field: 'privacy',
     allowNull: false,
+  },
+  addedScore: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    field: 'added_score',
   },
 }, {
   sequelize,

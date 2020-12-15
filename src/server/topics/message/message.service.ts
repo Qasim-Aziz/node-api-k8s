@@ -198,12 +198,16 @@ export class MessageService {
     const publishedAt = moment().toISOString();
     const message = await Message.create({ ...messageData, publishedAt }, { transaction });
     await MessageService.createOrUpdateTagsAndTraits(message.id, messageData.traitNames, { transaction });
+    await UserService.updateUserScore(messageData.userId, { messageId: message.id, transaction });
+    await UserService.updateDynamic(messageData.userId, { transaction });
     return MessageService.get(message.id, { transaction });
   }
 
-  static async update(messageId, messageData, { transaction = null } = {}) {
+  static async update(messageId, messageData, { transaction = null, userId = null } = {}) {
     await Message.update(messageData, { where: { id: messageId }, transaction });
     await MessageService.createOrUpdateTagsAndTraits(messageId, messageData.traitNames, { transaction });
+    await UserService.updateUserScore(userId, { messageId, transaction });
+    await UserService.updateDynamic(userId, { transaction });
     return MessageService.get(messageId, { transaction });
   }
 
@@ -236,6 +240,8 @@ export class MessageService {
 
   static async delete(messageId, reqUserId, { transaction = null } = {}) {
     await MessageService.checkUserRight(reqUserId, messageId, { transaction });
+    await UserService.updateUserScore(reqUserId, { messageId, transaction, deleteCase: true });
+    await UserService.updateDynamic(reqUserId, { transaction });
     await Tag.destroy({ where: { messageId }, transaction });
     await View.destroy({ where: { messageId }, transaction });
     await Love.destroy({ where: { messageId }, transaction });

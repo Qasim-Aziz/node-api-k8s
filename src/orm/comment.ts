@@ -16,6 +16,8 @@ export class Comment extends OrmModel {
 
   public commentsCount!: number;
 
+  public addedScore!: number;
+
   public loved!: boolean;
 
   public comments!: Comment[];
@@ -42,6 +44,12 @@ Comment.init({
     allowNull: false,
     defaultValue: 0,
     field: 'comments_count',
+  },
+  addedScore: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    field: 'added_score',
   },
 }, { sequelize, tableName: 'comment', modelName: 'comment' });
 
