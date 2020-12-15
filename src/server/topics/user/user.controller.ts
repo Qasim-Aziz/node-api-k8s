@@ -10,8 +10,8 @@ export class UserController {
   })
   @Auth.forLogged()
   static async getUser(req, { transaction = null } = {}) {
-    const { params: { userId } } = req;
-    const user = await UserService.getUser(userId, { transaction });
+    const { params: { userId }, user: { id: loggedUserId } } = req;
+    const user = await UserService.getUser(userId, { loggedUserId, transaction });
     return { user };
   }
 
@@ -80,5 +80,37 @@ export class UserController {
     const { query: { pseudo }, transaction } = req;
     const pseudoUsed = await UserService.checkPseudoExist(pseudo, { transaction });
     return { pseudoUsed };
+  }
+
+  @validation({
+    params: { userId: Joi.number().integer().required() },
+  })
+  @Auth.forLogged()
+  static async followOrUnfollow(req, { transaction = null } = {}) {
+    const { params: { userId: followedId }, user: { id: followerId } } = req;
+    const user = await UserService.followOrUnfollow(followerId, followedId, { transaction });
+    return { user };
+  }
+
+  @validation({
+    params: { userId: Joi.number().integer().required() },
+  })
+  @Auth.forLogged()
+  static async getFollowers(req, { transaction = null } = {}) {
+    const { params: { userId: followedId } } = req;
+
+    const followers = await UserService.getFollowers(followedId, { transaction });
+    return { followers };
+  }
+
+  @validation({
+    params: { userId: Joi.number().integer().required() },
+  })
+  @Auth.forLogged()
+  static async getFollowed(req, { transaction = null } = {}) {
+    const { params: { userId: followerId } } = req;
+
+    const followed = await UserService.getFollowed(followerId, { transaction });
+    return { followed };
   }
 }

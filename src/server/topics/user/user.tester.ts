@@ -94,3 +94,40 @@ export const getMe = async (user, {
       if (connexionCount) expect(userRes.nbConsecutiveConnexionDays).toEqual(connexionCount);
       if (expectedUser) expect(userRes).toEqual(expect.objectContaining(expectedUser));
     });
+
+export const followOrUnfollow = async (follower, followed, {
+  status = httpStatus.OK,
+  nbFollowers = null,
+} = {}) =>
+  request(app)
+    .post(`/api/users/${followed.id}/followOrUnfollow`)
+    .set('cookie', follower.token)
+    .expect(checkExpectedStatus(status))
+    .then((res) => {
+      if (nbFollowers) expect(res.body.user.nbFollowers).toBe(nbFollowers);
+    });
+
+export const getFollowers = async (followed, {
+  status = httpStatus.OK,
+  followers = null,
+} = {}) =>
+  request(app)
+    .get(`/api/users/${followed.id}/followers`)
+    .set('cookie', followed.token)
+    .expect(checkExpectedStatus(status))
+    .then((res) => {
+      console.log(res.body)
+      if (followers) expect(res.body.followers).toEqual(followers.map((f) => ({ pseudo: f.pseudo })));
+    });
+
+export const getFollowed = async (follower, {
+  status = httpStatus.OK,
+  followed = null,
+} = {}) =>
+  request(app)
+    .get(`/api/users/${follower.id}/followed`)
+    .set('cookie', follower.token)
+    .expect(checkExpectedStatus(status))
+    .then((res) => {
+      if (followed) expect(res.body.followed).toEqual(followed.map((f) => ({ pseudo: f.pseudo })));
+    });

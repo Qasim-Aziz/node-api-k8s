@@ -1,8 +1,8 @@
 import {
-  cast, col, fn, Op,
+  cast, col, fn, Op, literal,
 } from 'sequelize';
 import {
-  Message, Tag, User, Comment,
+  Message, User, Tag, Comment, Follower,
 } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import httpStatus from 'http-status';
@@ -19,7 +19,7 @@ export default class UserService {
       .then((count) => count !== 0);
   }
 
-  static async getUser(userId, { transaction = null } = {}) {
+  static async getUser(userId, { loggedUserId = null, transaction = null } = {}) {
     return User.unscoped().findByPk(userId, {
       attributes: [
         'id',
@@ -31,11 +31,18 @@ export default class UserService {
         'remindingScore',
         'dynamic',
         [cast(fn('COUNT', col('"messages"."id"')), 'int'), 'nbMessages'],
+        [cast(fn('COUNT', col('"followers"."id"')), 'int'), 'nbFollowers'],
+        [literal('"followers".id IS NOT NULL'), 'following'],
       ],
       include: [
-        { model: Message.unscoped(), attributes: [], required: false },
+        {
+          model: Message.unscoped(), attributes: [], required: false,
+        },
+        {
+          model: Follower.unscoped(), attributes: [], as: 'followers', required: false,
+        },
       ],
-      group: ['"user"."id"'],
+      group: ['"user"."id"', '"followers"."id"'],
       transaction,
       raw: true,
       nest: true,
@@ -159,6 +166,50 @@ export default class UserService {
     if (moment(user.lastConnexionDate).isSameOrAfter(moment().startOf('day'))) return user;
     const newNbConsecutiveDays = UserService.computeNbConsecutiveDays(user.lastConnexionDate, user.nbConsecutiveConnexionDays);
     return UserService.updateConnexionInformation(userId, newNbConsecutiveDays, { transaction });
+  }
+
+  static async followOrUnfollow(followerId, followedId, { transaction = null } = {}) {
+    const following = await Follower.findOne({ where: { followerId, followedId }, transaction });
+    if (following) {
+      await following.destroy({ transaction });
+    } else {
+      await Follower.create({ followerId, followedId }, { transaction });
+    }
+    return UserService.getUser(followedId, { transaction });
+  }
+
+  static async getFollowers(followedId, { transaction = null } = {}) {
+    return User.unscoped().findAll({
+      attributes: ['pseudo'],
+      include: [
+        {
+          model: Follower.unscoped(),
+          attributes: [],
+          as: 'followed',
+          where: { followedId },
+        },
+      ],
+      transaction,
+      raw: true,
+      nest: true,
+    });
+  }
+
+  static async getFollowed(followerId, { transaction = null } = {}) {
+    return User.unscoped().findAll({
+      attributes: ['pseudo'],
+      include: [
+        {
+          attributes: [],
+          model: Follower.unscoped(),
+          as: 'followers',
+          where: { followerId },
+        },
+      ],
+      transaction,
+      raw: true,
+      nest: true,
+    });
   }
 
   static getDynamicLevel(note) {
