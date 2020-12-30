@@ -8,23 +8,23 @@ const user1 = { email: 'user1@yopmail.com', pseudo: 'user1', password: 'pwd' };
 const user2 = { email: 'user2@yopmail.com', pseudo: 'user2', password: 'pwd' };
 const user3 = { email: 'user3@yopmail.com', pseudo: 'user3', password: 'pwd' };
 const user4 = { email: 'user4@yopmail.com', pseudo: 'user4', password: 'pwd' };
-const message1 = { content: 'message 1 content', privacy: PrivacyLevel.PRIVATE, emotionCode: EmotionCode.APAISE };
-const message2 = {
+const message1: any = { content: 'message 1 content', privacy: PrivacyLevel.PRIVATE, emotionCode: EmotionCode.APAISE };
+const message2: any = {
   content: 'message 2 content', privacy: PrivacyLevel.PUBLIC, emotionCode: EmotionCode.NERVEUX, traitNames: ['anxiete'],
 };
-const message3 = {
+const message3: any = {
   content: 'message 3', privacy: PrivacyLevel.PUBLIC, emotionCode: EmotionCode.NERVEUX, traitNames: [],
 };
-const message4 = {
+const message4: any = {
   content: 'message 4', privacy: PrivacyLevel.PUBLIC, emotionCode: EmotionCode.NERVEUX, traitNames: [],
 };
-const message5 = {
+const message5: any = {
   content: 'message 5', privacy: PrivacyLevel.PRIVATE, emotionCode: EmotionCode.NERVEUX, traitNames: [],
 };
-const message6 = {
+const message6: any = {
   content: 'message 6', privacy: PrivacyLevel.PRIVATE, emotionCode: EmotionCode.NERVEUX, traitNames: [],
 };
-const message2Update = { content: 'message 2 content update', traitNames: ['phobie', 'depression'] };
+const message2Update: any = { content: 'message 2 content update', traitNames: ['phobie', 'depression'] };
 
 describe('# Message Tests', () => {
   setUp(async () => {

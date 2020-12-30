@@ -86,7 +86,7 @@ describe('# Users Tests', () => {
     test('should update correctly user score', async () => {
       const userScore = await Testers.registerUser({ password: 'pwd', email: 'userScore@yopmail.com', pseudo: 'userScore' });
       await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remindingScore: 0 } });
-      const message12points = {
+      const message12points: any = {
         content: Array(1200).join('x'),
         privacy: PrivacyLevel.PUBLIC,
         emotionCode: EmotionCode.APAISE,
@@ -109,7 +109,7 @@ describe('# Users Tests', () => {
     test('should update correctly user score', async () => {
       const userDynamic = await Testers.registerUser({ password: 'pwd', email: 'dynamic@yopmail.com', pseudo: 'dynamic' });
       await Testers.getMe(userDynamic, { expectedUser: { dynamic: DynamicLevel.NOUVEAU } });
-      const messageGoodDynamic = { content: 'content', privacy: PrivacyLevel.PUBLIC, emotionCode: EmotionCode.HEUREUX };
+      const messageGoodDynamic: any = { content: 'content', privacy: PrivacyLevel.PUBLIC, emotionCode: EmotionCode.HEUREUX };
       await Testers.publishMessage(userDynamic, messageGoodDynamic);
       await Testers.getMe(userDynamic, { expectedUser: { dynamic: DynamicLevel.EN_FORME } });
       await Testers.publishMessage(userDynamic,
