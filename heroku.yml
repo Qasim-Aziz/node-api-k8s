@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:11-alpine
+    restart: always
+    container_name: db_jardin
+    environment:
+      POSTGRES_DB: jardin_secret
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: no_pass
+    ports:
+      - "127.0.0.1:15432:5432"
+#    volumes:
+#      - dbdata:/var/lib/postgresql/data
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+  node_modules:
