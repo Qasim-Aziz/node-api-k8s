@@ -1,12 +1,12 @@
+name: staging workflow
+
 on:
   push:
-    branches:
-      - dev-feature
+    branches: [ dev-feature ]
   
-name: npm build for jardinsecret
+
 jobs:
-  Docker-build-nodejs:
-    name: build and publish
+  jardin-backend:
     runs-on: ubuntu-latest
 
     services:
@@ -23,41 +23,42 @@ jobs:
           --health-retries 5
         ports:
           - 15432:5432
-      strategy:
-        matrix:
-          node-version: [12.19.x]
-      steps:
-      - uses: actions/checkout@v2
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+    strategy:
+      matrix:
+        node-version: [12.19.x]
 
-      - name: Cache Node Modules
-        uses: actions/cache@v2
-        id: cache-node-modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-nodemodules-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm run yarn
+    steps:
+    - uses: actions/checkout@v2
 
-      - name: Lint Test
-        run: npm run lint
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
 
-      - name: Circular Test
-        run: npm run check-circular
+    - name: Cache Node Modules
+      uses: actions/cache@v2
+      id: cache-node-modules
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-nodemodules-
+    - name: Install dependencies
+      if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      run: npm run yarn
 
-      - name: Tests
-        run: |
-          npm run migrate
-          npm run test::ci
-        env:
-          DB_HOST: 'localhost'
-          LOG_LEVEL: 'error'
-      
+    - name: Lint Test
+      run: npm run lint
+
+    - name: Circular Test
+      run: npm run check-circular
+
+    - name: Tests
+      run: |
+        npm run migrate
+        npm run test::ci
+      env:
+        DB_HOST: 'localhost'
+        LOG_LEVEL: 'error'
     
