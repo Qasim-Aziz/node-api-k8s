@@ -35,6 +35,8 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: install react
+      run: npm install -g create-react-app
 
     - name: Cache Node Modules
       uses: actions/cache@v2
