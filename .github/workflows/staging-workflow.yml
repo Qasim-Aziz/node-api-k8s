@@ -1,4 +1,8 @@
-on: push
+on:
+  push:
+    branches:
+      - dev-feature
+  
 name: npm build for jardinsecret
 jobs:
   Docker-build-nodejs:
