@@ -45,6 +45,9 @@ jobs:
     
     - name: Run yarn
       run: npm run yarn
+    
+    - name: Run migrations
+      run: npm run migrate
 
     - name: run test for application
       run: npm run test
