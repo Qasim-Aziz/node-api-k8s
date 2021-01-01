@@ -4,14 +4,14 @@ import { InitDBService } from 'src/initdb/initdb.service';
 import * as Testers from 'src/server/tests/testers';
 import { setUp } from 'src/server/tests/tester.base';
 import { moment } from 'src/server/helpers';
-import {DynamicLevel, EmotionCode, PrivacyLevel} from 'src/server/constants';
+import { DynamicLevel, EmotionCode, PrivacyLevel } from 'src/server/constants';
 
 const existingEmail = 'existing@yopmail.com';
 const existingPseudo = 'existing';
 const message1 = { content: 'message 1 content', privacy: PrivacyLevel.PRIVATE, emotionCode: EmotionCode.APAISE };
 let user;
 let anotherUser;
-const pseudo = 'pseudotest';
+const pseudoData = 'pseudotest';
 
 describe('# Users Tests', () => {
   setUp(async () => {
@@ -34,7 +34,7 @@ describe('# Users Tests', () => {
 
     test('should refresh nb consecutive connexion days', async () => {
       MockDate.set(moment().subtract({ day: 3 }).valueOf());
-      user = await Testers.registerUser({ password: 'pwd', email: 'xfzez@yopmail.com', pseudo });
+      user = await Testers.registerUser({ password: 'pwd', email: 'xfzez@yopmail.com', pseudo: pseudoData });
       MockDate.reset();
       MockDate.set(moment().subtract({ day: 2 }).valueOf());
       // connexion 1 day after, should update the counter to +1
@@ -46,7 +46,10 @@ describe('# Users Tests', () => {
       await Testers.refreshUserLastConnexionDate(user, user.id, { connexionCount: 0 });
     });
 
-    test('should get me', () => Testers.getMe(user, { expectedUser: user }));
+    test('should get me', () => {
+      const { id, pseudo, description } = user;
+      return Testers.getMe(user, { expectedUser: { id, pseudo, description } });
+    });
 
     test('should update me', () =>
       Testers.updateUser(user, user.id, { description: 'Test' }));
@@ -59,11 +62,11 @@ describe('# Users Tests', () => {
 
     test('should compute the right stats for user', async () => {
       await Testers.publishMessage(user, message1);
-      await Testers.getUser(user, user.id, { nbMessages: 1, connexionCount: 0, expectedUser: { pseudo } });
+      await Testers.getUser(user, user.id, { nbMessages: 1, connexionCount: 0, expectedUser: { pseudo: pseudoData } });
     });
 
     test('should get current user', async () => {
-      await Testers.getMe(user, { nbMessages: 1, connexionCount: 0, expectedUser: { pseudo } });
+      await Testers.getMe(user, { nbMessages: 1, connexionCount: 0, expectedUser: { pseudo: pseudoData } });
     });
 
     test('should follow user', async () => {
