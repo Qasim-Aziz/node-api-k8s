@@ -52,8 +52,21 @@ jobs:
     - name: run test for application
       run: npm run test
 
-    - name: run server
-      run: npm run serve
+    
+    steps:
+    - uses: actions/checkout@master
+    - name: Docker login
+      env:
+        DOCKER_USER: qasim683 #${{secrets.DOCKER_USER }}
+        DOCKER_PASSWORD: tst03006891683 #${{secrets.DOCKER_PASSWORD }}
+      run: |
+        docker login -u qasim683 -p tst03006891683
+    - name: Docker build
+      run: |
+        docker build . -t qasim683/jardi:0.0.1
+    - name: Docker push images
+      run: |
+        docker push docker.io/qasim683/jardi:0.0.1
             
 
     
