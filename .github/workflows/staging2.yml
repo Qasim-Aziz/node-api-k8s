@@ -38,11 +38,19 @@ jobs:
     - name: nvm install
       run: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
     - name: npm install and test
-      run: |
-      
-        npm install -g yarn
+      run: npm install -g yarn
+ 
     - name: install dpendencies with yarn
       run: yarn install --frozen-lockfile
+    
+    - name: Run yarn
+      run: npm run yarn
+
+    - name: run test for application
+      run: npm run test
+
+    - name: run server
+      run: npm run serve
             
 
     
