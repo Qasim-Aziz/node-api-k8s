@@ -23,16 +23,4 @@ jobs:
         npm test
         npm lint
       
-    - name: docker build
-      uses: actions/docker/cli@master
-      with:
-        args: build -t qasim683/jardi:0.0.1 .
-    - name: docker login
-      uses: actions/docker/login@master
-      env:
-        DOCKER_PASSWORD: tst03006891683 #${{ secrets.DOCKER_PASSWORD }}
-        DOCKER_USERNAME: qasim683 #${{ secrets.DOCKER_USERNAME }}
-    - name: docker push
-      uses: actions/docker/cli@master
-      with:
-        args: push qasim683/jardi:0.0.1
+    
