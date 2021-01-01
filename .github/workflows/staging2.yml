@@ -1,0 +1,59 @@
+name: staging workflow
+
+on:
+  push:
+    branches:
+      - dev-feature
+
+jobs:
+  jardin-backend:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: jardin_secret
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: no_pass
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 15432:5432
+
+    strategy:
+      matrix:
+        node-version: [12.19.x]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: nvm install
+      run: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
+    - name: npm install and test
+      run: npm install -g yarn
+ 
+    - name: install dpendencies with yarn
+      run: yarn install --frozen-lockfile
+    
+    - name: Run yarn
+      run: npm run yarn
+    
+    - name: Run migrations
+      run: npm run migrate
+
+    - name: run test for application
+      run: npm run test
+
+    - name: run server
+      run: npm run serve
+            
+
+    
