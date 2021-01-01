@@ -8,30 +8,31 @@ jobs:
   Docker-build-nodejs:
     name: build and publish
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.19.x]
     steps:
-      - uses: actions/checkout@master
-      - name: npm install
-        uses: actions/npm@master
-        with:
-          args: install
-      - name: npm test
-        uses: actions/npm@master
-        with:
-          args: run test
-      - name: npm lint
-        uses: actions/npm@master
-        with:
-          args: run lint
-      - name: docker build
-        uses: actions/docker/cli@master
-        with:
-          args: build -t qasim683/jardi:0.0.1 .
-      - name: docker login
-        uses: actions/docker/login@master
-        env:
-          DOCKER_PASSWORD: tst03006891683 #${{ secrets.DOCKER_PASSWORD }}
-          DOCKER_USERNAME: qasim683 #${{ secrets.DOCKER_USERNAME }}
-      - name: docker push
-        uses: actions/docker/cli@master
-        with:
-          args: push qasim683/jardi:0.0.1
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: npm install and test
+      run: |
+        npm install
+        npm test
+        npm lint
+      
+    - name: docker build
+      uses: actions/docker/cli@master
+      with:
+        args: build -t qasim683/jardi:0.0.1 .
+    - name: docker login
+      uses: actions/docker/login@master
+      env:
+        DOCKER_PASSWORD: tst03006891683 #${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_USERNAME: qasim683 #${{ secrets.DOCKER_USERNAME }}
+    - name: docker push
+      uses: actions/docker/cli@master
+      with:
+        args: push qasim683/jardi:0.0.1
