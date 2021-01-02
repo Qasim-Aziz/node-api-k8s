@@ -62,7 +62,7 @@ jobs:
       with:
         host: 34.70.252.194 
         username: root
-        key: ${{ secrets.DEV_SECRET }}
+        key: ${{ secrets.QA_DEV_SECRET }}
         port: 22
         script: |
           
