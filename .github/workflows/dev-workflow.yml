@@ -62,9 +62,15 @@ jobs:
       with:
         host: 34.70.252.194 
         username: root
-        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDddHhxuiaBvPHQlN1Pi20JO6i+2FWlKAH49Eq07+8QZ9qM7DJOPJQ6tqq1TESHjQ9k60e65cliQIYnNZpf15GwQnLiA96AWVAyZVQ6jZLLNzrKuVzPOl+QZ07Cmi4RyvoGVOOIg+6SSoYekg5jvYS3McHqU0vEOMm9NC/doDd9cD2IXS3ME/4RzVAmFAsdi8Vqf2We3ciEfK5eIVfWUcaVF37BEg2WsIS+t2sdjm3jzKG0S5+i6xyiSp8p+76ZMVNRb5NRQQ4kqIwFD7ryhLEnJxaamlEiXXn8Q4Tii4Vu+LPgVYXsMXpoT/r0bxZuEnD6sjJY4Iqoh5bYpVwwtwin qasim@qasim-VirtualBox" #${{ secrets.DEV_SECRET }}
+        key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDddHhxuiaBvPHQlN1Pi20JO6i+2FWlKAH49Eq07+8QZ9qM7DJOPJQ6tqq1TESHjQ9k60e65cliQIYnNZpf15GwQnLiA96AWVAyZVQ6jZLLNzrKuVzPOl+QZ07Cmi4RyvoGVOOIg+6SSoYekg5jvYS3McHqU0vEOMm9NC/doDd9cD2IXS3ME/4RzVAmFAsdi8Vqf2We3ciEfK5eIVfWUcaVF37BEg2WsIS+t2sdjm3jzKG0S5+i6xyiSp8p+76ZMVNRb5NRQQ4kqIwFD7ryhLEnJxaamlEiXXn8Q4Tii4Vu+LPgVYXsMXpoT/r0bxZuEnD6sjJY4Iqoh5bYpVwwtwin qasim@qasim-VirtualBox #${{ secrets.DEV_SECRET }}
         port: 22
         script: |
           
-          pwd
+          cd jardinsecret-back
+          git pull origin dev
+          npm run init-db
+          npm run init-data
+          npm run migrate
+          pkill -f -SIGHUP nodemon
+          
     
