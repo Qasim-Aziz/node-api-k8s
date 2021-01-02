@@ -35,9 +35,8 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: nvm install
-      run: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
-    - name: npm install and test
+    
+    - name: npm install packege
       run: npm install -g yarn
  
     - name: install dpendencies with yarn
