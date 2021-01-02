@@ -60,13 +60,13 @@ jobs:
     - name: DEMO Deployment
       uses: appleboy/ssh-action@master
       with:
-        host: 34.70.252.194 
+        host: 34.69.202.26 
         username: root
         key: ${{ secrets.DEMO_SECRET }}
         port: 22
         script: |
           
-          cd jardinsecret-back
+          cd /root/jardinsecret-back/
           git stash
           git pull origin demo
           npm run init-db
