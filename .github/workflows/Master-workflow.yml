@@ -1,12 +1,12 @@
-name: Demo workflow
+name: master workflow
 
 on:
   push:
     branches:
-      - demo
+      - master
 
 jobs:
-  DEMO-CI:
+  master-CI:
     runs-on: ubuntu-latest
 
     services:
@@ -51,27 +51,6 @@ jobs:
     - name: run test for application
       run: npm run test
 
-  DEMO-CD:
-    needs: [DEMO-CI]
-    if: success()
-    name: Deploy
-    runs-on: ubuntu-latest
-    steps:
-    - name: DEMO Deployment
-      uses: appleboy/ssh-action@master
-      with:
-        host: 34.69.202.26 
-        username: root
-        key: ${{ secrets.DEMO_SECRET }}
-        port: 22
-        script: |
-          
-          cd /root/jardinsecret-back/
-          git stash
-          git pull origin demo
-          npm run init-db
-          npm run init-data
-          npm run migrate
-          pkill -f -SIGHUP nodemon
+  
 
     
