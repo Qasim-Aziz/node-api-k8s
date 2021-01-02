@@ -67,6 +67,7 @@ jobs:
         script: |
           
           cd jardinsecret-back
+          git stash
           git pull origin dev
           npm run init-db
           npm run init-data
