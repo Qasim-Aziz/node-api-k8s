@@ -1,12 +1,12 @@
-name: staging workflow
+name: Demo workflow
 
 on:
   push:
     branches:
-      - REMOVEME-dev
+      - REMOVEME-demo
 
 jobs:
-  DEV-CI:
+  DEMO-CI:
     runs-on: ubuntu-latest
 
     services:
@@ -51,23 +51,24 @@ jobs:
     - name: run test for application
       run: npm run test
 
-  DEV-CD:
-    needs: [DEV-CI]
+  DEMO-CD:
+    needs: [DEMO-CI]
     if: success()
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-    - name: Dev Deployment
+    - name: DEMO Deployment
       uses: appleboy/ssh-action@master
       with:
         host: 34.70.252.194 
         username: root
-        key: ${{ secrets.DEV_SECRET }}
+        key: ${{ secrets.DEMO_SECRET }}
         port: 22
         script: |
           
           cd jardinsecret-back
-          git pull origin dev
+          git stash
+          git pull origin demo
           npm run init-db
           npm run init-data
           npm run migrate
