@@ -65,13 +65,14 @@ jobs:
         key: ${{ secrets.QA_DEV_SECRET }}
         port: 22
         script: |
-          
+          whoami
           cd /root/jardinsecret-back/
           git stash
           git pull origin dev
-          npm run init-db
-          npm run init-data
-          npm run migrate
+          pwd
+          /root/.nvm/versions/node/v12.19.0/bin/npm run init-db
+          /root/.nvm/versions/node/v12.19.0/bin/npm run init-data
+          /root/.nvm/versions/node/v12.19.0/bin/npm run migrate
           pkill -f -SIGHUP nodemon
 
     
