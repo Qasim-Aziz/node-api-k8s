@@ -65,7 +65,7 @@ jobs:
         key: ${{ secrets.QA_DEV_SECRET }}
         port: 22
         script: |
-          
+          pwd
           cd /root/jardinsecret-back/
           git stash
           git pull origin demo
