@@ -17,7 +17,7 @@ const getToken = (res) => {
 
 export const registerUser = async (user, { status = httpStatus.OK } = {}) =>
   request(app)
-    .post('/api/auth/register')
+    .post('/api/auth/registerPatient')
     .send(user)
     .expect(checkExpectedStatus(status))
     .then((res) => {
