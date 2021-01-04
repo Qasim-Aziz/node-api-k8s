@@ -76,4 +76,4 @@ jobs:
           /root/.nvm/versions/node/v12.19.0/bin/npm run init-data
           /root/.nvm/versions/node/v12.19.0/bin/npm run migrate
           pkill -f -SIGHUP nodemon
-          /root/.nvm/versions/node/v12.19.0/bin/npm run
+        
