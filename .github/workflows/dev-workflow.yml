@@ -60,7 +60,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-<<<<<<< HEAD
+
     - name: Dev Deployment
       uses: appleboy/ssh-action@master
       with:
@@ -76,4 +76,4 @@ jobs:
           /root/.nvm/versions/node/v12.19.0/bin/npm run init-data
           /root/.nvm/versions/node/v12.19.0/bin/npm run migrate
           pkill -f -SIGHUP nodemon
-
+          /root/.nvm/versions/node/v12.19.0/bin/npm run
