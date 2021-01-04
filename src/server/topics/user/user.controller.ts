@@ -40,7 +40,7 @@ export class UserController {
 
   @validation({
     body: {
-      password: Joi.string().min(8).max(50)
+      password: Joi.string().min(8).max(50),
     },
   })
   @Auth.forLogged()
@@ -49,7 +49,6 @@ export class UserController {
     const user = await UserService.updateUser(userId, userData, { transaction });
     return { user };
   }
-
 
   @validation({
     params: { userId: Joi.number().integer().required() },

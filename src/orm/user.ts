@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { OrmModel, sequelize } from 'src/orm/database';
 import { Utils } from 'src/server/helpers';
-import { DynamicLevel } from "src/server/constants";
+import { DynamicLevel, EmotionCode, GenderType } from 'src/server/constants';
 
 export class User extends OrmModel {
   public email!: string;
@@ -60,6 +60,12 @@ User.init({
     type: DataTypes.STRING,
     allowNull: false,
     field: 'pseudo',
+  },
+  gender: {
+    type: DataTypes.ENUM,
+    values: Object.values(GenderType),
+    allowNull: false,
+    field: 'gender',
   },
   description: {
     type: DataTypes.TEXT,

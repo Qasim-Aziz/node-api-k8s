@@ -2,12 +2,20 @@ import httpStatus from 'http-status';
 import { Checks, setUp } from 'src/server/tests/tester.base';
 import { InitDBService } from 'src/initdb/initdb.service';
 import * as Testers from 'src/server/tests/testers';
-import { EmotionCode, PrivacyLevel } from 'src/server/constants';
+import { EmotionCode, GenderType, PrivacyLevel } from 'src/server/constants';
 
-const user1 = { email: 'user1@yopmail.com', pseudo: 'user1', password: 'pwd' };
-const user2 = { email: 'user2@yopmail.com', pseudo: 'user2', password: 'pwd' };
-const user3 = { email: 'user3@yopmail.com', pseudo: 'user3', password: 'pwd' };
-const user4 = { email: 'user4@yopmail.com', pseudo: 'user4', password: 'pwd' };
+const user1 = {
+  email: 'user1@yopmail.com', pseudo: 'user1', password: 'pwd', gender: GenderType.MALE,
+};
+const user2 = {
+  email: 'user2@yopmail.com', pseudo: 'user2', password: 'pwd', gender: GenderType.MALE,
+};
+const user3 = {
+  email: 'user3@yopmail.com', pseudo: 'user3', password: 'pwd', gender: GenderType.MALE,
+};
+const user4 = {
+  email: 'user4@yopmail.com', pseudo: 'user4', password: 'pwd', gender: GenderType.MALE,
+};
 const message1: any = { content: 'message 1 content', privacy: PrivacyLevel.PRIVATE, emotionCode: EmotionCode.APAISE };
 const message2: any = {
   content: 'message 2 content', privacy: PrivacyLevel.PUBLIC, emotionCode: EmotionCode.NERVEUX, traitNames: ['anxiete'],

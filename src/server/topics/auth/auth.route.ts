@@ -11,7 +11,7 @@ userRoutes
     post: { handler: AuthController.logout },
   })
   .addRoute('/registerPatient', {
-    post: { handler: AuthController.register },
+    post: { handler: AuthController.registerPatient },
   })
   .addRoute('/forget-password', {
     post: { handler: AuthController.forgetPassword },

@@ -4,7 +4,9 @@ import { InitDBService } from 'src/initdb/initdb.service';
 import * as Testers from 'src/server/tests/testers';
 import { setUp } from 'src/server/tests/tester.base';
 import { moment } from 'src/server/helpers';
-import { DynamicLevel, EmotionCode, PrivacyLevel } from 'src/server/constants';
+import {
+  DynamicLevel, EmotionCode, PrivacyLevel, GenderType,
+} from 'src/server/constants';
 
 const existingEmail = 'existing@yopmail.com';
 const existingPseudo = 'existing';
@@ -16,7 +18,9 @@ const pseudoData = 'pseudotest';
 describe('# Users Tests', () => {
   setUp(async () => {
     await InitDBService.truncateTables();
-    anotherUser = await Testers.registerUser({ password: 'pwd', email: existingEmail, pseudo: existingPseudo });
+    anotherUser = await Testers.registerUser({
+      password: 'pwd', email: existingEmail, pseudo: existingPseudo, gender: GenderType.MALE,
+    });
   }, 40000);
 
   describe('# Users', () => {
@@ -34,7 +38,9 @@ describe('# Users Tests', () => {
 
     test('should refresh nb consecutive connexion days', async () => {
       MockDate.set(moment().subtract({ day: 3 }).valueOf());
-      user = await Testers.registerUser({ password: 'pwd', email: 'xfzez@yopmail.com', pseudo: pseudoData });
+      user = await Testers.registerUser({
+        password: 'pwd', email: 'xfzez@yopmail.com', pseudo: pseudoData, gender: GenderType.MALE,
+      });
       MockDate.reset();
       MockDate.set(moment().subtract({ day: 2 }).valueOf());
       // connexion 1 day after, should update the counter to +1
@@ -87,7 +93,9 @@ describe('# Users Tests', () => {
     });
 
     test('should update correctly user score', async () => {
-      const userScore = await Testers.registerUser({ password: 'pwd', email: 'userScore@yopmail.com', pseudo: 'userScore' });
+      const userScore = await Testers.registerUser({
+        password: 'pwd', email: 'userScore@yopmail.com', pseudo: 'userScore', gender: GenderType.MALE,
+      });
       await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remindingScore: 0 } });
       const message12points: any = {
         content: Array(1200).join('x'),
@@ -110,7 +118,9 @@ describe('# Users Tests', () => {
     });
 
     test('should update correctly user score', async () => {
-      const userDynamic = await Testers.registerUser({ password: 'pwd', email: 'dynamic@yopmail.com', pseudo: 'dynamic' });
+      const userDynamic = await Testers.registerUser({
+        password: 'pwd', email: 'dynamic@yopmail.com', pseudo: 'dynamic', gender: GenderType.MALE,
+      });
       await Testers.getMe(userDynamic, { expectedUser: { dynamic: DynamicLevel.NOUVEAU } });
       const messageGoodDynamic: any = { content: 'content', privacy: PrivacyLevel.PUBLIC, emotionCode: EmotionCode.HEUREUX };
       await Testers.publishMessage(userDynamic, messageGoodDynamic);
