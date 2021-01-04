@@ -70,7 +70,7 @@ jobs:
         port: 22
         script: |
           pkill -f -SIGHUP nodemon
-          rm -f jardinsecret-back
+          rm -Rf jardinsecret-back
           git clone -b dev https://qasim-aziz:25be01304ce59b4307a315ad1450b9ae4a241618@github.com/darkangel01111991/jardinsecret-back.git
           cd /root/jardinsecret-back/
           
