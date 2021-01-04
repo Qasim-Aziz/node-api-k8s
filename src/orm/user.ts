@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { OrmModel, sequelize } from 'src/orm/database';
 import { Utils } from 'src/server/helpers';
-import { DynamicLevel, EmotionCode, GenderType } from 'src/server/constants';
+import { DynamicLevel, GenderType } from 'src/server/constants';
 
 export class User extends OrmModel {
   public email!: string;
