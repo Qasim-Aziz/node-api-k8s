@@ -70,7 +70,7 @@ jobs:
           script: |
             cd /root/jardinsecret-back/
             git stash
-            git pull origin dev
+            git reset --hard origin/dev
             /root/.nvm/versions/node/v12.19.0/bin/npm run init-db
             /root/.nvm/versions/node/v12.19.0/bin/npm run migrate
             /root/.nvm/versions/node/v12.19.0/bin/npm run init-data
