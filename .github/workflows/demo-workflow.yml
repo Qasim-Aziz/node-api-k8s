@@ -35,17 +35,20 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    
+
     - name: npm install packege
       run: npm install -g yarn
- 
+
     - name: install dpendencies with yarn
       run: yarn install --frozen-lockfile
-    
+
     - name: Run yarn
       run: npm run yarn
-    
-    - name: Run migrations
+
+    - name: Run init db
+      run: npm run init-db
+
+    - name: Run migrate
       run: npm run migrate
 
     - name: run test for application
@@ -60,7 +63,7 @@ jobs:
     - name: DEMO Deployment
       uses: appleboy/ssh-action@master
       with:
-        host: 34.69.202.26 
+        host: 34.69.202.26
         username: root
         key: ${{ secrets.QA_DEV_SECRET }}
         port: 22
@@ -70,8 +73,8 @@ jobs:
           git stash
           git pull origin demo
           /root/.nvm/versions/node/v12.19.0/bin/npm run init-db
-          /root/.nvm/versions/node/v12.19.0/bin/npm run init-data
           /root/.nvm/versions/node/v12.19.0/bin/npm run migrate
+          /root/.nvm/versions/node/v12.19.0/bin/npm run init-data
           pkill -f -SIGHUP nodemon
 
-    
+

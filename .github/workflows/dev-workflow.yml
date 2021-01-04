@@ -1,4 +1,4 @@
-name: staging workflow
+name: dev workflow
 
 on:
   push:
@@ -45,7 +45,10 @@ jobs:
       - name: Run yarn
         run: npm run yarn
 
-      - name: Run migrations
+      - name: Run init db
+        run: npm run init-db
+
+      - name: Run migrate
         run: npm run migrate
 
       - name: run test for application
@@ -69,8 +72,8 @@ jobs:
             git stash
             git pull origin dev
             /root/.nvm/versions/node/v12.19.0/bin/npm run init-db
-            /root/.nvm/versions/node/v12.19.0/bin/npm run init-data
             /root/.nvm/versions/node/v12.19.0/bin/npm run migrate
+            /root/.nvm/versions/node/v12.19.0/bin/npm run init-data
             pkill -f -SIGHUP nodemon
 
 
