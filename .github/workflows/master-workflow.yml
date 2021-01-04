@@ -59,7 +59,7 @@ jobs:
         run: |
           npm run init-db
           npm run migrate
-          npm run test::ci
+          npm run test
         env:
           DB_HOST: 'localhost'
           LOG_LEVEL: 'error'
