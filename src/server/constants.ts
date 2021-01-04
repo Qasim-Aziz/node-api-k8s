@@ -84,3 +84,8 @@ export const EmotionNote = {
   [EmotionCode.SURPRIS]: 5,
   [EmotionCode.TRISTE]: 3,
 };
+
+export enum GenderType {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+}

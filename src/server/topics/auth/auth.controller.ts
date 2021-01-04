@@ -1,5 +1,6 @@
 import { validation, Joi, Auth } from 'src/server/helpers';
 import { AuthService } from 'src/server/topics/auth/auth.service';
+import { GenderType } from 'src/server/constants';
 
 export class AuthController {
   @validation({
@@ -21,12 +22,19 @@ export class AuthController {
       email: Joi.string().lowercase().email().required(),
       pseudo: Joi.string().lowercase().required(),
       password: Joi.string().required(),
+      gender: Joi.any().valid(...Object.values(GenderType)).required(),
     },
   })
   @Auth.forAll()
-  static async register(req, { transaction = null, cookiesManager = null } = {}) {
-    const { body: { email, pseudo, password } } = req;
-    const { user, token } = await AuthService.register({ email, pseudo, password }, { transaction });
+  static async registerPatient(req, { transaction = null, cookiesManager = null } = {}) {
+    const {
+      body: {
+        email, pseudo, password, gender,
+      },
+    } = req;
+    const { user, token } = await AuthService.registerPatient({
+      email, pseudo, password, gender,
+    }, { transaction });
     cookiesManager.setCookies(token);
     return { user, token };
   }

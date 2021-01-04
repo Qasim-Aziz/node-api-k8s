@@ -4,7 +4,7 @@ import {
 import { Sequelize } from 'src/orm/database';
 import { BackError, moment } from 'src/server/helpers';
 import httpStatus from 'http-status';
-import UserService from "../user/user.service";
+import UserService from 'src/server/topics/user/user.service';
 
 export default class CommentService {
   static async getComments(messageId, {

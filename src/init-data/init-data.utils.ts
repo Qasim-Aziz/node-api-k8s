@@ -2,11 +2,14 @@ import {
   logger, moment, PromiseUtils, transactionContext,
 } from 'src/server/helpers';
 import { initDataConf, password } from 'src/init-data/init-data.data';
-import {Message, Love, View, User} from 'src/orm';
+import {
+  Message, Love, View, User,
+} from 'src/orm';
 import { Checks } from 'src/server/tests/tester.base';
 import { AuthService } from 'src/server/topics/auth/auth.service';
 import { MessageService } from 'src/server/topics/message/message.service';
 import CommentService from 'src/server/topics/comment/comment.service';
+import { GenderType } from 'src/server/constants';
 
 let users;
 const getUserByPseudo = (pseudo) => users.find((u) => u.pseudo === pseudo);
@@ -60,10 +63,11 @@ export const populateInitData = async () => {
   Checks.deactivate();
   logger.info('Creating users');
   users = await Promise.all(Object.keys(initDataConf).map(async (pseudo) => {
-    const { user, token } = await AuthService.register({
+    const { user, token } = await AuthService.registerPatient({
       pseudo,
       password,
       email: `${pseudo}@yopmail.com`,
+      gender: GenderType.MALE,
     });
     await User.update({ description: initDataConf[pseudo].description }, { where: { id: user.id } });
     return Object.assign(user, { token });

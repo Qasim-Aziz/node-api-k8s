@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
 import bcrypt from 'bcrypt';
 import { User } from 'src/orm';
-import {BackError, logger, moment} from 'src/server/helpers';
+import { BackError, logger, moment } from 'src/server/helpers';
 import SessionService from 'src/server/topics/auth/session.service';
 import { SessionManager } from 'src/server/acl/session-manager';
 import UserService from 'src/server/topics/user/user.service';
@@ -11,9 +11,13 @@ import { EmailTemplates } from 'src/server/topics/email/templates/templates.enum
 import { Op } from 'src/orm/database';
 
 export class AuthService {
-  static async register({ email, pseudo, password }, { transaction = null } = {}) {
+  static async registerPatient({
+    email, pseudo, password, gender,
+  }, { transaction = null } = {}) {
     const passwordHash = await bcrypt.hash(password, 10);
-    await User.create({ email, pseudo, passwordHash }, { transaction });
+    await User.create({
+      email, pseudo, passwordHash, gender,
+    }, { transaction });
     return AuthService.login(email, password, { transaction });
   }
 
@@ -40,7 +44,7 @@ export class AuthService {
   static async forgetPassword(email, { transaction = null } = {}) {
     const user = await User.unscoped().findOne({ where: { email }, transaction });
     if (!user) {
-      logger.info('user with email ' + email + ' not found')
+      logger.info(`user with email ${email} not found`);
       return;
     }
     const resetPasswordCode = crypto.randomBytes(6).toString('hex').substr(2, 6).toUpperCase();
@@ -65,7 +69,7 @@ export class AuthService {
         resetPasswordExpires: { [Op.lte]: moment.utc() },
       },
       transaction,
-      logging: console.log
+      logging: console.log,
     });
     if (!user) {
       throw new BackError('Invalid resetPasswordCode', httpStatus.BAD_REQUEST);

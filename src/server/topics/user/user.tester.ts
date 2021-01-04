@@ -5,6 +5,7 @@ import app from 'src/application';
 import { checkExpectedStatus } from 'src/server/tests/tester.base';
 import { registerUser } from 'src/server/topics/auth/auth.tester';
 import { DEFAULT_PASSWORD } from 'src/server/tests/variables';
+import { GenderType } from 'src/server/constants';
 
 let userCounter = 0;
 
@@ -12,11 +13,13 @@ export const spawnUser = ({
   email = `user${userCounter}@yopmail.com`,
   pseudo = `user${userCounter}`,
   password = DEFAULT_PASSWORD,
-} = {}) => registerUser({ email, pseudo, password })
-  .then((user) => {
-    userCounter += 1;
-    return user;
-  });
+  gender = GenderType.MALE,
+} = {}) => registerUser({
+  email, pseudo, password, gender,
+}).then((user) => {
+  userCounter += 1;
+  return user;
+});
 
 export const isEmailUsed = (email, { status = httpStatus.OK, emailUsed = null } = {}) =>
   request(app)
@@ -116,7 +119,7 @@ export const getFollowers = async (followed, {
     .set('cookie', followed.token)
     .expect(checkExpectedStatus(status))
     .then((res) => {
-      console.log(res.body)
+      console.log(res.body);
       if (followers) expect(res.body.followers).toEqual(followers.map((f) => ({ pseudo: f.pseudo })));
     });
 
