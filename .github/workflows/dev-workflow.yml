@@ -77,5 +77,5 @@ jobs:
           /root/.nvm/versions/node/v12.19.0/bin/npm run init-db
           /root/.nvm/versions/node/v12.19.0/bin/npm run init-data
           /root/.nvm/versions/node/v12.19.0/bin/npm run migrate
-          /root/.nvm/versions/node/v12.19.0/bin/nodemon start
+          /root/.nvm/versions/node/v12.19.0/bin/npm run serve
           
