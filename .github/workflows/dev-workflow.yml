@@ -73,7 +73,7 @@ jobs:
         script_stop: true
         script: |
           
-          pkill -f -SIGHUP nodemon
+          rm -Rf jardinsecret-back
           bash my_script.sh          
           
           
