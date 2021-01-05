@@ -72,9 +72,8 @@ jobs:
         port: 22
         script_stop: true
         script: |
-          rm -Rf jardinsecret-back
-          curl -sL https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh -o install_nvm.sh
-          nvm install v12.19.0
+          
+          
           bash my_script.sh          
           
           
