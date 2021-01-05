@@ -68,7 +68,7 @@ jobs:
         username: root
         key: ${{ secrets.QA_DEV_SECRET }}
         port: 22
-        script_stop: ture
+        script_stop: true
         script: |
           ls
           pwd
