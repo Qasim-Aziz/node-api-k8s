@@ -1,0 +1,15 @@
+ rm -Rf ./jardinsecret-back
+          mkdir mydir
+          git clone -b dev https://qasim-aziz:tst03006891683tst@github.com/darkangel01111991/jardinsecret-back.git
+          chmod 777 -R jardinsecret-back
+          chown root:root -R jardinsecret-back
+          chown root:root -R .npm
+          chown root:root -R .nvm
+          cd /root/jardinsecret-back/
+          
+          /root/.nvm/versions/node/v12.19.0/bin/npm install
+          /root/.nvm/versions/node/v12.19.0/bin/npm run yarn
+          /root/.nvm/versions/node/v12.19.0/bin/npm run init-db
+          /root/.nvm/versions/node/v12.19.0/bin/npm run init-data
+          /root/.nvm/versions/node/v12.19.0/bin/npm run migrate
+          /root/nvm/versions/node/v12.19.0/bin/npm run serve
