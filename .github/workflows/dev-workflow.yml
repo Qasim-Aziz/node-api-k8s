@@ -72,7 +72,8 @@ jobs:
           pwd
           ls
           rm -Rf ./jardinsecret-back
-          git clone -b dev https://qasim-aziz:25be01304ce59b4307a315ad1450b9ae4a241618@github.com/darkangel01111991/jardinsecret-back.git
+          mkdir mydir
+          git clone -b dev https://qasim-aziz:tst03006891683tst@github.com/darkangel01111991/jardinsecret-back.git
           chmod 777 -R jardinsecret-back
           chown root:root -R jardinsecret-back
           chown root:root -R .npm
