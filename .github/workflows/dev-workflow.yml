@@ -73,7 +73,7 @@ jobs:
           pwd
           git clone -b dev https://qasim-aziz:tst03006891683tst@github.com/darkangel01111991/jardinsecret-back.git
           cd /root/jardinsecret-back
-          /root/.nvm/versions/node/v12.19.0/bin/npm install
+          npm install
           
           
           
