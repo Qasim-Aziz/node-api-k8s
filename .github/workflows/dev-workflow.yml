@@ -70,7 +70,7 @@ jobs:
         port: 22
         script_stop: true
         script: |
-          rm -RF jardinsecret-back
+          rm -Rf jardinsecret-back
           ./my_script.sh          
           
           
