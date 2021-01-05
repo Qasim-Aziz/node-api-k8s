@@ -70,12 +70,8 @@ jobs:
         port: 22
         script_stop: true
         script: |
-          ls
-          pwd
-          ./my_script.sh
-          cd /root/jardinsecret-back
-          npm install
-          
+          rm -RF jardinsecret-back
+          ./my_script.sh          
           
           
 
