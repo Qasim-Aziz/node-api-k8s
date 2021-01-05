@@ -29,7 +29,9 @@ jobs:
         node-version: [12.19.x]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@
+      with:
+          ref: demo
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
@@ -67,14 +69,10 @@ jobs:
         username: root
         key: ${{ secrets.QA_DEV_SECRET }}
         port: 22
+        script_stop: true
         script: |
-          pwd
-          cd /root/jardinsecret-back/
-          git stash
-          git reset --hard origin/demo
-          /root/.nvm/versions/node/v12.19.0/bin/npm run init-db
-          /root/.nvm/versions/node/v12.19.0/bin/npm run migrate
-          /root/.nvm/versions/node/v12.19.0/bin/npm run init-data
-          pkill -f -SIGHUP nodemon
+          screen -X quit
+          rm -Rf jardinsecret-back
+          bash my_script.sh 
 
 
