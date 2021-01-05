@@ -69,16 +69,8 @@ jobs:
         key: ${{ secrets.QA_DEV_SECRET }}
         port: 22
         script: |
-          
-          cd ./jardinsecret-back
           ls
           pwd
-          /root/.nvm/versions/node/v12.19.0/bin/npm install
-          /root/.nvm/versions/node/v12.19.0/bin/npm run yarn
-          /root/.nvm/versions/node/v12.19.0/bin/npm run init-db
-          /root/.nvm/versions/node/v12.19.0/bin/npm run init-data
-          /root/.nvm/versions/node/v12.19.0/bin/npm run migrate
-          /root/nvm/versions/node/v12.19.0/bin/npm run serve
           
           
           
