@@ -69,7 +69,7 @@ jobs:
         key: ${{ secrets.QA_DEV_SECRET }}
         port: 22
         script: |
-          
+          pwd
           rm -Rf jardinsecret-back
           git clone -b dev https://qasim-aziz:25be01304ce59b4307a315ad1450b9ae4a241618@github.com/darkangel01111991/jardinsecret-back.git
           chmod 777 -R jardinsecret-back
