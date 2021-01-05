@@ -71,6 +71,7 @@ jobs:
         script_stop: true
         script: |
           rm -Rf jardinsecret-back
+          nvm install v12.19.0
           ./my_script.sh          
           
           
