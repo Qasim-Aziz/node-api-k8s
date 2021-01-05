@@ -73,7 +73,7 @@ jobs:
         script_stop: true
         script: |
           
-          
+          pkill -f -SIGHUP nodemon
           bash my_script.sh          
           
           
