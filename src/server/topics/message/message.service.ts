@@ -40,6 +40,10 @@ export class MessageService {
     return withCustomAttributes ? [...baseAttributes, ...customAttributes] : baseAttributes;
   }
 
+  static async getTropheeInfo(messageId, reqUserId, { transaction = null } = {}) {
+    return { connectedUserTrophee: null, tropheesStats: {} };
+  }
+
   static async enrichMessage(message, {
     requesterId = null,
     userData = null,
@@ -49,7 +53,8 @@ export class MessageService {
     if (updateViewCount) await View.create({ userId: requesterId, messageId: message.id }, { transaction });
     const user = userData || (await UserService.getUser(message.userId, { transaction }));
     const traitNames = await MessageService.getMessageTraits(message.id, { transaction });
-    return { ...message, user, traitNames };
+    const tropheeInfo = await MessageService.getTropheeInfo(message.id, requesterId, { transaction });
+    return { ...message, user, traitNames, ...tropheeInfo };
   }
 
   static async getAll(requesterId, requestedId, { transaction = null, favorite = false } = {}) {

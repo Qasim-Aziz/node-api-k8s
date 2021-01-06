@@ -18,7 +18,7 @@ export class User extends OrmModel {
 
   public totalScore!: number;
 
-  public remindingScore!: number;
+  public remainingScore!: number;
 
   public lastConnexionDate!: Date;
 
@@ -89,11 +89,11 @@ User.init({
     defaultValue: 0,
     field: 'total_score',
   },
-  remindingScore: {
+  remainingScore: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,
-    field: 'reminding_score',
+    field: 'remaining_score',
   },
   isAdmin: {
     type: DataTypes.BOOLEAN,

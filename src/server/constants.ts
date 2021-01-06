@@ -101,3 +101,15 @@ export enum TropheeCode {
   BADGE_8 = 'BADGE_8',
   BADGE_9 = 'BADGE_9',
 }
+
+export const TropheeScore = {
+  [TropheeCode.BADGE_1]: 4,
+  [TropheeCode.BADGE_2]: 9,
+  [TropheeCode.BADGE_3]: 15,
+  [TropheeCode.BADGE_4]: 25,
+  [TropheeCode.BADGE_5]: 40,
+  [TropheeCode.BADGE_6]: 50,
+  [TropheeCode.BADGE_7]: 80,
+  [TropheeCode.BADGE_8]: 150,
+  [TropheeCode.BADGE_9]: 300,
+};

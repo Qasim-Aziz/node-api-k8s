@@ -6,6 +6,8 @@ import { checkExpectedStatus } from 'src/server/tests/tester.base';
 
 let messageCounter = 0;
 
+const omitTraitNames = ({ traitNames, ...message }) => (message);
+
 export const publishMessage = async (user, message, { status = httpStatus.OK } = {}) => request(app)
   .post('/api/messages')
   .set('Authorization', user.token)
@@ -13,7 +15,8 @@ export const publishMessage = async (user, message, { status = httpStatus.OK } =
   .expect(checkExpectedStatus(status))
   .then((res) => {
     const messageRes = res.body.message;
-    expect(messageRes).toMatchObject(message);
+    expect(messageRes).toMatchObject(omitTraitNames(message));
+    if (message.traitNames) expect(messageRes.traitNames.sort()).toMatchObject(message.traitNames.sort());
     expect(messageRes.nbLoves).toEqual(0);
     expect(messageRes.nbViews).toEqual(0);
     expect(messageRes.userId).toEqual(user.id);

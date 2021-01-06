@@ -10,6 +10,8 @@ export class Trophee extends OrmModel {
   public user!: User;
 
   public message!: Message;
+
+  public tropheeCode!: string;
 }
 
 Trophee.init({

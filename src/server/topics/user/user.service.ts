@@ -28,7 +28,7 @@ export default class UserService {
         'description',
         'shouldResetPassword',
         'totalScore',
-        'remindingScore',
+        'remainingScore',
         'dynamic',
         [cast(fn('COUNT', col('"messages"."id"')), 'int'), 'nbMessages'],
         [cast(fn('COUNT', col('"followers"."id"')), 'int'), 'nbFollowers'],
@@ -119,11 +119,11 @@ export default class UserService {
     const delta = messageId
       ? await UserService.updateMessageScore(messageId, { deleteCase, transaction })
       : await UserService.updateCommentScore(commentId, { deleteCase, transaction });
-    const user = await User.unscoped().findByPk(userId, { attributes: ['id', 'totalScore', 'remindingScore'], transaction });
+    const user = await User.unscoped().findByPk(userId, { attributes: ['id', 'totalScore', 'remainingScore'], transaction });
     await User.update(
       {
         totalScore: Math.max(user.totalScore + delta, 0),
-        remindingScore: Math.max(user.remindingScore + delta, 0),
+        remainingScore: Math.max(user.remainingScore + delta, 0),
       },
       { where: { id: user.id }, transaction },
     );

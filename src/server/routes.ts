@@ -4,6 +4,7 @@ import userRoutes from 'src/server/topics/user/user.route';
 import authRoutes from 'src/server/topics/auth/auth.route';
 import messageRoutes from 'src/server/topics/message/message.route';
 import commentRoutes from 'src/server/topics/comment/comment.route';
+import tropheeRoutes from 'src/server/topics/trophee/trophee.route';
 
 import { Env } from 'src/server/helpers';
 

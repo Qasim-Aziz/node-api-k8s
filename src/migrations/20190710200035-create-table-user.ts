@@ -56,11 +56,11 @@ module.exports = {
       defaultValue: 0,
       field: 'total_score',
     },
-    remindingScore: {
+    remainingScore: {
       type: Sequelize.INTEGER,
       allowNull: false,
       defaultValue: 0,
-      field: 'reminding_score',
+      field: 'remaining_score',
     },
     isAdmin: {
       type: Sequelize.BOOLEAN,
