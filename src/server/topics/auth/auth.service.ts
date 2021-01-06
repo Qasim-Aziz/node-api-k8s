@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
 import bcrypt from 'bcrypt';
 import { User } from 'src/orm';
-import { BackError, logger, moment } from 'src/server/helpers';
+import { BackError, Env, logger, moment } from 'src/server/helpers';
 import SessionService from 'src/server/topics/auth/session.service';
 import { SessionManager } from 'src/server/acl/session-manager';
 import UserService from 'src/server/topics/user/user.service';
@@ -47,7 +47,9 @@ export class AuthService {
       logger.info(`user with email ${email} not found`);
       return;
     }
-    const resetPasswordCode = crypto.randomBytes(6).toString('hex').substr(2, 6).toUpperCase();
+    const resetPasswordCode = Env.isProd
+      ? crypto.randomBytes(6).toString('hex').substr(2, 6).toUpperCase()
+      : '123456';
     const resetPasswordExpires = moment().add(1, 'hour');
     await user.update({ resetPasswordCode, resetPasswordExpires }, { transaction });
 
