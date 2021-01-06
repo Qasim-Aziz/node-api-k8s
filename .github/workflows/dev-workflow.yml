@@ -3,7 +3,7 @@ name: dev workflow
 on:
   push:
     branches:
-      - test-dev
+      - dev
 
 jobs:
   DEV-CI:
