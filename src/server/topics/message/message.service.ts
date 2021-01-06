@@ -75,7 +75,7 @@ export class MessageService {
     return Promise.all(rawMessages.map(
       (m) => MessageService.enrichMessage(m, {
         requesterId, userData, transaction, updateViewCount: requestedId !== requesterId,
-      })
+      }),
     ));
   }
 

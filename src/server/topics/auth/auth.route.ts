@@ -1,17 +1,17 @@
 import { AuthController } from 'src/server/topics/auth/auth.controller';
 import Router from 'src/server/abstracts/router';
 
-const userRoutes = new Router();
+const authRoutes = new Router();
 
-userRoutes
+authRoutes
   .addRoute('/login', {
     post: { handler: AuthController.login },
   })
   .addRoute('/logout', {
     post: { handler: AuthController.logout },
   })
-  .addRoute('/register', {
-    post: { handler: AuthController.register },
+  .addRoute('/registerPatient', {
+    post: { handler: AuthController.registerPatient },
   })
   .addRoute('/forget-password', {
     post: { handler: AuthController.forgetPassword },
@@ -20,4 +20,4 @@ userRoutes
     post: { handler: AuthController.resetPassword },
   });
 
-export default userRoutes.getRouter();
+export default authRoutes.getRouter();

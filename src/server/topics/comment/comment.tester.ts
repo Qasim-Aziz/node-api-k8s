@@ -36,14 +36,18 @@ export const getMessageComments = (user, message, { status = httpStatus.OK, expe
       return res.body.comments;
     });
 
-export const loveComment = (user, comment, { status = httpStatus.OK, lovesCount = 0, msgError = null, loved = true, isOwner = false } = {}) =>
+export const loveComment = (user, comment, {
+  status = httpStatus.OK, lovesCount = 0, msgError = null, loved = true, isOwner = false,
+} = {}) =>
   request(app)
     .post(`/api/comments/${comment.id}/love`)
     .set('Authorization', user.token)
     .expect(checkExpectedStatus(status))
     .then((res) => {
       if (status === httpStatus.OK) {
-        expect(formatComment(res.body.comment)).toMatchObject(formatComment({ ...comment, lovesCount, loved, isOwner }));
+        expect(formatComment(res.body.comment)).toMatchObject(formatComment({
+          ...comment, lovesCount, loved, isOwner,
+        }));
         Object.assign(comment, { lovesCount: res.body.comment.lovesCount });
       } else if (msgError) {
         expect(res.body.message).toEqual(msgError);

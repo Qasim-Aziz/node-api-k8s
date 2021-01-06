@@ -8,6 +8,11 @@ export const DYNAMIC = {
   NOUVEAU: 'NOUVEAU',
 };
 
+const Gender = {
+  MALE: 'MALE',
+  FEMALE: 'FEMALE',
+};
+
 module.exports = {
   up: () => lib.createTable('user', {
     email: {
@@ -23,6 +28,11 @@ module.exports = {
       type: Sequelize.TEXT,
       allowNull: false,
       field: 'pseudo',
+    },
+    gender: {
+      type: Sequelize.ENUM,
+      values: Object.values(Gender),
+      allowNull: false,
     },
     description: {
       type: Sequelize.TEXT,
