@@ -3,7 +3,7 @@ name: Demo workflow
 on:
   push:
     branches:
-      - demo
+      - remove-me-demo
 
 jobs:
   DEMO-CI:
@@ -73,6 +73,15 @@ jobs:
         script: |
           screen -X quit
           rm -Rf jardinsecret-back
-          bash my_script.sh 
+          
+          git clone -b demo https://${secret.USER}:${secret.PASSWORD}@github.com/darkangel01111991/jardinsecret-back.git
+          chmod 777 -R jardinsecret-back
+          cd jardinsecret-back
+          /root/.nvm/versions/node/v12.19.0/bin/npm run reinstall
+          /root/.nvm/versions/node/v12.19.0/bin/npm run yarn
+          /root/.nvm/versions/node/v12.19.0/bin/npm run init-db
+          /root/.nvm/versions/node/v12.19.0/bin/npm run init-data
+          /root/.nvm/versions/node/v12.19.0/bin/npm npm run migrate
+          screen -d -m npm run serve
 
 
