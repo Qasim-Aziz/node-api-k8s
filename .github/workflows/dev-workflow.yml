@@ -75,7 +75,7 @@ jobs:
           screen -X quit
           rm -Rf jardinsecret-back
 
-          git clone -b dev https://${secrets.USER}:${secrets.PASSWORD}@github.com/darkangel01111991/jardinsecret-back.git
+          git clone -b dev https://${secrets.USER}:${secrets.USER_TOKEN}@github.com/darkangel01111991/jardinsecret-back.git
           chmod 777 -R jardinsecret-back
           cd jardinsecret-back
           /root/.nvm/versions/node/v12.19.0/bin/npm run reinstall
