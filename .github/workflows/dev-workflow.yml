@@ -3,7 +3,7 @@ name: dev workflow
 on:
   push:
     branches:
-      - remove-me-dev
+      - test-dev
 
 jobs:
   DEV-CI:
@@ -66,7 +66,7 @@ jobs:
     - name: Dev Deployment
       uses: appleboy/ssh-action@master
       with:
-        host: 34.70.252.194 
+        host: 34.70.252.194
         username: root
         key: ${{ secrets.QA_DEV_SECRET }}
         port: 22
@@ -74,8 +74,8 @@ jobs:
         script: |
           screen -X quit
           rm -Rf jardinsecret-back
-           
-          git clone -b dev https://${secret.USER}:${secret.PASSWORD}@github.com/darkangel01111991/jardinsecret-back.git         
+
+          git clone -b dev https://${secret.USER}:${secret.PASSWORD}@github.com/darkangel01111991/jardinsecret-back.git
           chmod 777 -R jardinsecret-back
           cd jardinsecret-back
           /root/.nvm/versions/node/v12.19.0/bin/npm run reinstall
@@ -85,9 +85,9 @@ jobs:
           /root/.nvm/versions/node/v12.19.0/bin/npm run migrate
           screen -d -m npm run serve
 
-          
 
 
 
 
-          
+
+
