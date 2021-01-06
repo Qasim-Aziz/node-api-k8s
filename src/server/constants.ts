@@ -89,3 +89,15 @@ export enum GenderType {
   MALE = 'MALE',
   FEMALE = 'FEMALE',
 }
+
+export enum TropheeCode {
+  BADGE_1 = 'BADGE_1',
+  BADGE_2 = 'BADGE_2',
+  BADGE_3 = 'BADGE_3',
+  BADGE_4 = 'BADGE_4',
+  BADGE_5 = 'BADGE_5',
+  BADGE_6 = 'BADGE_6',
+  BADGE_7 = 'BADGE_7',
+  BADGE_8 = 'BADGE_8',
+  BADGE_9 = 'BADGE_9',
+}

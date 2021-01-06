@@ -21,5 +21,6 @@ router.use('/users', userRoutes);
 router.use('/auth', authRoutes);
 router.use('/messages', messageRoutes);
 router.use('/comments', commentRoutes);
+router.use('/trophees', tropheeRoutes);
 
 export default router;
