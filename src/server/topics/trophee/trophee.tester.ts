@@ -18,6 +18,6 @@ export const setTrophee = async (user, messageId, tropheeCode, {
       const messageRes = res.body.message;
       expect(messageRes.id).toEqual(messageId);
       expect(messageRes.connectedUserTrophee).toEqual(expectedUserTrophee);
-      expect(messageRes.tropheesStats).toEqual(expectedMessageTrophees);
+      expect(messageRes.tropheesStats).toEqual(expect.objectContaining(expectedMessageTrophees));
       return messageRes;
     });

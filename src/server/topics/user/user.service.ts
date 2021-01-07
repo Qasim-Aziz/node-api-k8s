@@ -2,11 +2,12 @@ import {
   cast, col, fn, Op, literal,
 } from 'sequelize';
 import {
-  Message, User, Tag, Comment, Follower,
+  Message, User, Tag, Comment, Follower, Trophee,
 } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import httpStatus from 'http-status';
 import { DynamicLevel, EmotionNote, PrivacyLevel } from 'src/server/constants';
+import { Sequelize } from 'src/orm/database';
 
 export default class UserService {
   static async checkEmailExist(email, { transaction = null } = {}) {
@@ -19,8 +20,29 @@ export default class UserService {
       .then((count) => count !== 0);
   }
 
+  static async getUserTropheeInfo(userId, { transaction = null } = {}) {
+    const tropheesStatsRaw = await Trophee.findAll({
+      group: ['tropheeCode'],
+      attributes: ['tropheeCode', [Sequelize.cast(Sequelize.fn('COUNT', 'tropheeCode'), 'int'), 'tropheesStats']],
+      include: [
+        {
+          model: Message.unscoped(),
+          attributes: [],
+          required: true,
+          where: { userId },
+        },
+      ],
+      transaction,
+      raw: true,
+    });
+    const tropheesStats = tropheesStatsRaw.reduce(
+      (obj, item: any) => Object.assign(obj, { [item.tropheeCode]: item.tropheesStats }), {},
+    );
+    return { nbTrophees: Object.values(tropheesStats).reduce((a: any, b: any) => a + b, 0), tropheesStats };
+  }
+
   static async getUser(userId, { loggedUserId = null, transaction = null } = {}) {
-    return User.unscoped().findByPk(userId, {
+    const userRaw = await User.unscoped().findByPk(userId, {
       attributes: [
         'id',
         'pseudo',
@@ -47,6 +69,8 @@ export default class UserService {
       raw: true,
       nest: true,
     });
+    const userTropheeInfo = await UserService.getUserTropheeInfo(userId, { transaction });
+    return { ...userRaw, ...userTropheeInfo };
   }
 
   static computeTraitsScores(traitsLength) {

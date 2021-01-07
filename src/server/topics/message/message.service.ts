@@ -3,7 +3,7 @@ import {
   Op, QueryTypes, sequelize, Sequelize,
 } from 'src/orm/database';
 import {
-  Comment, Favorite, Love, Message, Tag, Trait, View,
+  Comment, Favorite, Love, Message, Tag, Trait, View, Trophee,
 } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import { getNextMessageQuery } from 'src/server/topics/message/message.query';
@@ -41,7 +41,21 @@ export class MessageService {
   }
 
   static async getTropheeInfo(messageId, reqUserId, { transaction = null } = {}) {
-    return { connectedUserTrophee: null, tropheesStats: {} };
+    const tropheesStatsRaw = await Trophee.findAll({
+      group: ['tropheeCode'],
+      attributes: ['tropheeCode', [Sequelize.cast(Sequelize.fn('COUNT', 'tropheeCode'), 'int'), 'tropheesStats']],
+      where: { messageId },
+      transaction,
+      raw: true,
+    });
+    const tropheesStats = tropheesStatsRaw.reduce(
+      (obj, item: any) => Object.assign(obj, { [item.tropheeCode]: item.tropheesStats }), {},
+    );
+    const userTrophee = await Trophee.findOne({ where: { messageId, userId: reqUserId }, transaction });
+    const connectedUserTrophee = userTrophee
+      ? userTrophee.tropheeCode
+      : null;
+    return { connectedUserTrophee, tropheesStats };
   }
 
   static async enrichMessage(message, {
@@ -54,7 +68,9 @@ export class MessageService {
     const user = userData || (await UserService.getUser(message.userId, { transaction }));
     const traitNames = await MessageService.getMessageTraits(message.id, { transaction });
     const tropheeInfo = await MessageService.getTropheeInfo(message.id, requesterId, { transaction });
-    return { ...message, user, traitNames, ...tropheeInfo };
+    return {
+      ...message, user, traitNames, ...tropheeInfo,
+    };
   }
 
   static async getAll(requesterId, requestedId, { transaction = null, favorite = false } = {}) {
@@ -75,7 +91,6 @@ export class MessageService {
       nest: true,
       transaction,
     });
-    console.log(rawMessages);
     const userData = await UserService.getUser(requestedId, { transaction });
     return Promise.all(rawMessages.map(
       (m) => MessageService.enrichMessage(m, {
@@ -115,7 +130,7 @@ export class MessageService {
       raw: true,
       nest: true,
     });
-    return MessageService.enrichMessage(message, { transaction });
+    return MessageService.enrichMessage(message, { transaction, requesterId: reqUserId });
   }
 
   static async getNext(reqUserId, { transaction = null } = {}) {
