@@ -90,6 +90,11 @@ export enum GenderType {
   FEMALE = 'FEMALE',
 }
 
+export enum UserType {
+  PATIENT = 'PATIENT',
+  THERAPIST = 'THERAPIST',
+}
+
 export enum TropheeCode {
   BADGE_1 = 'BADGE_1',
   BADGE_2 = 'BADGE_2',

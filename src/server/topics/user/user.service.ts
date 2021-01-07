@@ -52,6 +52,8 @@ export default class UserService {
         'totalScore',
         'remainingScore',
         'dynamic',
+        'type',
+        'gender',
         [cast(fn('COUNT', col('"messages"."id"')), 'int'), 'nbMessages'],
         [cast(fn('COUNT', col('"followers"."id"')), 'int'), 'nbFollowers'],
         [literal('"followers".id IS NOT NULL'), 'following'],
