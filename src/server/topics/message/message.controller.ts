@@ -1,5 +1,5 @@
 import { validation, Joi, Auth } from 'src/server/helpers';
-import { EmotionCode, PrivacyLevel } from 'src/server/constants';
+import { ContextType, EmotionCode, PrivacyLevel } from 'src/server/constants';
 import { MessageService } from 'src/server/topics/message/message.service';
 
 export class MessageController {
@@ -21,7 +21,13 @@ export class MessageController {
     return { messages };
   }
 
-  @validation({})
+  @validation({
+    body: {
+      query: {
+        context: Joi.any().valid(...Object.values(ContextType)).optional(),
+      },
+    },
+  })
   @Auth.forLogged()
   static async getNext(req) {
     const message = await MessageService.getNext(req.user.id);

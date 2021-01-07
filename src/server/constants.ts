@@ -95,6 +95,11 @@ export enum UserType {
   THERAPIST = 'THERAPIST',
 }
 
+export enum ContextType {
+  ALL = 'ALL',
+  FOLLOWED = 'FOLLOWED',
+}
+
 export enum TropheeCode {
   BADGE_1 = 'BADGE_1',
   BADGE_2 = 'BADGE_2',
