@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
 import request from 'supertest';
 import app from 'src/application';
-import { EmotionCode, PrivacyLevel } from 'src/server/constants';
+import { ContextType, EmotionCode, PrivacyLevel } from 'src/server/constants';
 import { checkExpectedStatus } from 'src/server/tests/tester.base';
 
 let messageCounter = 0;
@@ -75,9 +75,12 @@ export const getMessage = async (user, messageId, {
   return messageRes;
 };
 
-export const getNextMessage = async (user, { status = httpStatus.OK, expectedMessageId = null, nbViews = null } = {}) => {
+export const getNextMessage = async (user, {
+  status = httpStatus.OK, expectedMessageId = null, nbViews = null, context = ContextType.ALL,
+} = {}) => {
   const res = await request(app)
     .get('/api/messages/next')
+    .query({ context })
     .set('Authorization', user.token)
     .expect(checkExpectedStatus(status));
   if (status !== httpStatus.OK) return null;
@@ -156,7 +159,7 @@ export const getAllMessages = async (user, requestedUser, { status = httpStatus.
     .expect(checkExpectedStatus(status));
   if (status !== httpStatus.OK) return null;
   const messagesRes = res.body.messages;
-  expect(messagesRes.map((m) => m.id)).toEqual(expectedMessagesIds);
+  expect(messagesRes.map((m) => m.id).sort()).toEqual(expectedMessagesIds.sort());
   if (user.id !== requestedUser.id) expect([...new Set(messagesRes.map((m) => m.privacy))]).toEqual([PrivacyLevel.PUBLIC]);
   return messagesRes;
 };

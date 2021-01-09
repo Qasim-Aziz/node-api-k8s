@@ -7,7 +7,7 @@ import {
 } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import { getNextMessageQuery } from 'src/server/topics/message/message.query';
-import { PrivacyLevel } from 'src/server/constants';
+import { ContextType, PrivacyLevel } from 'src/server/constants';
 import { FindAttributeOptions } from 'sequelize';
 import UserService from 'src/server/topics/user/user.service';
 
@@ -65,7 +65,7 @@ export class MessageService {
     updateViewCount = false,
   } = {}) {
     if (updateViewCount) await View.create({ userId: requesterId, messageId: message.id }, { transaction });
-    const user = userData || (await UserService.getUser(message.userId, { transaction }));
+    const user = userData || (await UserService.getUser(message.userId, { reqUserId: requesterId, transaction }));
     const traitNames = await MessageService.getMessageTraits(message.id, { transaction });
     const tropheeInfo = await MessageService.getTropheeInfo(message.id, requesterId, { transaction });
     return {
@@ -91,7 +91,7 @@ export class MessageService {
       nest: true,
       transaction,
     });
-    const userData = await UserService.getUser(requestedId, { transaction });
+    const userData = await UserService.getUser(requestedId, { reqUserId: requesterId, transaction });
     return Promise.all(rawMessages.map(
       (m) => MessageService.enrichMessage(m, {
         requesterId, userData, transaction, updateViewCount: requestedId !== requesterId,
@@ -133,12 +133,12 @@ export class MessageService {
     return MessageService.enrichMessage(message, { transaction, requesterId: reqUserId });
   }
 
-  static async getNext(reqUserId, { transaction = null } = {}) {
+  static async getNext(reqUserId, { transaction = null, context = ContextType.ALL } = {}) {
     // for now, very simple getNext function based on view and most recent messages others than mine.
     // later, when we will have more data, it will be based on user similarity
     // Useful variables/features : messages written by reqUser, tags used by reqUser,
     // views duration, messages loved, users subscribed, saved messages
-    const [{ id }]: any = await sequelize.query(getNextMessageQuery(), {
+    const [{ id }]: any = await sequelize.query(getNextMessageQuery(context), {
       type: QueryTypes.SELECT,
       raw: true,
       replacements: { reqUserId },

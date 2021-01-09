@@ -36,7 +36,7 @@ export class AuthService {
     const session = await SessionService.createSession(user.id, { transaction });
     const token = SessionManager.makeSession(session);
     await UserService.refreshUserLastConnexionDate(user.id, { transaction });
-    return { token, user: await UserService.getUser(user.id, { transaction }) };
+    return { token, user: await UserService.getUser(user.id, { reqUserId: user.id, transaction }) };
   }
 
   static async logout(token, { transaction = null } = {}) {

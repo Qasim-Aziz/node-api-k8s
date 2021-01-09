@@ -41,7 +41,7 @@ export default class UserService {
     return { nbTrophees: Object.values(tropheesStats).reduce((a: any, b: any) => a + b, 0), tropheesStats };
   }
 
-  static async getUser(userId, { loggedUserId = null, transaction = null } = {}) {
+  static async getUser(userId, { reqUserId = null, transaction = null } = {}) {
     const userRaw = await User.unscoped().findByPk(userId, {
       attributes: [
         'id',
@@ -54,25 +54,19 @@ export default class UserService {
         'dynamic',
         'type',
         'gender',
-        [cast(fn('COUNT', col('"messages"."id"')), 'int'), 'nbMessages'],
-        [cast(fn('COUNT', col('"followers"."id"')), 'int'), 'nbFollowers'],
-        [literal('"followers".id IS NOT NULL'), 'following'],
       ],
-      include: [
-        {
-          model: Message.unscoped(), attributes: [], required: false,
-        },
-        {
-          model: Follower.unscoped(), attributes: [], as: 'followers', required: false,
-        },
-      ],
-      group: ['"user"."id"', '"followers"."id"'],
       transaction,
       raw: true,
       nest: true,
     });
+    const nbMessages = await Message.count({ where: { userId }, transaction });
+    const nbFollowers = await Follower.count({ where: { followedId: userId }, transaction });
+    const nbFollowed = await Follower.count({ where: { followerId: userId }, transaction });
+    const following = !!(await Follower.findOne({ where: { followerId: reqUserId, followedId: userId }, transaction }));
     const userTropheeInfo = await UserService.getUserTropheeInfo(userId, { transaction });
-    return { ...userRaw, ...userTropheeInfo };
+    return {
+      ...userRaw, ...userTropheeInfo, nbMessages, nbFollowers, nbFollowed, following,
+    };
   }
 
   static computeTraitsScores(traitsLength) {
@@ -165,13 +159,13 @@ export default class UserService {
       if (isPseudoUsed) throw new BackError('Le pseudo est déjà utilisé', httpStatus.BAD_REQUEST);
     }
     await user.update(userData, { transaction });
-    return UserService.getUser(userId, { transaction });
+    return UserService.getUser(userId, { reqUserId: userId, transaction });
   }
 
   static async updateConnexionInformation(userId, nbConsecutiveConnexionDays, { transaction = null } = {}) {
     await User.update({ nbConsecutiveConnexionDays, lastConnexionDate: moment().toISOString() },
       { where: { id: userId }, transaction });
-    return UserService.getUser(userId, { transaction });
+    return UserService.getUser(userId, { reqUserId: userId, transaction });
   }
 
   static computeNbConsecutiveDays(lastConnexionDate, previousNbConsecutiveConnexionDays) {
@@ -201,7 +195,7 @@ export default class UserService {
     } else {
       await Follower.create({ followerId, followedId }, { transaction });
     }
-    return UserService.getUser(followedId, { transaction });
+    return UserService.getUser(followedId, { reqUserId: followerId, transaction });
   }
 
   static async getFollowers(followedId, { transaction = null } = {}) {

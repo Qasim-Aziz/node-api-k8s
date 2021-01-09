@@ -30,7 +30,7 @@ export class MessageController {
   })
   @Auth.forLogged()
   static async getNext(req) {
-    const message = await MessageService.getNext(req.user.id);
+    const message = await MessageService.getNext(req.user.id, { context: req.query.context });
     return { message };
   }
 

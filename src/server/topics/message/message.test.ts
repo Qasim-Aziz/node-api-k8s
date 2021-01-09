@@ -2,7 +2,9 @@ import httpStatus from 'http-status';
 import { Checks, setUp } from 'src/server/tests/tester.base';
 import { InitDBService } from 'src/initdb/initdb.service';
 import * as Testers from 'src/server/tests/testers';
-import { EmotionCode, GenderType, PrivacyLevel } from 'src/server/constants';
+import {
+  ContextType, EmotionCode, GenderType, PrivacyLevel,
+} from 'src/server/constants';
 
 const user1 = {
   email: 'user1@yopmail.com', pseudo: 'user1', password: 'pwd', gender: GenderType.MALE,
@@ -31,6 +33,9 @@ const message5: any = {
 };
 const message6: any = {
   content: 'message 6', privacy: PrivacyLevel.PRIVATE, emotionCode: EmotionCode.NERVEUX, traitNames: [],
+};
+const message7: any = {
+  content: 'message 7', privacy: PrivacyLevel.PUBLIC, emotionCode: EmotionCode.NERVEUX, traitNames: [],
 };
 const message2Update: any = { content: 'message 2 content update', traitNames: ['phobie', 'depression'] };
 
@@ -89,7 +94,7 @@ describe('# Message Tests', () => {
   });
 
   describe('Messages : get next', () => {
-    test('should get the right next messages', async () => {
+    test('should get the right next messages in the case of an ALL context', async () => {
       // I don't use Promise all here because th&²²e time creation is important
       await Testers.publishMessage(user3, message3);
       await Testers.publishMessage(user2, message4);
@@ -104,13 +109,21 @@ describe('# Message Tests', () => {
       await Testers.getNextMessage(user1, { expectedMessageId: message2.id, nbViews: 2 });
       await Testers.getNextMessage(user1, { expectedMessageId: message4.id, nbViews: 3 });
     });
+
+    test('should get the right next messages in the case of a FOLLOWED context', async () => {
+      await Testers.followOrUnfollow(user1, user3, { nbFollowers: 1 });
+      await Testers.publishMessage(user3, message7);
+      await Testers.getNextMessage(user1, { expectedMessageId: message7.id, nbViews: 1, context: ContextType.FOLLOWED });
+      await Testers.getNextMessage(user1, { expectedMessageId: message3.id, nbViews: 2, context: ContextType.FOLLOWED });
+      await Testers.getNextMessage(user1, { expectedMessageId: message7.id, nbViews: 2, context: ContextType.FOLLOWED });
+    });
   });
 
   describe('Messages : get all', () => {
     test('should get all my messages, even private ones', () =>
-      Testers.getAllMessages(user3, user3, { expectedMessagesIds: [message5.id, message3.id] }));
+      Testers.getAllMessages(user3, user3, { expectedMessagesIds: [message5.id, message3.id, message7.id] }));
     test('should only get public messages of another user', () =>
-      Testers.getAllMessages(user1, user3, { expectedMessagesIds: [message3.id] }));
+      Testers.getAllMessages(user1, user3, { expectedMessagesIds: [message3.id, message7.id] }));
   });
 
   describe('Messages : search traits', () => {
