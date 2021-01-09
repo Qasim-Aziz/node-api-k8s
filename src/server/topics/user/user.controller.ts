@@ -15,21 +15,6 @@ export class UserController {
     return { user };
   }
 
-  @validation({
-    params: { userId: Joi.number().integer().required() },
-    body: {
-      pseudo: Joi.string().lowercase().optional(),
-      description: Joi.string().optional(),
-    },
-  })
-  @Auth.forLogged()
-  static async updateUser(req, { transaction = null } = {}) {
-    const { params: { userId }, body: userData, user: { id: reqUserId } } = req;
-    if (userId !== reqUserId) throw new BackError('Cannot update another user', httpStatus.FORBIDDEN);
-    const user = await UserService.updateUser(userId, userData, { transaction });
-    return { user };
-  }
-
   @validation({})
   @Auth.forLogged()
   static async getMe(req, { transaction = null } = {}) {
@@ -41,6 +26,8 @@ export class UserController {
   @validation({
     body: {
       password: Joi.string().min(8).max(50),
+      pseudo: Joi.string().lowercase().optional(),
+      description: Joi.string().optional(),
     },
   })
   @Auth.forLogged()

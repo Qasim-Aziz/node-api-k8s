@@ -66,11 +66,11 @@ export const getUser = async (user, userId, {
       if (expectedUser) expect(userRes).toMatchObject(expectedUser);
     });
 
-export const updateUser = async (user, userId, userData, {
+export const updateMe = async (user, userData, {
   status = httpStatus.OK,
 } = {}) =>
   request(app)
-    .put(`/api/users/${userId}`)
+    .put('/api/users/me')
     .set('cookie', user.token)
     .send(userData)
     .expect(checkExpectedStatus(status))

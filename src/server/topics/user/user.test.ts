@@ -58,13 +58,10 @@ describe('# Users Tests', () => {
     });
 
     test('should update me', () =>
-      Testers.updateUser(user, user.id, { description: 'Test' }));
-
-    test('should not update another user', () =>
-      Testers.updateUser(user, anotherUser.id, {}, { status: httpStatus.FORBIDDEN }));
+      Testers.updateMe(user, { description: 'Test' }));
 
     test('should not update me with another user pseudo', () =>
-      Testers.updateUser(user, user.id, { pseudo: existingPseudo }, { status: httpStatus.BAD_REQUEST }));
+      Testers.updateMe(user, { pseudo: existingPseudo }, { status: httpStatus.BAD_REQUEST }));
 
     test('should compute the right stats for user', async () => {
       await Testers.publishMessage(user, message1);

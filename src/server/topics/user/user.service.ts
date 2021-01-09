@@ -1,6 +1,4 @@
-import {
-  cast, col, fn, Op, literal,
-} from 'sequelize';
+import { Op } from 'sequelize';
 import {
   Message, User, Tag, Comment, Follower, Trophee,
 } from 'src/orm';
