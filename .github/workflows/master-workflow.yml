@@ -5,9 +5,8 @@ on:
     branches:
       - master
 
-
 jobs:
-  jardin-backend:
+  master-CI:
     runs-on: ubuntu-latest
 
     services:
@@ -30,36 +29,56 @@ jobs:
         node-version: [12.19.x]
 
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
 
-      - name: Cache Node Modules
-        uses: actions/cache@v2
-        id: cache-node-modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-nodemodules-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm run yarn
+    - name: npm install packege
+      run: npm install -g yarn
 
-      - name: Lint Test
-        run: npm run lint
+    - name: install dpendencies with yarn
+      run: yarn install --frozen-lockfile
 
-      - name: Circular Test
-        run: npm run check-circular
+    - name: Run yarn
+      run: npm run yarn
 
-      - name: Tests
-        run: |
-          npm run init-db
-          npm run migrate
-          npm run test
-        env:
-          DB_HOST: 'localhost'
-          LOG_LEVEL: 'error'
+    - name: Run init db
+      run: npm run init-db
+
+    - name: Run migrate
+      run: npm run migrate
+
+    - name: run test for application
+      run: npm run test
+
+<<<<<<< HEAD:.github/workflows/Master-workflow.yml
+  
+=======
+  DEMO-CD:
+    needs: [DEMO-CI]
+    if: success()
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: DEMO Deployment
+      uses: appleboy/ssh-action@master
+      with:
+        host: 34.69.202.26
+        username: root
+        key: ${{ secrets.QA_DEV_SECRET }}
+        port: 22
+        script: |
+          pwd
+          cd /root/jardinsecret-back/
+          git stash
+          git reset --hard origin/demo
+          /root/.nvm/versions/node/v12.19.0/bin/npm run init-db
+          /root/.nvm/versions/node/v12.19.0/bin/npm run migrate
+          /root/.nvm/versions/node/v12.19.0/bin/npm run init-data
+          pkill -f -SIGHUP nodemon
+>>>>>>> 84739594e9e941176b5d8b7e303f4a0854ba329e:.github/workflows/demo-workflow.yml
+
+
