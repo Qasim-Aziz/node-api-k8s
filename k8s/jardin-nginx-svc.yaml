@@ -3,16 +3,15 @@ kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    app: jardin-back
-  name: jardin-back
+    app: nginx
+  name: nginx
   namespace: default
 spec:
   ports:
-  - port: 3000
+  - port: 80
     protocol: TCP
-    targetPort: 3000
+    targetPort: 80
   selector:
-    app: jardin-back
-  type: NodePort
+    app: nginx
 status:
   loadBalancer: {}

@@ -5,6 +5,7 @@ metadata:
   labels:
     app: jardin-back
   name: jardin-back
+  namespace: default
 spec:
   replicas: 1
   selector:
