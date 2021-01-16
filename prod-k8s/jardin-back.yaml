@@ -4,7 +4,7 @@ metadata:
   creationTimestamp: null
   labels:
     app: jardin-back
-  name: jardin-back
+  name: jardin-back-prod
   namespace: default
 spec:
   replicas: 1

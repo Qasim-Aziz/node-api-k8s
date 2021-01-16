@@ -4,7 +4,7 @@ metadata:
   creationTimestamp: null
   labels:
     app: jardin-back
-  name: jardin-svc
+  name: jardin-prod-svc
   namespace: prod
 spec:
   ports:
