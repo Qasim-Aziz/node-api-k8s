@@ -17,7 +17,7 @@ spec:
           servicePort: 3000
         path: /api(/|$)(.*)
       - backend:
-          serviceName: nginx
+          serviceName: nginx-prod
           servicePort: 80
         path: /nginx(/|$)(.*)
   - host: beta.anonyme.io 
