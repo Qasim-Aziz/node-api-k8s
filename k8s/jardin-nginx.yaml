@@ -21,7 +21,6 @@ spec:
       containers:
       - image: nginx
         name: nginx
-        command: ["/bin/sh","-c","rm -f /etc/nginx/conf.d/*"]
         volumeMounts:
         - name: nginx-conf
           mountPath: "/etc/nginx/conf.d"
