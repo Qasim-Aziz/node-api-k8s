@@ -21,7 +21,7 @@ export default {
     host: {
       doc: 'Database host',
       format: 'ipaddress',
-      default: '127.0.0.1',
+      default: '0.0.0.0',
       env: 'DB_HOST',
     },
     port: {
@@ -35,7 +35,7 @@ export default {
     host: {
       doc: 'application host',
       format: 'ipaddress',
-      default: 'localhost',
+      default: '0.0.0.0',
       env: 'APP_HOST',
     },
     port: {
