@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nginx
   name: nginx-prod
-  namespace: default
+  namespace: prod
 spec:
   replicas: 1
   selector:

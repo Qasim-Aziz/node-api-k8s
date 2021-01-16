@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nginx-conf
-  namespace: prod
+  namespace: default
 data:
 
   nginx.conf: |-

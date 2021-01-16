@@ -5,7 +5,7 @@ metadata:
   labels:
     app: jardin-back
   name: jardin-svc
-  namespace: prod
+  namespace: default
 spec:
   ports:
   - port: 3000
