@@ -15,11 +15,11 @@ spec:
       - backend:
           serviceName: jardin-prod-svc
           servicePort: 3000
-        path: /api(/|$)(.*)
+        path: /prod-api(/|$)(.*)
       - backend:
           serviceName: nginx-prod
           servicePort: 80
-        path: /nginx(/|$)(.*)
+        path: /prod-nginx(/|$)(.*)
   - host: beta.anonyme.io 
     http:
       paths:
