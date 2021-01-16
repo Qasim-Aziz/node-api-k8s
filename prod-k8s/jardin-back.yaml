@@ -19,7 +19,7 @@ spec:
         app: jardin-back
     spec:
       containers:
-      - image: anonymeio/jardin-back:0.0.1
+      - image: anonymeio/jardin-back-prod:0.0.1
         name: jardin-back
         command: ["/bin/sh", "-c", "npm run serve"]
         resources: {}
