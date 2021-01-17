@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf-argo
+  namespace: argocd
+data:
+
+  default.conf: |-
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        server_name beta.anonyme.io;
+        location / {
+        
+        rewrite ^/(beta.anonyme.io)$ http://34.121.54.120:32624/applications redirect;
+       }
+  
+    }
