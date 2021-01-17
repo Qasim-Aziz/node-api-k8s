@@ -4,10 +4,11 @@ metadata:
   namespace: prod
   name: postgre
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
   - port: 5432
     targetPort: 5432
+    nodePort: 31405
 
 ---
 
