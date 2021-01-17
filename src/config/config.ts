@@ -24,12 +24,12 @@ export default {
       default: '0.0.0.0',
       env: 'DB_HOST',
     },
-    // port: {
-    //   doc: 'Database port',
-    //   format: 'port',
-    //   default: '15432',
-    //   env: 'DB_PORT',
-    // },
+    port: {
+       doc: 'Database port',
+       format: 'port',
+       default: '15432',
+       env: 'DB_PORT',
+    },
   },
   app: {
     host: {
