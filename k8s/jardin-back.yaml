@@ -5,7 +5,7 @@ metadata:
   labels:
     app: jardin-back
   name: jardin-back
-  namespace: default
+  namespace: argocd
 spec:
   replicas: 1
   selector:

@@ -5,7 +5,7 @@ metadata:
   labels:
     app: jardin-back
   name: jardin-svc
-  namespace: default
+  namespace: argocd
 spec:
   ports:
   - port: 3000
