@@ -25,10 +25,10 @@ export default {
       env: 'DB_HOST',
     },
     port: {
-      doc: 'Database port',
-      format: 'port',
-      default: '15432',
-      env: 'DB_PORT',
+       doc: 'Database port',
+       format: 'port',
+       default: '15432',
+       env: 'DB_PORT',
     },
   },
   app: {

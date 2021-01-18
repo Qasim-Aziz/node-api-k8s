@@ -1,0 +1,40 @@
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: prod
+  name: postgre
+spec:
+  clusterIP: None
+  ports:
+  - port: 5432
+    targetPort: 5432
+    
+
+---
+
+
+kind: Endpoints
+apiVersion: v1
+metadata:
+  namespace: prod
+  name: postgre
+subsets:
+  - addresses:
+      - ip: 34.72.159.142
+    ports:
+      - port: 5432
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: postgre
+# spec:
+#   selector:
+#     app: jardin-back
+#   ports:
+#     - name: http
+#       protocol: TCP
+#       port: 5432
+#       targetPort: 5432
+#   externalIPs:
+#     - 34.72.159.142

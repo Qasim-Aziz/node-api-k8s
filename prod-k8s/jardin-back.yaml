@@ -19,9 +19,9 @@ spec:
         app: jardin-back
     spec:
       containers:
-      - image: anonymeio/jardin-back-prod:0.0.1
+      - image: anonymeio/jardin-prod:0.0.2
         name: jardin-back
-        command: ["/bin/sh", "-c", "npm init-db", "npm init-data","npm run migrate", "npm run serve"]
+        command: ["/bin/sh", "-c", "npm run init-db", "npm run init-data","npm run migrate", "npm run serve"]
         env:
           - name: DB_USERNAME
             valueFrom:
@@ -40,13 +40,13 @@ spec:
                 key: DB_NAME
           - name: DB_HOST
             valueFrom:
-              secretKeyRef:
-                name: prod-db
+              configMapKeyRef:
+                name: prod-configmap
                 key: DB_HOST
           - name: DB_PORT
             valueFrom:
-              secretKeyRef:
-                name: prod-db
+              configMapKeyRef:
+                name: prod-configmap
                 key: DB_PORT
         resources: {}
 status: {}
