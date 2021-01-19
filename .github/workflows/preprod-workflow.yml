@@ -35,9 +35,13 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
-      - name: Use gcloud CLI
-        run: gcloud info
+      - name: Empty bucket
+        run: gsutil rm gs://sql-bucket-anonyme/prod-db
       - name: export prod database
         run: gcloud sql export sql anonyme-prod gs://sql-bucket-anonyme/prod-db --database=jardin_secret
+      - name: delete database
+        run: gcloud sql databases delete jardin_secret --instance=beta-anonyme -q
+      - name: create database 
+        run: gcloud sql databases create jardin_secret --instance=beta-anonyme -q 
       - name: import on preprod database
         run: gcloud sql import sql beta-anonyme gs://sql-bucket-anonyme/prod-db --database=jardin_secret -q
