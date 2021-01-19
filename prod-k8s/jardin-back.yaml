@@ -29,7 +29,7 @@ spec:
         - name: DB_PASSWORD
           value: "7q3E1vOBf9bjBIhK"
         - name: DB_NAME
-          value: "jardin_secret"
+          value: "postgres"
         - name: DB_HOST
           value: "10.20.0.4"
         - name: DB_PORT
