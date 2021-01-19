@@ -41,13 +41,27 @@ spec:
                 key: DB_NAME
           - name: DB_HOST
             valueFrom:
-              secretKeyRef:
-                name: pvt-ip
+              configMapKeyRef:
+                name: prod-configMap
                 key: DB_HOST
           - name: DB_PORT
             valueFrom:
               configMapKeyRef:
                 name: prod-configmap
                 key: DB_PORT
-        resources: {}
-status: {}
+      - name: cloud-sql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.17
+        command:
+        - "/cloud_sql_proxy"
+        - "-instances=10.74.240.4=tcp:5432"
+        - "-credential_file=/secrets/service_account.json"
+        securityContext:
+          runAsNonRoot: true
+        volumeMounts:
+        - name: sa-secret
+          mountPath: /secrets/
+          readOnly: true    
+      volumes:
+      - name: sa-secret
+        secret:
+          secretName: sa-secret  
