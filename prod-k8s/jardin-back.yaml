@@ -53,7 +53,7 @@ spec:
         image: gcr.io/cloudsql-docker/gce-proxy:1.17
         command:
         - "/cloud_sql_proxy"
-        - "-instances=platinum-trees-99915:us-central1-c:anonyme-prod=tcp:5432"
+        #- "-instances=platinum-trees-99915:us-central1-c:anonyme-prod=tcp:5432"
         - "-credential_file=/secrets/service_account.json"
         securityContext:
           runAsNonRoot: true
