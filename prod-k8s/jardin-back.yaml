@@ -22,7 +22,7 @@ spec:
       containers:
       - image: anonymeio/jardin-prod:0.0.3
         name: jardin-back
-        command: ["/bin/sh", "-c","npm run migrate","npm run init-db", "npm run init-data", "npm run serve"]
+        command: ["/bin/sh", "-c","npm run init-db", "npm run init-data","npm run migrate", "npm run serve"]
         env:
         - name: DB_USERNAME
           value: "jardin"
@@ -31,7 +31,7 @@ spec:
         - name: DB_NAME
           value: "jardin_secret"
         - name: DB_HOST
-          value: "0.0.0.0"
+          value: "platinum-trees-99915:us-central1:anonyme-prod"
         - name: DB_PORT
           value: "5432"
         
