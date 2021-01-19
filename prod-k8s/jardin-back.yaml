@@ -31,7 +31,7 @@ spec:
         - name: DB_NAME
           value: "jardin_secret"
         - name: DB_HOST
-          value: "platinum-trees-99915:us-central1:anonyme-prod"
+          value: "jardin-prod-svc"
         - name: DB_PORT
           value: "5432"
         
