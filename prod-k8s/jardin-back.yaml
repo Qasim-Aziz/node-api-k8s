@@ -24,31 +24,41 @@ spec:
         name: jardin-back
         command: ["/bin/sh", "-c", "npm run init-db", "npm run init-data","npm run migrate", "npm run serve"]
         env:
-          - name: DB_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: prod-db
-                key: DB_USERNAME
-          - name: DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: prod-db
-                key: DB_PASSWORD
-          - name: DB_NAME
-            valueFrom:
-              secretKeyRef:
-                name: prod-db
-                key: DB_NAME
-          - name: DB_HOST
-            valueFrom:
-              configMapKeyRef:
-                name: prod-configmap
-                key: DB_HOST
-          - name: DB_PORT
-            valueFrom:
-              configMapKeyRef:
-                name: prod-configmap
-                key: DB_PORT
+        - name: DB_USERNAME
+          value: "jardin"
+        - name: DB_PASSWORD
+          value: "khIBjb9fBOv1e3q7"
+        - name: DB_NAME
+          value: "jardin_secret"
+        - name: DB_HOST
+          value: "127.0.0.1"
+        - name: DB_HOST
+          value: "5432"
+          # - name: DB_USERNAME
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: prod-db
+          #       key: DB_USERNAME
+          # - name: DB_PASSWORD
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: prod-db
+          #       key: DB_PASSWORD
+          # - name: DB_NAME
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: prod-db
+          #       key: DB_NAME
+          # - name: DB_HOST
+          #   valueFrom:
+          #     configMapKeyRef:
+          #       name: prod-configmap
+          #       key: DB_HOST
+          # - name: DB_PORT
+          #   valueFrom:
+          #     configMapKeyRef:
+          #       name: prod-configmap
+          #       key: DB_PORT
       - name: cloud-sql-proxy
         image: gcr.io/cloudsql-docker/gce-proxy:1.17
         command:
