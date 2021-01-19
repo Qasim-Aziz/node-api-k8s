@@ -32,6 +32,8 @@ spec:
           value: "jardin_secret"
         - name: DB_HOST
           value: "10.20.0.4"
+        - name: DB_PORT
+          value: "5432"
         
           # - name: DB_USERNAME
           #   valueFrom:
