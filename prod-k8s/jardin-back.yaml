@@ -31,7 +31,7 @@ spec:
         - name: DB_NAME
           value: "jardin_secret"
         - name: DB_HOST
-          value: "127.0.0.1"
+          value: "10.74.240.4"
         - name: DB_PORT
           value: "5432"
         - name: APP_HOST
@@ -63,20 +63,20 @@ spec:
           #     configMapKeyRef:
           #       name: prod-configmap
           #       key: DB_PORT
-      - name: cloud-sql-proxy
-        image: gcr.io/cloudsql-docker/gce-proxy:1.17
-        command:
-        - "/cloud_sql_proxy"
-        - "-ip_address_types=PRIVATE"
-        - "-instances=platinum-trees-99915:us-central1:anonyme-prod=tcp:5432"
-        - "-credential_file=/secrets/service_account.json"
-        securityContext:
-          runAsNonRoot: true
-        volumeMounts:
-        - name: sa-secret
-          mountPath: /secrets/
-          readOnly: true    
-      volumes:
-      - name: sa-secret
-        secret:
-          secretName: sa-secret  
+      # - name: cloud-sql-proxy
+      #   image: gcr.io/cloudsql-docker/gce-proxy:1.17
+      #   command:
+      #   - "/cloud_sql_proxy"
+      #   - "-ip_address_types=PRIVATE"
+      #   - "-instances=platinum-trees-99915:us-central1:anonyme-prod=tcp:5432"
+      #   - "-credential_file=/secrets/service_account.json"
+      #   securityContext:
+      #     runAsNonRoot: true
+      #   volumeMounts:
+      #   - name: sa-secret
+      #     mountPath: /secrets/
+      #     readOnly: true    
+      # volumes:
+      # - name: sa-secret
+      #   secret:
+      #     secretName: sa-secret  
