@@ -39,4 +39,5 @@ jobs:
         run: gcloud info
       - name: export prod database
         run: gcloud sql export sql anonyme-prod gs://sql-bucket-anonyme/prod-db --database=jardin_secret
-        
+      - name: import on preprod database
+        run: gcloud sql import sql beta-anonyme gs://sql-bucket-anonyme/prod-db --database=jardin_secret -q
