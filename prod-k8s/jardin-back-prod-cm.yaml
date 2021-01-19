@@ -1,7 +1,7 @@
 apiVersion: v1
 data:
-  DB_HOST: "postgre"
-  DB_PORT: "5432"
+  DB_HOST: 34.72.159.142
+  DB_PORT: 5432
 kind: ConfigMap
 metadata:
   creationTimestamp: null
