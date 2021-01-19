@@ -37,3 +37,6 @@ jobs:
 
       - name: Use gcloud CLI
         run: gcloud info
+      - name: export prod database
+        run: gcloud sql export sql anonyme-prod gs://sql-bucket-anonyme/prod-db --database=jardin_secret
+        
