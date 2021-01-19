@@ -53,7 +53,6 @@ spec:
         image: gcr.io/cloudsql-docker/gce-proxy:1.17
         command:
         - "/cloud_sql_proxy"
-        - "-ip_address_types=PRIVATE"
         - "-instances=platinum-trees-99915:us-central1:anonyme-prod=tcp:5432"
         - "-credential_file=/secrets/service_account.json"
         securityContext:
