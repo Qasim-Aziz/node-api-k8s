@@ -20,7 +20,7 @@ metadata:
   name: postgre
 subsets:
   - addresses:
-      - ip: 10.74.240.4
+      - ip: 10.20.0.4
     ports:
       - port: 5432
 # ---
