@@ -25,6 +25,7 @@ COPY . .
 RUN npm install
 RUN npm install -g yarn
 RUN npm run yarn
+RUN npm install pg
 EXPOSE 3000
 
 

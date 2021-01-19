@@ -25,9 +25,9 @@ spec:
         command: ["/bin/sh", "-c","npm run init-db", "npm run init-data","npm run migrate", "npm run serve"]
         env:
         - name: DB_USERNAME
-          value: "jardin"
+          value: "postgres"
         - name: DB_PASSWORD
-          value: "khIBjb9fBOv1e3q7"
+          value: "7q3E1vOBf9bjBIhK"
         - name: DB_NAME
           value: "jardin_secret"
         - name: DB_HOST
