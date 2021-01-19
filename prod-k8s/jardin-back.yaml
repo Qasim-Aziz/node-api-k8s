@@ -31,13 +31,13 @@ spec:
         - name: DB_NAME
           value: "jardin_secret"
         - name: DB_HOST
-          value: 127.0.0.1
+          value: "127.0.0.1"
         - name: DB_PORT
-          value: 5432
+          value: "5432"
         - name: APP_HOST
-          value: 127.0.0.1
+          value: "127.0.0.1"
         - name: APP_PORT
-          value: 3000
+          value: "3000"
           # - name: DB_USERNAME
           #   valueFrom:
           #     secretKeyRef:
