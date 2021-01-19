@@ -68,7 +68,7 @@ spec:
         - "-instances=platinum-trees-99915:us-central1:anonyme-prod=tcp:5432"
         - "-credential_file=/secrets/service_account.json"
         ports:
-          - containerPort: "5432"
+          - containerPort: 5432
         securityContext:
           runAsNonRoot: true
         volumeMounts:
