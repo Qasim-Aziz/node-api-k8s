@@ -32,7 +32,7 @@ spec:
           value: "jardin_secret"
         - name: DB_HOST
           value: "127.0.0.1"
-        - name: DB_HOST
+        - name: DB_PORT
           value: "5432"
           # - name: DB_USERNAME
           #   valueFrom:
