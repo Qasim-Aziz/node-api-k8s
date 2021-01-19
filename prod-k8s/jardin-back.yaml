@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
+    networking/allow-internet-access: "true"
     app: jardin-back
   name: jardin-back-prod
   namespace: prod
