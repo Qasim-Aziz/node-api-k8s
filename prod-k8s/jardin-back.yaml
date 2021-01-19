@@ -41,8 +41,8 @@ spec:
                 key: DB_NAME
           - name: DB_HOST
             valueFrom:
-              configMapKeyRef:
-                name: prod-configmap
+              secretKeyRef:
+                name: pvt-ip
                 key: DB_HOST
           - name: DB_PORT
             valueFrom:
