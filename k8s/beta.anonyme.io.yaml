@@ -16,7 +16,7 @@ spec:
       paths:
       - backend:
           serviceName: jardin-svc-preprod
-          servicePort: 3000
+          servicePort: 31745
         path: /beta-api
       - backend:
           serviceName: nginx-svc-preprod
