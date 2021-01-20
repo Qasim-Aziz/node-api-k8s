@@ -11,7 +11,7 @@ metadata:
     
 spec:
   rules:
-  - host: beta.anonyme.io
+  - host: frontend.35.225.226.173.nip.io
     http:
       paths:
       - backend:
