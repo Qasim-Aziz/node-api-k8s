@@ -11,6 +11,7 @@ spec:
   - port: 3000
     protocol: TCP
     targetPort: 3000
+    nodePort: 31745
   selector:
     app: jardin-back-preprod
   type: NodePort
