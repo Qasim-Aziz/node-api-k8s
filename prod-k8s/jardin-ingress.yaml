@@ -20,7 +20,7 @@ spec:
           serviceName: nginx-prod
           servicePort: 80
         path: /nginx-prod(/|$)(.*)
-  - host: frontend.34.66.117.55.nip.io 
+  - host: frontend.35.225.226.173.nip.io 
     http:
       paths:
       - backend:
