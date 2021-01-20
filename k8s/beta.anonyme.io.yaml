@@ -20,7 +20,7 @@ spec:
       - backend:
           serviceName: nginx-svc-preprod
           servicePort: 80
-        path: /beta(/|$)(.*)
+        path: /(/|$)(.*)
   - host: frontend.35.193.48.130.nip.io
     http:
       paths:
