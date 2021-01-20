@@ -22,16 +22,16 @@ spec:
       containers:
       - image: anonymeio/jardin-prod:0.0.3
         name: jardin-back
-        command: ["/bin/sh", "-c", "npm run serve"]
+        command: ["/bin/sh", "-c", "npm run init-db", "npm run init-data", "npm run migrate", "npm run serve"]
         env:
         - name: DB_USERNAME
-          value: "postgres"
+          value: "jardin"
         - name: DB_PASSWORD
-          value: "7q3E1vOBf9bjBIhK"
+          value: "khIBjb9fBOv1e3q7"
         - name: DB_NAME
-          value: "postgres"
+          value: "jardin_secret"
         - name: DB_HOST
-          value: "localhost"
+          value: "127.0.0.1"
         - name: DB_PORT
           value: "5432"
         - name: APP_HOST
