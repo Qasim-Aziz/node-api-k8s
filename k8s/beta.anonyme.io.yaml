@@ -18,7 +18,7 @@ spec:
           servicePort: 3000
         path: /beta-api(/|$)(.*)
       - backend:
-          serviceName: nginx-svc-preprod
+          serviceName: nginx-2
           servicePort: 80
         path: /(/|$)(.*)
   - host: frontend.35.193.48.130.nip.io
@@ -29,7 +29,7 @@ spec:
           servicePort: 3000
         path: /beta-api
       - backend:
-          serviceName: nginx-svc-preprod
+          serviceName: nginx-2
           servicePort: 80
         path: /
     
