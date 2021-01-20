@@ -34,6 +34,8 @@ spec:
           value: "localhost"
         - name: DB_PORT
           value: "5432"
+        - name: APP_HOST
+          value: "127.0.0.1"
         
           # - name: DB_USERNAME
           #   valueFrom:
