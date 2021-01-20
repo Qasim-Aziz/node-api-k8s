@@ -1,14 +1,14 @@
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: internet-access
-  namespace: prod
-spec:
-  podSelector:
-    matchLabels:
-      networking/allow-internet-access: "true"
-  policyTypes:
-  - Ingress
-  - Egress
-  ingress:
-  - {}
+# apiVersion: networking.k8s.io/v1
+# kind: NetworkPolicy
+# metadata:
+#   name: internet-access
+#   namespace: prod
+# spec:
+#   podSelector:
+#     matchLabels:
+#       networking/allow-internet-access: "true"
+#   policyTypes:
+#   - Ingress
+#   - Egress
+#   ingress:
+#   - {}
