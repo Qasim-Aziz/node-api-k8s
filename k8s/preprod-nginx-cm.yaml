@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: nginx-conf-argo
-  namespace: argocd
+  name: nginx-conf-preprod
+  namespace: preprod
 data:
 
   default.conf: |-
@@ -12,7 +12,7 @@ data:
         server_name beta.anonyme.io;
         location / {
         
-        rewrite ^/(beta.anonyme.io)$ http://34.121.54.120:32624/applications redirect;
+        rewrite ^/(beta.anonyme.io)$ https://www.webflow.com/$1 redirect;
        }
   
     }

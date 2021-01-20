@@ -9,7 +9,7 @@ data:
     server {
         listen 80 default_server;
         listen [::]:80 default_server;
-        server_name beta.anonyme.io;
+        server_name anonyme.io;
         location / {
         
         rewrite ^/(anonyme.io)$ https://www.webflow.com/$1 redirect;

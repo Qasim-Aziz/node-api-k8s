@@ -3,25 +3,28 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: jardin-back
-  name: jardin-back
-  namespace: argocd
+    networking/allow-internet-access: "true"
+    app: jardin-back-preprod
+  name: jardin-back-preprod
+  namespace: preprod
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jardin-back
+      app: jardin-back-preprod
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: jardin-back
+        app: jardin-back-preprod
     spec:
       containers:
-      - image: anonymeio/jardin-back:0.0.1
+      - image: anonymeio/jardin:0.0.1
         name: jardin-back
-        command: ["/bin/sh", "-c", "npm run init-db", "npm run init-data","npm run migrate", "npm run serve"]
+        command: ["/bin/sh", "-c"]
+        args: ["npm run init-db; npm run init-data; npm run migrate; npm run serve"]
+        
         env:
           - name: DB_USERNAME
             valueFrom:
@@ -40,13 +43,35 @@ spec:
                 key: DB_NAME
           - name: DB_HOST
             valueFrom:
-              secretKeyRef:
-                name: preprod-db
+              configMapKeyRef:
+                name: preprod-configmap
                 key: DB_HOST
           - name: DB_PORT
             valueFrom:
-              secretKeyRef:
-                name: preprod-db
+              configMapKeyRef:
+                name: preprod-configmap
                 key: DB_PORT
-        resources: {}
-status: {}
+          - name: APP_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: preprod-configmap
+                key: APP_HOST
+      - name: cloud-sql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.17
+        command:
+        - "/cloud_sql_proxy"
+        
+        - "-instances=platinum-trees-99915:us-central1:beta-anonyme=tcp:5432"
+        - "-credential_file=/secrets/service_account.json"
+        ports:
+          - containerPort: 5432
+        securityContext:
+          runAsNonRoot: true
+        volumeMounts:
+        - name: sa-secret
+          mountPath: /secrets/
+          readOnly: true    
+      volumes:
+      - name: sa-secret
+        secret:
+          secretName: sa-secret  

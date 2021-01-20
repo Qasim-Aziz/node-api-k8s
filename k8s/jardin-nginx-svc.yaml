@@ -3,15 +3,15 @@ kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    app: nginx
-  name: nginx
-  namespace: argocd
+    app: nginx-preprod
+  name: nginx-svc-preprod
+  namespace: preprod
 spec:
   ports:
   - port: 80
     protocol: TCP
     targetPort: 80
   selector:
-    app: nginx
+    app: nginx-preprod
 status:
   loadBalancer: {}

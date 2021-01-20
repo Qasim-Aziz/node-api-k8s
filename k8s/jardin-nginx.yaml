@@ -3,29 +3,29 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: nginx
-  name: nginx
-  namespace: argocd
+    app: nginx-preprod
+  name: nginx-preprod
+  namespace: preprod
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nginx
+      app: nginx-preprod
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: nginx
+        app: nginx-preprod
     spec:
       containers:
       - image: nginx
         name: nginx
         volumeMounts:
-        - name: nginx-conf
+        - name: nginx-conf-preprod
           mountPath: "/etc/nginx/conf.d"
           readOnly: false
       volumes:
-      - name: nginx-conf
+      - name: nginx-conf-preprod
         configMap:
-          name: nginx-conf
+          name: nginx-conf-preprod
