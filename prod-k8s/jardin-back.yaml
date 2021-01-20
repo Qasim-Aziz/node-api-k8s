@@ -22,7 +22,9 @@ spec:
       containers:
       - image: anonymeio/jardin-prod:0.0.3
         name: jardin-back
-        command: ["/bin/sh", "-c", "npm run serve", "npm run init-db", "npm run init-data", "npm run migrate"]
+        command: ["/bin/sh"]
+        args: ["-c", "npm run serve", "npm run init-db", "npm run init-data", "npm run migrate"]
+          
         env:
         - name: DB_USERNAME
           value: "jardin"
