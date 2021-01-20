@@ -51,27 +51,27 @@ spec:
               configMapKeyRef:
                 name: prod-configmap
                 key: DB_PORT
-          - name: APP_HOST
-            valueFrom:
-              configMapKeyRef:
-                name: prod-configmap
-                key: APP_HOST
-      - name: cloud-sql-proxy
-        image: gcr.io/cloudsql-docker/gce-proxy:1.17
-        command:
-        - "/cloud_sql_proxy"
+      #     - name: APP_HOST
+      #       valueFrom:
+      #         configMapKeyRef:
+      #           name: prod-configmap
+      #           key: APP_HOST
+      # - name: cloud-sql-proxy
+      #   image: gcr.io/cloudsql-docker/gce-proxy:1.17
+      #   command:
+      #   - "/cloud_sql_proxy"
         
-        - "-instances=platinum-trees-99915:us-central1:anonyme-prod=tcp:5432"
-        - "-credential_file=/secrets/service_account.json"
-        ports:
-          - containerPort: 5432
-        securityContext:
-          runAsNonRoot: true
-        volumeMounts:
-        - name: sa-secret
-          mountPath: /secrets/
-          readOnly: true    
-      volumes:
-      - name: sa-secret
-        secret:
-          secretName: sa-secret  
+      #   - "-instances=platinum-trees-99915:us-central1:anonyme-prod=tcp:5432"
+      #   - "-credential_file=/secrets/service_account.json"
+      #   ports:
+      #     - containerPort: 5432
+      #   securityContext:
+      #     runAsNonRoot: true
+      #   volumeMounts:
+      #   - name: sa-secret
+      #     mountPath: /secrets/
+      #     readOnly: true    
+      # volumes:
+      # - name: sa-secret
+      #   secret:
+      #     secretName: sa-secret  

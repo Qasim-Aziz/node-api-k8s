@@ -11,23 +11,13 @@ metadata:
     
 spec:
   rules:
-  - http:
-      paths:
-      - backend:
-          serviceName: jardin-svc-preprod
-          servicePort: 3000
-        path: /beta-api(/|$)(.*)
-      - backend:
-          serviceName: nginx-2
-          servicePort: 80
-        path: /(/|$)(.*)
-  - host: frontend.35.193.48.130.nip.io
+  - host: beta.anonyme.io
     http:
       paths:
       - backend:
           serviceName: jardin-svc-preprod
           servicePort: 3000
-        path: /beta-api
+        path: /api
       - backend:
           serviceName: nginx-2
           servicePort: 80
