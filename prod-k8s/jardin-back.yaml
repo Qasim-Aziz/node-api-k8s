@@ -31,7 +31,7 @@ spec:
         - name: DB_NAME
           value: "jardin_secret"
         - name: DB_HOST
-          value: "127.0.0.1"
+          value: "localhost"
         - name: DB_PORT
           value: "5432"
         - name: APP_HOST
