@@ -6,13 +6,18 @@ metadata:
 data:
 
   default.conf: |-
+    http {
+    upstream {
+        server beta.anonyme.io;
+    }
+
+    include mime.types;
+
     server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
-        server_name beta.anonyme.io;
+        listen 80;
+        server_name webflow.com;
         location / {
-        
-        rewrite ^/(beta.anonyme.io)$ https://www.webflow.com/$1 redirect;
-       }
-  
+            proxy_pass https://webflow.com;
+        }
+     }
     }
