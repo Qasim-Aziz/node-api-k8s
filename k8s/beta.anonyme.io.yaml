@@ -8,8 +8,13 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
     
 spec:
+  tls:
+  - hosts:
+    - beta.anonyme.io
+    secretName: beta-tls
   rules:
   - host: beta.anonyme.io
     http:
