@@ -9,7 +9,7 @@ data:
     server {
         listen 80 default_server;
         listen [::]:80 default_server;
-        server_name beta.anonyme.io;
+        
         location / {
     
         proxy_pass https://www.webflow.com/$1 redirect;
