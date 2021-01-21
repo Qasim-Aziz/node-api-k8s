@@ -196,8 +196,8 @@ export default class UserService {
     return UserService.getUser(followedId, { reqUserId: followerId, transaction });
   }
 
-  static async getFollowers(followedId, { transaction = null } = {}) {
-    return User.unscoped().findAll({
+  static async getFollowers(followedId, { transaction = null, limit = 10, offset = 0 } = {}) {
+    const { rows: followers, count: total } = await User.unscoped().findAndCountAll({
       attributes: ['pseudo'],
       include: [
         {
@@ -210,11 +210,15 @@ export default class UserService {
       transaction,
       raw: true,
       nest: true,
+      limit,
+      offset,
+      subQuery: false,
     });
+    return { followers, total };
   }
 
-  static async getFollowed(followerId, { transaction = null } = {}) {
-    return User.unscoped().findAll({
+  static async getFollowed(followerId, { transaction = null, limit = 10, offset = 0 } = {}) {
+    const { rows: followed, count: total } = await User.unscoped().findAndCountAll({
       attributes: ['pseudo'],
       include: [
         {
@@ -227,7 +231,11 @@ export default class UserService {
       transaction,
       raw: true,
       nest: true,
+      limit,
+      offset,
+      subQuery: false,
     });
+    return { followed, total };
   }
 
   static getDynamicLevel(note) {

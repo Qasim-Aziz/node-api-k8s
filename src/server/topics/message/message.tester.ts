@@ -151,14 +151,17 @@ export const searchTraits = async (user, q, { status = httpStatus.OK, expectedRe
   return traitsRes;
 };
 
-export const getAllMessages = async (user, requestedUser, { status = httpStatus.OK, expectedMessagesIds = [] } = {}) => {
+export const getAllMessages = async (user, requestedUser, {
+  status = httpStatus.OK, expectedMessagesIds = [], total = null, limit = 10, offset = 0,
+} = {}) => {
   const res = await request(app)
     .get('/api/messages')
     .set('Authorization', user.token)
-    .query({ userId: requestedUser.id })
+    .query({ userId: requestedUser.id, limit, offset })
     .expect(checkExpectedStatus(status));
   if (status !== httpStatus.OK) return null;
   const messagesRes = res.body.messages;
+  if (total) expect(res.body.total).toEqual(total);
   expect(messagesRes.map((m) => m.id).sort()).toEqual(expectedMessagesIds.sort());
   if (user.id !== requestedUser.id) expect([...new Set(messagesRes.map((m) => m.privacy))]).toEqual([PrivacyLevel.PUBLIC]);
   return messagesRes;

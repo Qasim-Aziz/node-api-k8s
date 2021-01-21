@@ -73,10 +73,12 @@ export class MessageService {
     };
   }
 
-  static async getAll(requesterId, requestedId, { transaction = null, favorite = false } = {}) {
+  static async getAll(requesterId, requestedId, {
+    transaction = null, favorite = false, limit = 10, offset = 0,
+  } = {}) {
     const requiredPrivacy = (requesterId === requestedId) ? [PrivacyLevel.PRIVATE, PrivacyLevel.PUBLIC] : [PrivacyLevel.PUBLIC];
     const attributes = MessageService.getAttributes({ withCustomAttributes: true, reqUserId: requesterId }) as string[];
-    const rawMessages = await Message.unscoped().findAll({
+    const { count: total, rows: rawMessages } = await Message.unscoped().findAndCountAll({
       attributes,
       include: [
         { model: Love.unscoped(), attributes: [] },
@@ -89,14 +91,20 @@ export class MessageService {
       where: { privacy: { [Op.in]: requiredPrivacy }, ...favorite ? {} : { userId: requestedId } },
       raw: true,
       nest: true,
+      subQuery: false,
       transaction,
+      limit,
+      offset,
     });
     const userData = await UserService.getUser(requestedId, { reqUserId: requesterId, transaction });
-    return Promise.all(rawMessages.map(
-      (m) => MessageService.enrichMessage(m, {
-        requesterId, userData, transaction, updateViewCount: requestedId !== requesterId,
-      }),
-    ));
+    return {
+      total,
+      messages: await Promise.all(rawMessages.map(
+        (m) => MessageService.enrichMessage(m, {
+          requesterId, userData, transaction, updateViewCount: requestedId !== requesterId,
+        }),
+      )),
+    };
   }
 
   static async getMessageTraits(messageId, { transaction = null } = {}) {

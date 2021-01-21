@@ -121,7 +121,11 @@ describe('# Message Tests', () => {
 
   describe('Messages : get all', () => {
     test('should get all my messages, even private ones', () =>
-      Testers.getAllMessages(user3, user3, { expectedMessagesIds: [message5.id, message3.id, message7.id] }));
+      Testers.getAllMessages(user3, user3, { expectedMessagesIds: [message5.id, message3.id, message7.id], total: 3 }));
+    test('should get all my messages with right limit and offset', () =>
+      Testers.getAllMessages(user3, user3, {
+        expectedMessagesIds: [message5.id], limit: 1, offset: 1, total: 3,
+      }));
     test('should only get public messages of another user', () =>
       Testers.getAllMessages(user1, user3, { expectedMessagesIds: [message3.id, message7.id] }));
   });

@@ -13,12 +13,17 @@ export class MessageController {
   }
 
   @validation({
-    query: { userId: Joi.number().integer().required() },
+    query: {
+      userId: Joi.number().integer().required(),
+      limit: Joi.number().integer().optional(),
+      offset: Joi.number().integer().optional(),
+    },
   })
   @Auth.forLogged()
   static async getAll(req) {
-    const messages = await MessageService.getAll(req.user.id, req.query.userId);
-    return { messages };
+    const { query: { userId, limit, offset }, user: { id: reqUserId } } = req;
+    const { messages, total } = await MessageService.getAll(reqUserId, userId, { limit, offset });
+    return { messages, total };
   }
 
   @validation({
@@ -34,14 +39,15 @@ export class MessageController {
     return { message };
   }
 
-  @validation({})
+  @validation({
+    limit: Joi.number().integer().optional().default(10),
+    offset: Joi.number().integer().optional().default(0),
+  })
   @Auth.forLogged()
   static async getFavorites(req) {
-    const { user: { id: reqUserId } } = req;
-    console.log('reqUserId');
-    console.log(reqUserId);
-    const messages = await MessageService.getAll(reqUserId, reqUserId, { favorite: true });
-    return { messages };
+    const { user: { id: reqUserId }, query: { limit, offset } } = req;
+    const { messages, total } = await MessageService.getAll(reqUserId, reqUserId, { favorite: true, limit, offset });
+    return { messages, total };
   }
 
   @validation({

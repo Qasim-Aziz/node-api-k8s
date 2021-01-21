@@ -79,24 +79,34 @@ export class UserController {
   }
 
   @validation({
-    params: { userId: Joi.number().integer().required() },
+    params: {
+      userId: Joi.number().integer().required(),
+    },
+    query: {
+      limit: Joi.number().integer().optional().default(10),
+      offset: Joi.number().integer().optional().default(0),
+    },
   })
   @Auth.forLogged()
   static async getFollowers(req, { transaction = null } = {}) {
-    const { params: { userId: followedId } } = req;
-
-    const followers = await UserService.getFollowers(followedId, { transaction });
-    return { followers };
+    const { params: { userId: followedId }, query: { limit, offset } } = req;
+    const { followers, total } = await UserService.getFollowers(followedId, { transaction, limit, offset });
+    return { followers, total };
   }
 
   @validation({
-    params: { userId: Joi.number().integer().required() },
+    params: {
+      userId: Joi.number().integer().required(),
+    },
+    query: {
+      limit: Joi.number().integer().optional().default(10),
+      offset: Joi.number().integer().optional().default(0),
+    },
   })
   @Auth.forLogged()
   static async getFollowed(req, { transaction = null } = {}) {
-    const { params: { userId: followerId } } = req;
-
-    const followed = await UserService.getFollowed(followerId, { transaction });
-    return { followed };
+    const { params: { userId: followerId }, query: { limit, offset } } = req;
+    const { followed, total } = await UserService.getFollowed(followerId, { transaction, limit, offset });
+    return { followed, total };
   }
 }
