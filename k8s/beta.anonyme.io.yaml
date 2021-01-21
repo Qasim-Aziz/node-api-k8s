@@ -17,9 +17,9 @@ spec:
       - backend:
           serviceName: jardin-svc-preprod
           servicePort: 3000
-        path: /api
+        path: /
       - backend:
           serviceName: nginx-2
           servicePort: 80
-        path: /
+        path: /api
     
