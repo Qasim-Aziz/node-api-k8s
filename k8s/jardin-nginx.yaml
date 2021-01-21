@@ -21,11 +21,11 @@ spec:
       containers:
       - image: nginx
         name: nginx
-        volumeMounts:
-        - name: nginx-conf-preprod
-          mountPath: "/etc/nginx/conf.d"
-          readOnly: false
-      volumes:
-      - name: nginx-conf-preprod
-        configMap:
-          name: nginx-conf-preprod
+      #   volumeMounts:
+      #   - name: nginx-conf-preprod
+      #     mountPath: "/etc/nginx/conf.d"
+      #     readOnly: false
+      # volumes:
+      # - name: nginx-conf-preprod
+      #   configMap:
+      #     name: nginx-conf-preprod
