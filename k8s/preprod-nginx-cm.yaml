@@ -11,7 +11,7 @@ data:
         server_name beta.anonyme.io;
         
         location / {
-          pass_proxy https://webflow.com;
+          proxy_pass https://webflow.com;
         }
   
         }
