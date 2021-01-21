@@ -11,8 +11,8 @@ data:
         listen [::]:80 default_server;
         server_name beta.anonyme.io;
         location / {
-    
-        rewrite ^/(beta.anonyme.io)$ https://www.webflow.com/$1 redirect;
-       }
+            return 301 https://webflow.com;
+     }
+
   
     }
