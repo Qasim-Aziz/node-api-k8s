@@ -14,4 +14,4 @@ data:
           proxy_pass https://webflow.com/$1 redirect;
         }
   
-        }
+      }
