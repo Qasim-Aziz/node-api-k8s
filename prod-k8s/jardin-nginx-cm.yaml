@@ -7,12 +7,11 @@ data:
 
   default.conf: |-
     server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
+        listen 80;
         server_name anonyme.io;
-        location / {
         
-        rewrite ^/(anonyme.io)$ https://www.webflow.com/$1 redirect;
-       }
+        location / {
+          proxy_pass https://webflow.com/$1 redirect;
+        }
   
-    }
+        }
