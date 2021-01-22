@@ -5,7 +5,7 @@ metadata:
   namespace: prod
 data:
 
-  default.conf: |-
+  default.conf: |
     server {
         listen 80;
         server_name anonyme.io;
