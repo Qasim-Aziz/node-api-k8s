@@ -13,7 +13,7 @@ spec:
   tls:
   - hosts:
     - api.anonyme.io
-    secretName: beta-tls
+    secretName: api-tls
   rules:
   - host: api.anonyme.io
     http:
