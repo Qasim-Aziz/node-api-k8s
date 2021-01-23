@@ -3,7 +3,7 @@ name: Docker build for Nodeapp
 on:
   push:
     branches:
-      - docker-k8s
+      - preprod
 
 jobs:
   build-job:
