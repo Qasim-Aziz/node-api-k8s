@@ -20,7 +20,7 @@ spec:
         app: jardin-back
     spec:
       containers:
-      - image: anonymeio/jardin-prod:0.0.3
+      - image: anonymeio/jardin-prod:0.0.3$GITHUB_SHA
         name: jardin-back
         command: ["/bin/sh", "-c"]
         args: ["npm run init-db; npm run init-data; npm run migrate; npm run serve"]

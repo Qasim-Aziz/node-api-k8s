@@ -18,7 +18,7 @@ jobs:
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - name: Docker build
       run: |
-        docker build -t ${{secrets.DOCKER_HUB_USERNAME }}/jardin-prod:0.0.3 .
+        docker build -t ${{secrets.DOCKER_HUB_USERNAME }}/jardin-prod:0.0.3$GITHUB_SHA .
     - name: Docker push images
       run: |
-        docker push docker.io/${{secrets.DOCKER_HUB_USERNAME }}/jardin-prod:0.0.3
+        docker push docker.io/${{secrets.DOCKER_HUB_USERNAME }}/jardin-prod:0.0.3$GITHUB_SHA
