@@ -25,7 +25,9 @@ describe('# Comments', () => {
     comment2 = await Testers.commentMessage(user2, message, 'this is a comment 2');
     await Testers.getMessage(user2, message.id, { nbComments: 2, commented: true });
     await Testers.getMessageComments(user2, message, { expectedResults: [comment1.id, comment2.id], total: 2 });
-    await Testers.getMessageComments(user2, message, { expectedResults: [comment2.id], total: 2, limit: 1, offset: 1 });
+    await Testers.getMessageComments(user2, message, {
+      expectedResults: [comment2.id], total: 2, limit: 1, offset: 1,
+    });
   });
 
   test('Should edit comment', () =>
