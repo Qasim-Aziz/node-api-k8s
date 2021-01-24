@@ -22,14 +22,18 @@ export const commentMessage = (user, message, content, { status = httpStatus.OK 
       return res.body.comment;
     });
 
-export const getMessageComments = (user, message, { status = httpStatus.OK, expectedResults = null, msgError = null } = {}) =>
+export const getMessageComments = (user, message, {
+  status = httpStatus.OK, expectedResults = null, msgError = null, total = null, limit = 10, offset = 0,
+} = {}) =>
   request(app)
     .get(`/api/comments?messageId=${message.id}`)
+    .query({ limit, offset })
     .set('Authorization', user.token)
     .expect(checkExpectedStatus(status))
     .then((res) => {
       if (status === httpStatus.OK) {
         expectDeepMatch(res.body.comments.map((c) => c.id), expectedResults);
+        if (total) expect(res.body.total).toEqual(total);
       } else if (msgError) {
         expect(res.body.message).toEqual(msgError);
       }

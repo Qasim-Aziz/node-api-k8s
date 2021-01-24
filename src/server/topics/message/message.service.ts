@@ -78,7 +78,7 @@ export class MessageService {
   } = {}) {
     const requiredPrivacy = (requesterId === requestedId) ? [PrivacyLevel.PRIVATE, PrivacyLevel.PUBLIC] : [PrivacyLevel.PUBLIC];
     const attributes = MessageService.getAttributes({ withCustomAttributes: true, reqUserId: requesterId }) as string[];
-    const { count: total, rows: rawMessages } = await Message.unscoped().findAndCountAll({
+    const { count: total, rows: rawMessages }: any = await Message.unscoped().findAndCountAll({
       attributes,
       include: [
         { model: Love.unscoped(), attributes: [] },
@@ -98,7 +98,7 @@ export class MessageService {
     });
     const userData = await UserService.getUser(requestedId, { reqUserId: requesterId, transaction });
     return {
-      total,
+      total: total.length,
       messages: await Promise.all(rawMessages.map(
         (m) => MessageService.enrichMessage(m, {
           requesterId, userData, transaction, updateViewCount: requestedId !== requesterId,

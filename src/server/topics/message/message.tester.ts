@@ -161,6 +161,8 @@ export const getAllMessages = async (user, requestedUser, {
     .expect(checkExpectedStatus(status));
   if (status !== httpStatus.OK) return null;
   const messagesRes = res.body.messages;
+  console.log('res.body')
+  console.log(res.body)
   if (total) expect(res.body.total).toEqual(total);
   expect(messagesRes.map((m) => m.id).sort()).toEqual(expectedMessagesIds.sort());
   if (user.id !== requestedUser.id) expect([...new Set(messagesRes.map((m) => m.privacy))]).toEqual([PrivacyLevel.PUBLIC]);
