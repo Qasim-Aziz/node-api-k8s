@@ -23,7 +23,7 @@ spec:
       - image: anonymeio/jardin-back:0.0.1
         name: jardin-back
         command: ["/bin/sh", "-c"]
-        args: ["npm run init-db; npm run init-data; npm run migrate; npm run serve"]
+        args: ["npm run migrate; npm run serve"]
         
         env:
           - name: DB_USERNAME
