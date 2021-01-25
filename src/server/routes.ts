@@ -5,6 +5,7 @@ import authRoutes from 'src/server/topics/auth/auth.route';
 import messageRoutes from 'src/server/topics/message/message.route';
 import commentRoutes from 'src/server/topics/comment/comment.route';
 import tropheeRoutes from 'src/server/topics/trophee/trophee.route';
+import initDataRoutes from 'src/server/topics/init-data/init-data.route';
 
 import { Env } from 'src/server/helpers';
 
@@ -23,5 +24,6 @@ router.use('/auth', authRoutes);
 router.use('/messages', messageRoutes);
 router.use('/comments', commentRoutes);
 router.use('/trophees', tropheeRoutes);
+router.use('/init-data', initDataRoutes);
 
 export default router;
