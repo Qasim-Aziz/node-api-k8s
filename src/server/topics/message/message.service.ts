@@ -28,6 +28,7 @@ export class MessageService {
       [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.fn('DISTINCT', Sequelize.col('"loves"."id"'))), 'int'), 'nbLoves'],
       [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.fn('DISTINCT', Sequelize.col('"views"."id"'))), 'int'), 'nbViews'],
       [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.fn('DISTINCT', Sequelize.col('"comments"."id"'))), 'int'), 'nbComments'],
+      [Sequelize.literal(`"message"."user_id" = ${reqUserId}`), 'isOwner'],
     ];
     const customAttributes = [
       [Sequelize.fn('coalesce',
@@ -228,7 +229,7 @@ export class MessageService {
     await MessageService.createOrUpdateTagsAndTraits(message.id, messageData.traitNames, { transaction });
     await UserService.updateUserScore(messageData.userId, { messageId: message.id, transaction });
     await UserService.updateDynamic(messageData.userId, { transaction });
-    return MessageService.get(message.id, { transaction });
+    return MessageService.get(message.id, { transaction, reqUserId: messageData.userId });
   }
 
   static async update(messageId, messageData, { transaction = null, userId = null } = {}) {
@@ -236,7 +237,7 @@ export class MessageService {
     await MessageService.createOrUpdateTagsAndTraits(messageId, messageData.traitNames, { transaction });
     await UserService.updateUserScore(userId, { messageId, transaction });
     await UserService.updateDynamic(userId, { transaction });
-    return MessageService.get(messageId, { transaction });
+    return MessageService.get(messageId, { transaction, reqUserId: userId });
   }
 
   static async checkUserRight(userId, messageId, { transaction = null } = {}) {

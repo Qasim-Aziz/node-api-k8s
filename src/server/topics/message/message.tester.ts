@@ -20,6 +20,7 @@ export const publishMessage = async (user, message, { status = httpStatus.OK } =
     expect(messageRes.nbLoves).toEqual(0);
     expect(messageRes.nbViews).toEqual(0);
     expect(messageRes.userId).toEqual(user.id);
+    expect(messageRes.isOwner).toEqual(true);
     return Object.assign(message, messageRes);
   });
 
@@ -50,6 +51,7 @@ export const updateMessage = async (user, messageId, messageData, { status = htt
   if (nbLoves !== null) expect(messageRes.nbLoves).toEqual(nbLoves);
   if (nbViews !== null) expect(messageRes.nbViews).toEqual(nbViews);
   expect(messageRes.userId).toEqual(user.id);
+  expect(messageRes.isOwner).toEqual(true);
   return messageRes;
 };
 
@@ -72,6 +74,7 @@ export const getMessage = async (user, messageId, {
   if (nbComments !== null) expect(messageRes.nbComments).toEqual(nbComments);
   expect(messageRes.loved).toEqual(loved);
   expect(messageRes.commented).toEqual(commented);
+  expect(messageRes.isOwner).toEqual(user.id === messageRes.userId);
   return messageRes;
 };
 
@@ -161,11 +164,10 @@ export const getAllMessages = async (user, requestedUser, {
     .expect(checkExpectedStatus(status));
   if (status !== httpStatus.OK) return null;
   const messagesRes = res.body.messages;
-  console.log('res.body')
-  console.log(res.body)
   if (total) expect(res.body.total).toEqual(total);
   expect(messagesRes.map((m) => m.id).sort()).toEqual(expectedMessagesIds.sort());
   if (user.id !== requestedUser.id) expect([...new Set(messagesRes.map((m) => m.privacy))]).toEqual([PrivacyLevel.PUBLIC]);
+  expect()
   return messagesRes;
 };
 
