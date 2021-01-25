@@ -3,7 +3,7 @@ name: Docker build for Nodeapp
 on:
   push:
     branches:
-      - remove-me-preprod
+      - preprod
 
 jobs:
   build-job:
