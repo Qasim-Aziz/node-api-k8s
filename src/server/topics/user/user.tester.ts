@@ -78,6 +78,7 @@ export const updateMe = async (user, userData, {
       if (status !== httpStatus.OK) return null;
       const userRes = res.body.user;
       expect(userRes).toMatchObject(userData);
+      if (userData.traitNames) expect(userRes.traitNames.sort()).toEqual(userData.traitNames.sort());
       return Object.assign(user, userRes);
     });
 

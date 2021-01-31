@@ -111,6 +111,10 @@ module.exports = {
         type: Sequelize.STRING(255),
         allowNull: false,
       },
+      position: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
     };
 
     const tagFields = {

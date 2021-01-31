@@ -2,6 +2,18 @@ import { Tag, Trait } from 'src/orm';
 import { Op, sequelize } from 'src/orm/database';
 
 export class TraitService {
+  static async getThesaurus({ transaction = null } = {}) {
+    console.log('all traits')
+    console.log(await Trait.findAll({ transaction }))
+    return Trait.findAll({
+      where: { position: { [Op.not]: null } },
+      order: ['position', 'name'],
+      raw: true,
+      nest: true,
+      transaction,
+    });
+  }
+
   static async getTraits({ transaction = null, messageId = null, userId = null } = {}) {
     const fkId = messageId ? { messageId } : { userId };
     return (await Tag.unscoped().findAll({

@@ -6,6 +6,7 @@ import messageRoutes from 'src/server/topics/message/message.route';
 import commentRoutes from 'src/server/topics/comment/comment.route';
 import tropheeRoutes from 'src/server/topics/trophee/trophee.route';
 import initDataRoutes from 'src/server/topics/init-data/init-data.route';
+import traitRoutes from 'src/server/topics/trait/trait.route';
 
 import { Env } from 'src/server/helpers';
 
@@ -25,5 +26,6 @@ router.use('/messages', messageRoutes);
 router.use('/comments', commentRoutes);
 router.use('/trophees', tropheeRoutes);
 router.use('/init-data', initDataRoutes);
+router.use('/traits', traitRoutes);
 
 export default router;

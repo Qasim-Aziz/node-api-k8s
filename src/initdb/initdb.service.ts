@@ -36,7 +36,7 @@ export class InitDBService {
     const tables = Object.values(sequelize.models)
       .map((model) => model.getTableName())
       .filter((tableName) => tableName !== 'SequelizeMeta') as string[];
-    const tablesToOmit = [];
+    const tablesToOmit = ['trait'];
     const tablesToTruncate = tables.filter((table) => !tablesToOmit.includes(table));
     const tablesToTruncateFormatted = tablesToTruncate.map((table) => `"${table}"`).join(', ');
 

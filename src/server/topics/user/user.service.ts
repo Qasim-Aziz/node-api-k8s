@@ -6,6 +6,7 @@ import { BackError, moment } from 'src/server/helpers';
 import httpStatus from 'http-status';
 import { DynamicLevel, EmotionNote, PrivacyLevel } from 'src/server/constants';
 import { Sequelize } from 'src/orm/database';
+import { TraitService } from 'src/server/topics/trait/trait.service';
 
 export default class UserService {
   static async checkEmailExist(email, { transaction = null } = {}) {
@@ -62,8 +63,9 @@ export default class UserService {
     const nbFollowed = await Follower.count({ where: { followerId: userId }, transaction });
     const following = !!(await Follower.findOne({ where: { followerId: reqUserId, followedId: userId }, transaction }));
     const userTropheeInfo = await UserService.getUserTropheeInfo(userId, { transaction });
+    const traitNames = await TraitService.getTraits({ userId, transaction });
     return {
-      ...userRaw, ...userTropheeInfo, nbMessages, nbFollowers, nbFollowed, following,
+      ...userRaw, ...userTropheeInfo, nbMessages, nbFollowers, nbFollowed, following, traitNames,
     };
   }
 
@@ -157,7 +159,7 @@ export default class UserService {
       if (isPseudoUsed) throw new BackError('Le pseudo est déjà utilisé', httpStatus.BAD_REQUEST);
     }
     await user.update(userData, { transaction });
-
+    await TraitService.createOrUpdateTagsAndTraits(userData.traitNames, { transaction, userId });
     return UserService.getUser(userId, { reqUserId: userId, transaction });
   }
 
