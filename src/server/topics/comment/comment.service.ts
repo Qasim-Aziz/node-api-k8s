@@ -30,6 +30,7 @@ export default class CommentService {
       transaction,
       subQuery: false,
       limit,
+      order: [['postedAt', 'desc']],
       offset,
     });
     return { comments, total };
