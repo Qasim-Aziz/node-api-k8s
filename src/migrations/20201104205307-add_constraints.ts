@@ -23,7 +23,10 @@ module.exports = {
       lib.createUniqueIndex('favorite_user_message', 'favorite', ['user_id', 'message_id']),
       lib.createUniqueIndex('pseudo', 'user', ['pseudo']),
       lib.createUniqueIndex('email', 'user', ['email']),
-      lib.createUniqueIndex('trait_message', 'tag', ['trait_id', 'message_id']),
+      lib.createUniqueIndex('trait_message', 'tag', ['trait_id', 'message_id'], { nullableField: 'message_id' }),
+      lib.createUniqueIndex('trait_user', 'tag', ['trait_id', 'user_id'], { nullableField: 'user_id' }),
+      lib.addCheck('tag', 'user_message_xor',
+        '(user_id is null and message_id is not null) or (user_id is not null and message_id is null)'),
     ]);
   },
 

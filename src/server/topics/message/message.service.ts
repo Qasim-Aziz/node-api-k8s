@@ -10,6 +10,7 @@ import { getNextMessageQuery } from 'src/server/topics/message/message.query';
 import { ContextType, PrivacyLevel } from 'src/server/constants';
 import { FindAttributeOptions } from 'sequelize';
 import UserService from 'src/server/topics/user/user.service';
+import { TraitService } from 'src/server/topics/trait/trait.service';
 
 export class MessageService {
   static async isPublicMessage(messageId, { transaction = null } = {}) {
@@ -67,7 +68,7 @@ export class MessageService {
   } = {}) {
     if (updateViewCount) await View.create({ userId: requesterId, messageId: message.id }, { transaction });
     const user = userData || (await UserService.getUser(message.userId, { reqUserId: requesterId, transaction }));
-    const traitNames = await MessageService.getMessageTraits(message.id, { transaction });
+    const traitNames = await TraitService.getTraits({ messageId: message.id, transaction });
     const tropheeInfo = await MessageService.getTropheeInfo(message.id, requesterId, { transaction });
     return {
       ...message, user, traitNames, ...tropheeInfo,
@@ -106,17 +107,6 @@ export class MessageService {
         }),
       )),
     };
-  }
-
-  static async getMessageTraits(messageId, { transaction = null } = {}) {
-    return (await Tag.unscoped().findAll({
-      attributes: [],
-      where: { messageId },
-      include: [
-        { model: Trait.unscoped(), attributes: ['name'], required: true },
-      ],
-      transaction,
-    })).map((tag: any) => tag.trait.name);
   }
 
   static async get(messageId, { transaction = null, reqUserId = null, updateViewCount = false } = {}) {
@@ -163,70 +153,10 @@ export class MessageService {
     );
   }
 
-  static async createTraitsIfRequired(traitNames, { transaction = null } = {}) {
-    const traitsAlreadyCreated = await Trait.unscoped().findAll({
-      attributes: ['id', 'name'],
-      where: { name: traitNames },
-      transaction,
-      raw: true,
-      nest: true,
-    });
-    const traitsAlreadyCreatedNames = traitsAlreadyCreated.map((t) => t.name);
-    const traitsNotExisting = traitNames.filter((trait) => !(traitsAlreadyCreatedNames.includes(trait)));
-    return Trait.bulkCreate(traitsNotExisting.map((name) => ({ name })), { returning: true, transaction });
-  }
-
-  static async unTag(messageId, traitNames, { transaction = null } = {}) {
-    const currentTagsToDeleteIds = (await Tag.unscoped().findAll({
-      where: { messageId },
-      attributes: ['id'],
-      include: [{
-        model: Trait.unscoped(),
-        attributes: ['id', 'name'],
-        required: true,
-        where: { name: { [Op.notIn]: traitNames } },
-      }],
-      transaction,
-      raw: true,
-      nest: true,
-    })).map((t) => t.id);
-    if (currentTagsToDeleteIds.length) await Tag.destroy({ where: { id: currentTagsToDeleteIds }, transaction });
-  }
-
-  static async setNewTags(messageId, traitNames, { transaction = null } = {}) {
-    const traitsNotLinked = (await Trait.unscoped().findAll({
-      attributes: ['id', 'name'],
-      include: [{
-        model: Tag.unscoped(),
-        attributes: ['id'],
-        required: false,
-        where: { messageId },
-      }],
-      where: {
-        [Op.and]: [
-          { name: traitNames },
-          { '$"tags"."id"$': null },
-        ],
-      },
-      transaction,
-      raw: true,
-    })).map((trait) => trait.id);
-    const tagsToCreate = traitsNotLinked.map((traitId) => ({ traitId, messageId }));
-    return Tag.bulkCreate(tagsToCreate, { transaction });
-  }
-
-  static async createOrUpdateTagsAndTraits(messageId, traitNames, { transaction = null } = {}) {
-    if (traitNames === undefined) return null;
-    await sequelize.query('LOCK TABLE trait IN ACCESS EXCLUSIVE MODE;', { transaction });
-    await MessageService.createTraitsIfRequired(traitNames, { transaction });
-    await MessageService.unTag(messageId, traitNames, { transaction });
-    return MessageService.setNewTags(messageId, traitNames, { transaction });
-  }
-
   static async create(messageData, { transaction = null } = {}) {
     const publishedAt = moment().toISOString();
     const message = await Message.create({ ...messageData, publishedAt }, { transaction });
-    await MessageService.createOrUpdateTagsAndTraits(message.id, messageData.traitNames, { transaction });
+    await TraitService.createOrUpdateTagsAndTraits(messageData.traitNames, { transaction, messageId: message.id });
     await UserService.updateUserScore(messageData.userId, { messageId: message.id, transaction });
     await UserService.updateDynamic(messageData.userId, { transaction });
     return MessageService.get(message.id, { transaction, reqUserId: messageData.userId });
@@ -234,7 +164,7 @@ export class MessageService {
 
   static async update(messageId, messageData, { transaction = null, userId = null } = {}) {
     await Message.update(messageData, { where: { id: messageId }, transaction });
-    await MessageService.createOrUpdateTagsAndTraits(messageId, messageData.traitNames, { transaction });
+    await TraitService.createOrUpdateTagsAndTraits(messageData.traitNames, { transaction, messageId });
     await UserService.updateUserScore(userId, { messageId, transaction });
     await UserService.updateDynamic(userId, { transaction });
     return MessageService.get(messageId, { transaction, reqUserId: userId });

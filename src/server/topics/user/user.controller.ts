@@ -28,6 +28,7 @@ export class UserController {
       password: Joi.string().min(8).max(50),
       pseudo: Joi.string().lowercase().optional(),
       description: Joi.string().optional(),
+      traitNames: Joi.array().items(Joi.string().regex(/^[A-Za-z0-9]+$/)).optional(),
     },
   })
   @Auth.forLogged()

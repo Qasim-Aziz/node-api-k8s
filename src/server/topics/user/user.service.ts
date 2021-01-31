@@ -157,6 +157,7 @@ export default class UserService {
       if (isPseudoUsed) throw new BackError('Le pseudo est déjà utilisé', httpStatus.BAD_REQUEST);
     }
     await user.update(userData, { transaction });
+
     return UserService.getUser(userId, { reqUserId: userId, transaction });
   }
 

@@ -259,11 +259,13 @@ export const changeValuesEnumInArray = async function changeValuesEnumInArray(ta
   await queryInterface.sequelize.query(`DROP TYPE "${enumName}_old";`);
 };
 
-export const createUniqueIndex = function createUniqueIndex(indexName, table, fields) {
+export const createUniqueIndex = function createUniqueIndex(indexName, table, fields, { nullableField = null } = {}) {
   return `\
 CREATE UNIQUE INDEX ${indexName}_deleted_unique ON "${table}"
-USING btree (${fields.join(', ')}, deleted_at) WHERE deleted_at IS NOT NULL;
-CREATE UNIQUE INDEX ${indexName}_unique ON "${table}" USING btree (${fields.join(', ')}) WHERE deleted_at IS NULL;
+USING btree (${fields.join(', ')}, deleted_at) WHERE deleted_at IS NOT NULL
+${nullableField ? `AND ${nullableField} is NOT NULL` : ''};
+CREATE UNIQUE INDEX ${indexName}_unique ON "${table}" USING btree (${fields.join(', ')}) WHERE deleted_at IS NULL
+${nullableField ? `AND ${nullableField} is NOT NULL` : ''};
 `;
 };
 
