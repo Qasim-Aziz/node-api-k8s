@@ -98,6 +98,8 @@ export class TraitService {
     console.log('here 2')
     await TraitService.unTag(traitNames, { transaction, messageId, userId });
     console.log('here 3')
-    return TraitService.setNewTags(traitNames, { transaction, messageId, userId });
+    await TraitService.setNewTags(traitNames, { transaction, messageId, userId });
+    console.log('here 4')
+    return null;
   }
 }
