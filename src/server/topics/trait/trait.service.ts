@@ -25,6 +25,8 @@ export class TraitService {
   }
 
   static async createTraitsIfRequired(traitNames, { transaction = null } = {}) {
+    console.log('all traits')
+    console.log(await Trait.findAll({ transaction, raw: true, nest: true, attributes: ['name'] }))
     const traitsAlreadyCreated = await Trait.unscoped().findAll({
       attributes: ['id', 'name'],
       where: { name: traitNames },
