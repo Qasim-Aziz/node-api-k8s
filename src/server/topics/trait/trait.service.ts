@@ -41,7 +41,7 @@ export class TraitService {
     console.log(traitsAlreadyCreatedNames)
     const traitsNotExisting = traitNames.filter((trait) => !(traitsAlreadyCreatedNames.includes(trait)));
     console.log('traitsNotExisting')
-    console.log(traitsNotExisting)
+    console.log(traitsNotExisting.map((name) => ({ name })))
     return Trait.bulkCreate(traitsNotExisting.map((name) => ({ name })), { returning: true, transaction });
   }
 
