@@ -57,11 +57,11 @@ describe('# Users Tests', () => {
       return Testers.getMe(user, { expectedUser: { id, pseudo, description } });
     });
 
-    test('should update me', () =>
+    test('should update me with trait names', () =>
       Testers.updateMe(user, { description: 'Test', traitNames: ['A', 'B'] }));
 
     test('should update me with different trait names', () =>
-      Testers.updateMe(user, { description: 'Test', traitNames: ['B', 'C'] }));
+      Testers.updateMe(user, { traitNames: ['B', 'C'] }));
 
     test('should not update me with another user pseudo', () =>
       Testers.updateMe(user, { pseudo: existingPseudo }, { status: httpStatus.BAD_REQUEST }));
