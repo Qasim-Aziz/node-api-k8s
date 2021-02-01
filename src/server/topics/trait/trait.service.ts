@@ -91,8 +91,11 @@ export class TraitService {
     console.log(traitNames)
     if (traitNames === undefined) return null;
     await sequelize.query('LOCK TABLE trait IN ACCESS EXCLUSIVE MODE;', { transaction });
+    console.log('here 1')
     await TraitService.createTraitsIfRequired(traitNames, { transaction });
+    console.log('here 2')
     await TraitService.unTag(traitNames, { transaction, messageId, userId });
+    console.log('here 3')
     return TraitService.setNewTags(traitNames, { transaction, messageId, userId });
   }
 }
