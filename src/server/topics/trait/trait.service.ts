@@ -25,8 +25,6 @@ export class TraitService {
   }
 
   static async createTraitsIfRequired(traitNames, { transaction = null } = {}) {
-    console.log('all traits')
-    console.log(await Trait.findAll({ transaction, raw: true, nest: true, attributes: ['name'] }))
     const traitsAlreadyCreated = await Trait.unscoped().findAll({
       attributes: ['id', 'name'],
       where: { name: traitNames },
@@ -42,6 +40,8 @@ export class TraitService {
     const traitsNotExisting = traitNames.filter((trait) => !(traitsAlreadyCreatedNames.includes(trait)));
     console.log('traitsNotExisting')
     console.log(traitsNotExisting.map((name) => ({ name })))
+    console.log('all traits')
+    console.log(await Trait.findAll({ transaction, raw: true, nest: true, attributes: ['name'] }))
     return Trait.bulkCreate(traitsNotExisting.map((name) => ({ name })), { returning: true, transaction });
   }
 
