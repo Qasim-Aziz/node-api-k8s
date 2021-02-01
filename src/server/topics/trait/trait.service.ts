@@ -87,11 +87,11 @@ export class TraitService {
   }
 
   static async createOrUpdateTagsAndTraits(traitNames, { transaction = null, messageId = null, userId = null } = {}) {
+    if (traitNames === undefined) return null;
     console.log('traitNames in createOrUpdateTagsAndTraits : ')
     console.log(traitNames)
     console.log('userId : ', userId)
     console.log('messageId : ', messageId)
-    if (traitNames === undefined) return null;
     await sequelize.query('LOCK TABLE trait IN ACCESS EXCLUSIVE MODE;', { transaction });
     console.log('here 1')
     await TraitService.createTraitsIfRequired(traitNames, { transaction });
