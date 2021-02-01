@@ -3,8 +3,6 @@ import { Op, sequelize } from 'src/orm/database';
 
 export class TraitService {
   static async getThesaurus({ transaction = null } = {}) {
-    console.log('all traits')
-    console.log(await Trait.findAll({ transaction }))
     return Trait.findAll({
       where: { position: { [Op.not]: null } },
       order: ['position', 'name'],
@@ -34,8 +32,14 @@ export class TraitService {
       raw: true,
       nest: true,
     });
+    console.log('traitsAlreadyCreated in createTraitsIfRequired')
+    console.log(traitsAlreadyCreated)
     const traitsAlreadyCreatedNames = traitsAlreadyCreated.map((t) => t.name);
+    console.log('traitsAlreadyCreatedNames')
+    console.log(traitsAlreadyCreatedNames)
     const traitsNotExisting = traitNames.filter((trait) => !(traitsAlreadyCreatedNames.includes(trait)));
+    console.log('traitsNotExisting')
+    console.log(traitsNotExisting)
     return Trait.bulkCreate(traitsNotExisting.map((name) => ({ name })), { returning: true, transaction });
   }
 
@@ -81,6 +85,8 @@ export class TraitService {
   }
 
   static async createOrUpdateTagsAndTraits(traitNames, { transaction = null, messageId = null, userId = null } = {}) {
+    console.log('traitNames in createOrUpdateTagsAndTraits')
+    console.log(traitNames)
     if (traitNames === undefined) return null;
     await sequelize.query('LOCK TABLE trait IN ACCESS EXCLUSIVE MODE;', { transaction });
     await TraitService.createTraitsIfRequired(traitNames, { transaction });
