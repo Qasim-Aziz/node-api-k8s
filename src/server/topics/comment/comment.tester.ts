@@ -3,7 +3,7 @@ import request from 'supertest';
 import app from 'src/application';
 import { checkExpectedStatus, expectDeepMatch } from 'src/server/tests/tester.base';
 
-const formatCommentUser = ({ id, pseudo }) => ({ id, pseudo });
+const formatCommentUser = ({ id, pseudo, totalScore }) => ({ id, pseudo });
 const formatComment = ({ updated_at, ...comment }) => comment;
 
 export const commentMessage = (user, message, content, { status = httpStatus.OK } = {}) =>
@@ -50,7 +50,7 @@ export const loveComment = (user, comment, {
     .then((res) => {
       if (status === httpStatus.OK) {
         expect(formatComment(res.body.comment)).toMatchObject(formatComment({
-          ...comment, lovesCount, loved, isOwner,
+          ...comment, lovesCount, loved, isOwner, user: formatCommentUser(comment.user),
         }));
         Object.assign(comment, { lovesCount: res.body.comment.lovesCount });
       } else if (msgError) {
