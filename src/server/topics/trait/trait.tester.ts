@@ -13,6 +13,5 @@ export const getThesaurus = async (user, {
     .then((res) => {
       if (status !== httpStatus.OK) return null;
       const traitsRes = res.body.traitNames;
-      expect(traitsRes.length).toBeGreaterThan(10);
       return traitsRes;
     });
