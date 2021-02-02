@@ -158,9 +158,7 @@ export default class UserService {
       const isPseudoUsed = await UserService.checkPseudoExist(userData.pseudo, { transaction, userId });
       if (isPseudoUsed) throw new BackError('Le pseudo est déjà utilisé', httpStatus.BAD_REQUEST);
     }
-    console.log('here 0')
     await user.update(userData, { transaction });
-    console.log('here 0 bis')
     await TraitService.createOrUpdateTagsAndTraits(userData.traitNames, { transaction, userId });
     return UserService.getUser(userId, { reqUserId: userId, transaction });
   }

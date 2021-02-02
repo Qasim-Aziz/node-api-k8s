@@ -32,23 +32,9 @@ export class TraitService {
       raw: true,
       nest: true,
     });
-    console.log('traitsAlreadyCreated in createTraitsIfRequired')
-    console.log(traitsAlreadyCreated)
     const traitsAlreadyCreatedNames = traitsAlreadyCreated.map((t) => t.name);
-    console.log('traitsAlreadyCreatedNames')
-    console.log(traitsAlreadyCreatedNames)
     const traitsNotExisting = traitNames.filter((trait) => !(traitsAlreadyCreatedNames.includes(trait)));
-    console.log('traitsNotExisting')
-    console.log(traitsNotExisting.map((name) => ({ name })))
-    console.log('all traits')
-    console.log(await Trait.findAll({ transaction, raw: true, nest: true, attributes: ['name'] }))
-    console.log('all tags')
-    console.log(await Tag.findAll({ transaction, raw: true, nest: true }))
-    await Promise.all(traitsNotExisting.map((name) => ({ name })).map(async (trait) => {
-      console.log('trait : ', trait)
-      const t = await Trait.create(trait, { transaction });
-      console.log('trait : ', t)
-    }))
+    await Promise.all(traitsNotExisting.map((name) => ({ name })).map((trait) => Trait.create(trait, { transaction })));
   }
 
   static async unTag(traitNames, { transaction = null, messageId = null, userId = null } = {}) {
@@ -94,18 +80,10 @@ export class TraitService {
 
   static async createOrUpdateTagsAndTraits(traitNames, { transaction = null, messageId = null, userId = null } = {}) {
     if (traitNames === undefined) return null;
-    console.log('traitNames in createOrUpdateTagsAndTraits : ')
-    console.log(traitNames)
-    console.log('userId : ', userId)
-    console.log('messageId : ', messageId)
     await sequelize.query('LOCK TABLE trait IN ACCESS EXCLUSIVE MODE;', { transaction });
-    console.log('here 1')
     await TraitService.createTraitsIfRequired(traitNames, { transaction });
-    console.log('here 2')
     await TraitService.unTag(traitNames, { transaction, messageId, userId });
-    console.log('here 3')
     await TraitService.setNewTags(traitNames, { transaction, messageId, userId });
-    console.log('here 4')
     return null;
   }
 }
