@@ -139,5 +139,5 @@ User.init({
 
 // Scopes
 User.addScope('userComment', {
-  attributes: ['id', 'pseudo'],
+  attributes: ['id', 'pseudo', 'totalScore'],
 });
