@@ -56,6 +56,8 @@ describe('# Message Tests', () => {
       Testers.updateMessage(user1, message2.id, {}, { status: httpStatus.FORBIDDEN }));
     test('should update an existing message only if mine', () =>
       Testers.updateMessage(user2, message2.id, message2Update, { nbLoves: 0, nbViews: 0 }));
+    test('should update me with trait names', () =>
+      Testers.updateMe(user2, { traitNames: ['phobie', 'Az'] }));
     test('shouldnt get a private message if not mine', () =>
       Testers.getMessage(user2, message1.id, { status: httpStatus.FORBIDDEN }));
     test('should get a public message even if not mine', () =>
