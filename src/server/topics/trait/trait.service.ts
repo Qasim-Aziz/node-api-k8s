@@ -44,8 +44,10 @@ export class TraitService {
     console.log(await Trait.findAll({ transaction, raw: true, nest: true, attributes: ['name'] }))
     console.log('all tags')
     console.log(await Tag.findAll({ transaction, raw: true, nest: true }))
-
-    return Trait.bulkCreate(traitsNotExisting.map((name) => ({ name })), { returning: true, transaction });
+    await Promise.all(traitsNotExisting.map((name) => ({ name })).map((trait) => {
+      console.log('trait : ', trait)
+      return Trait.create(trait, { transaction });
+    }))
   }
 
   static async unTag(traitNames, { transaction = null, messageId = null, userId = null } = {}) {
