@@ -44,9 +44,10 @@ export class TraitService {
     console.log(await Trait.findAll({ transaction, raw: true, nest: true, attributes: ['name'] }))
     console.log('all tags')
     console.log(await Tag.findAll({ transaction, raw: true, nest: true }))
-    await Promise.all(traitsNotExisting.map((name) => ({ name })).map((trait) => {
+    await Promise.all(traitsNotExisting.map((name) => ({ name })).map(async (trait) => {
       console.log('trait : ', trait)
-      return Trait.create(trait, { transaction });
+      const t = await Trait.create(trait, { transaction });
+      console.log('trait : ', t)
     }))
   }
 
