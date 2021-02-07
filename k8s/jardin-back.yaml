@@ -16,6 +16,9 @@ spec:
   template:
     metadata:
       creationTimestamp: null
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3000'
       labels:
         app: jardin-back-preprod
     spec:
