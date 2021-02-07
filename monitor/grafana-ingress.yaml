@@ -16,7 +16,7 @@ spec:
     - api.anonyme.io
     secretName: beta-tls
   rules:
-  - host: beta.anonyme.io
+  - host: api.anonyme.io
     http:
       paths:
       - backend:
