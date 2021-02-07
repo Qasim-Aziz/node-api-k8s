@@ -13,7 +13,7 @@ metadata:
 spec:
   tls:
   - hosts:
-    - beta.anonyme.io
+    - api.anonyme.io
     secretName: beta-tls
   rules:
   - host: beta.anonyme.io
