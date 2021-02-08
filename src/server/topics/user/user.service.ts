@@ -37,7 +37,11 @@ export default class UserService {
     const tropheesStats = tropheesStatsRaw.reduce(
       (obj, item: any) => Object.assign(obj, { [item.tropheeCode]: item.tropheesStats }), {},
     );
-    return { nbTrophees: Object.values(tropheesStats).reduce((a: any, b: any) => a + b, 0), tropheesStats };
+    const nbTropheesGiven = await Trophee.count({
+      where: { userId },
+      transaction,
+    });
+    return { nbTrophees: Object.values(tropheesStats).reduce((a: any, b: any) => a + b, 0), tropheesStats, nbTropheesGiven };
   }
 
   static async getUser(userId, { reqUserId = null, transaction = null } = {}) {

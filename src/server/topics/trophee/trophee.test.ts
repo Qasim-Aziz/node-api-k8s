@@ -91,6 +91,14 @@ describe('# Trophee Tests', () => {
         [TropheeCode.BADGE_3]: 1,
       },
       nbTrophees: 3,
+      nbTropheesGiven: 0,
+    },
+  }));
+
+  test('shoud get the right number of trophees given', () => Testers.getUser(user2, user2.id, {
+    expectedUser: {
+      nbTrophees: 0,
+      nbTropheesGiven: 2,
     },
   }));
 });
