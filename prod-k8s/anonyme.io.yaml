@@ -8,12 +8,12 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    #cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
-  tls:
-  - hosts:
-    - api.anonyme.io
-    secretName: api-tls
+  # tls:
+  # - hosts:
+  #   - api.anonyme.io
+  #   secretName: api-tls
   rules:
   - host: api.anonyme.io
     http:
