@@ -1,12 +1,12 @@
+import { Op } from 'sequelize';
 import {
-  cast, col, fn, Op, literal,
-} from 'sequelize';
-import {
-  Message, User, Tag, Comment, Follower,
+  Message, User, Tag, Comment, Follower, Trophee,
 } from 'src/orm';
 import { BackError, moment } from 'src/server/helpers';
 import httpStatus from 'http-status';
 import { DynamicLevel, EmotionNote, PrivacyLevel } from 'src/server/constants';
+import { Sequelize } from 'src/orm/database';
+import { TraitService } from 'src/server/topics/trait/trait.service';
 
 export default class UserService {
   static async checkEmailExist(email, { transaction = null } = {}) {
@@ -19,8 +19,33 @@ export default class UserService {
       .then((count) => count !== 0);
   }
 
-  static async getUser(userId, { loggedUserId = null, transaction = null } = {}) {
-    return User.unscoped().findByPk(userId, {
+  static async getUserTropheeInfo(userId, { transaction = null } = {}) {
+    const tropheesStatsRaw = await Trophee.findAll({
+      group: ['tropheeCode'],
+      attributes: ['tropheeCode', [Sequelize.cast(Sequelize.fn('COUNT', 'tropheeCode'), 'int'), 'tropheesStats']],
+      include: [
+        {
+          model: Message.unscoped(),
+          attributes: [],
+          required: true,
+          where: { userId },
+        },
+      ],
+      transaction,
+      raw: true,
+    });
+    const tropheesStats = tropheesStatsRaw.reduce(
+      (obj, item: any) => Object.assign(obj, { [item.tropheeCode]: item.tropheesStats }), {},
+    );
+    const nbTropheesGiven = await Trophee.count({
+      where: { userId },
+      transaction,
+    });
+    return { nbTrophees: Object.values(tropheesStats).reduce((a: any, b: any) => a + b, 0), tropheesStats, nbTropheesGiven };
+  }
+
+  static async getUser(userId, { reqUserId = null, transaction = null } = {}) {
+    const userRaw = await User.unscoped().findByPk(userId, {
       attributes: [
         'id',
         'pseudo',
@@ -28,25 +53,24 @@ export default class UserService {
         'description',
         'shouldResetPassword',
         'totalScore',
-        'remindingScore',
+        'remainingScore',
         'dynamic',
-        [cast(fn('COUNT', col('"messages"."id"')), 'int'), 'nbMessages'],
-        [cast(fn('COUNT', col('"followers"."id"')), 'int'), 'nbFollowers'],
-        [literal('"followers".id IS NOT NULL'), 'following'],
+        'type',
+        'gender',
       ],
-      include: [
-        {
-          model: Message.unscoped(), attributes: [], required: false,
-        },
-        {
-          model: Follower.unscoped(), attributes: [], as: 'followers', required: false,
-        },
-      ],
-      group: ['"user"."id"', '"followers"."id"'],
       transaction,
       raw: true,
       nest: true,
     });
+    const nbMessages = await Message.count({ where: { userId }, transaction });
+    const nbFollowers = await Follower.count({ where: { followedId: userId }, transaction });
+    const nbFollowed = await Follower.count({ where: { followerId: userId }, transaction });
+    const following = !!(await Follower.findOne({ where: { followerId: reqUserId, followedId: userId }, transaction }));
+    const userTropheeInfo = await UserService.getUserTropheeInfo(userId, { transaction });
+    const traitNames = await TraitService.getTraits({ userId, transaction });
+    return {
+      ...userRaw, ...userTropheeInfo, nbMessages, nbFollowers, nbFollowed, following, traitNames,
+    };
   }
 
   static computeTraitsScores(traitsLength) {
@@ -119,11 +143,11 @@ export default class UserService {
     const delta = messageId
       ? await UserService.updateMessageScore(messageId, { deleteCase, transaction })
       : await UserService.updateCommentScore(commentId, { deleteCase, transaction });
-    const user = await User.unscoped().findByPk(userId, { attributes: ['id', 'totalScore', 'remindingScore'], transaction });
+    const user = await User.unscoped().findByPk(userId, { attributes: ['id', 'totalScore', 'remainingScore'], transaction });
     await User.update(
       {
         totalScore: Math.max(user.totalScore + delta, 0),
-        remindingScore: Math.max(user.remindingScore + delta, 0),
+        remainingScore: Math.max(user.remainingScore + delta, 0),
       },
       { where: { id: user.id }, transaction },
     );
@@ -139,13 +163,14 @@ export default class UserService {
       if (isPseudoUsed) throw new BackError('Le pseudo est déjà utilisé', httpStatus.BAD_REQUEST);
     }
     await user.update(userData, { transaction });
-    return UserService.getUser(userId, { transaction });
+    await TraitService.createOrUpdateTagsAndTraits(userData.traitNames, { transaction, userId });
+    return UserService.getUser(userId, { reqUserId: userId, transaction });
   }
 
   static async updateConnexionInformation(userId, nbConsecutiveConnexionDays, { transaction = null } = {}) {
     await User.update({ nbConsecutiveConnexionDays, lastConnexionDate: moment().toISOString() },
       { where: { id: userId }, transaction });
-    return UserService.getUser(userId, { transaction });
+    return UserService.getUser(userId, { reqUserId: userId, transaction });
   }
 
   static computeNbConsecutiveDays(lastConnexionDate, previousNbConsecutiveConnexionDays) {
@@ -175,11 +200,11 @@ export default class UserService {
     } else {
       await Follower.create({ followerId, followedId }, { transaction });
     }
-    return UserService.getUser(followedId, { transaction });
+    return UserService.getUser(followedId, { reqUserId: followerId, transaction });
   }
 
-  static async getFollowers(followedId, { transaction = null } = {}) {
-    return User.unscoped().findAll({
+  static async getFollowers(followedId, { transaction = null, limit = 10, offset = 0 } = {}) {
+    const { rows: followers, count: total } = await User.unscoped().findAndCountAll({
       attributes: ['pseudo'],
       include: [
         {
@@ -192,11 +217,15 @@ export default class UserService {
       transaction,
       raw: true,
       nest: true,
+      limit,
+      offset,
+      subQuery: false,
     });
+    return { followers, total };
   }
 
-  static async getFollowed(followerId, { transaction = null } = {}) {
-    return User.unscoped().findAll({
+  static async getFollowed(followerId, { transaction = null, limit = 10, offset = 0 } = {}) {
+    const { rows: followed, count: total } = await User.unscoped().findAndCountAll({
       attributes: ['pseudo'],
       include: [
         {
@@ -209,7 +238,11 @@ export default class UserService {
       transaction,
       raw: true,
       nest: true,
+      limit,
+      offset,
+      subQuery: false,
     });
+    return { followed, total };
   }
 
   static getDynamicLevel(note) {

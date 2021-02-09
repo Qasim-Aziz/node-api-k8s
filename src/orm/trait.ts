@@ -6,6 +6,8 @@ export class Trait extends OrmModel {
   public name!: string;
 
   public tags!: Tag[];
+
+  public position!: number;
 }
 
 Trait.init({
@@ -13,6 +15,11 @@ Trait.init({
     type: DataTypes.STRING,
     field: 'name',
     allowNull: false,
+  },
+  position: {
+    type: DataTypes.INTEGER,
+    field: 'position',
+    allowNull: true,
   },
 }, {
   sequelize,

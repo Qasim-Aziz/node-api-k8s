@@ -1,7 +1,9 @@
 import httpStatus from 'http-status';
 import bcrypt from 'bcrypt';
 import { User } from 'src/orm';
-import { BackError, logger, moment } from 'src/server/helpers';
+import {
+  BackError, Env, logger, moment,
+} from 'src/server/helpers';
 import SessionService from 'src/server/topics/auth/session.service';
 import { SessionManager } from 'src/server/acl/session-manager';
 import UserService from 'src/server/topics/user/user.service';
@@ -9,6 +11,7 @@ import crypto from 'crypto';
 import EmailService from 'src/server/topics/email/email.service';
 import { EmailTemplates } from 'src/server/topics/email/templates/templates.enum';
 import { Op } from 'src/orm/database';
+import { UserType } from 'src/server/constants';
 
 export class AuthService {
   static async registerPatient({
@@ -16,7 +19,7 @@ export class AuthService {
   }, { transaction = null } = {}) {
     const passwordHash = await bcrypt.hash(password, 10);
     await User.create({
-      email, pseudo, passwordHash, gender,
+      email, pseudo, passwordHash, gender, type: UserType.PATIENT,
     }, { transaction });
     return AuthService.login(email, password, { transaction });
   }
@@ -33,7 +36,7 @@ export class AuthService {
     const session = await SessionService.createSession(user.id, { transaction });
     const token = SessionManager.makeSession(session);
     await UserService.refreshUserLastConnexionDate(user.id, { transaction });
-    return { token, user: await UserService.getUser(user.id, { transaction }) };
+    return { token, user: await UserService.getUser(user.id, { reqUserId: user.id, transaction }) };
   }
 
   static async logout(token, { transaction = null } = {}) {
@@ -47,7 +50,9 @@ export class AuthService {
       logger.info(`user with email ${email} not found`);
       return;
     }
-    const resetPasswordCode = crypto.randomBytes(6).toString('hex').substr(2, 6).toUpperCase();
+    const resetPasswordCode = Env.isProd
+      ? crypto.randomBytes(6).toString('hex').substr(2, 6).toUpperCase()
+      : '123456';
     const resetPasswordExpires = moment().add(1, 'hour');
     await user.update({ resetPasswordCode, resetPasswordExpires }, { transaction });
 

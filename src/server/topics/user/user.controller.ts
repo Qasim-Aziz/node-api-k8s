@@ -10,23 +10,8 @@ export class UserController {
   })
   @Auth.forLogged()
   static async getUser(req, { transaction = null } = {}) {
-    const { params: { userId }, user: { id: loggedUserId } } = req;
-    const user = await UserService.getUser(userId, { loggedUserId, transaction });
-    return { user };
-  }
-
-  @validation({
-    params: { userId: Joi.number().integer().required() },
-    body: {
-      pseudo: Joi.string().lowercase().optional(),
-      description: Joi.string().optional(),
-    },
-  })
-  @Auth.forLogged()
-  static async updateUser(req, { transaction = null } = {}) {
-    const { params: { userId }, body: userData, user: { id: reqUserId } } = req;
-    if (userId !== reqUserId) throw new BackError('Cannot update another user', httpStatus.FORBIDDEN);
-    const user = await UserService.updateUser(userId, userData, { transaction });
+    const { params: { userId }, user: { id: reqUserId } } = req;
+    const user = await UserService.getUser(userId, { reqUserId, transaction });
     return { user };
   }
 
@@ -34,13 +19,16 @@ export class UserController {
   @Auth.forLogged()
   static async getMe(req, { transaction = null } = {}) {
     const { user: { id: userId } } = req;
-    const user = await UserService.getUser(userId, { transaction });
+    const user = await UserService.getUser(userId, { reqUserId: userId, transaction });
     return { user };
   }
 
   @validation({
     body: {
       password: Joi.string().min(8).max(50),
+      pseudo: Joi.string().lowercase().optional(),
+      description: Joi.string().optional(),
+      traitNames: Joi.array().items(Joi.string().regex(/^[A-Za-z0-9]+$/)).optional(),
     },
   })
   @Auth.forLogged()
@@ -92,24 +80,34 @@ export class UserController {
   }
 
   @validation({
-    params: { userId: Joi.number().integer().required() },
+    params: {
+      userId: Joi.number().integer().required(),
+    },
+    query: {
+      limit: Joi.number().integer().optional().default(10),
+      offset: Joi.number().integer().optional().default(0),
+    },
   })
   @Auth.forLogged()
   static async getFollowers(req, { transaction = null } = {}) {
-    const { params: { userId: followedId } } = req;
-
-    const followers = await UserService.getFollowers(followedId, { transaction });
-    return { followers };
+    const { params: { userId: followedId }, query: { limit, offset } } = req;
+    const { followers, total } = await UserService.getFollowers(followedId, { transaction, limit, offset });
+    return { followers, total };
   }
 
   @validation({
-    params: { userId: Joi.number().integer().required() },
+    params: {
+      userId: Joi.number().integer().required(),
+    },
+    query: {
+      limit: Joi.number().integer().optional().default(10),
+      offset: Joi.number().integer().optional().default(0),
+    },
   })
   @Auth.forLogged()
   static async getFollowed(req, { transaction = null } = {}) {
-    const { params: { userId: followerId } } = req;
-
-    const followed = await UserService.getFollowed(followerId, { transaction });
-    return { followed };
+    const { params: { userId: followerId }, query: { limit, offset } } = req;
+    const { followed, total } = await UserService.getFollowed(followerId, { transaction, limit, offset });
+    return { followed, total };
   }
 }

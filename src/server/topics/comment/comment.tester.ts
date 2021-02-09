@@ -3,7 +3,7 @@ import request from 'supertest';
 import app from 'src/application';
 import { checkExpectedStatus, expectDeepMatch } from 'src/server/tests/tester.base';
 
-const formatCommentUser = ({ id, pseudo }) => ({ id, pseudo });
+const formatCommentUser = ({ id, pseudo, totalScore }) => ({ id, pseudo });
 const formatComment = ({ updated_at, ...comment }) => comment;
 
 export const commentMessage = (user, message, content, { status = httpStatus.OK } = {}) =>
@@ -22,14 +22,18 @@ export const commentMessage = (user, message, content, { status = httpStatus.OK 
       return res.body.comment;
     });
 
-export const getMessageComments = (user, message, { status = httpStatus.OK, expectedResults = null, msgError = null } = {}) =>
+export const getMessageComments = (user, message, {
+  status = httpStatus.OK, expectedResults = null, msgError = null, total = null, limit = 10, offset = 0,
+} = {}) =>
   request(app)
     .get(`/api/comments?messageId=${message.id}`)
+    .query({ limit, offset })
     .set('Authorization', user.token)
     .expect(checkExpectedStatus(status))
     .then((res) => {
       if (status === httpStatus.OK) {
         expectDeepMatch(res.body.comments.map((c) => c.id), expectedResults);
+        if (total) expect(res.body.total).toEqual(total);
       } else if (msgError) {
         expect(res.body.message).toEqual(msgError);
       }
@@ -46,7 +50,7 @@ export const loveComment = (user, comment, {
     .then((res) => {
       if (status === httpStatus.OK) {
         expect(formatComment(res.body.comment)).toMatchObject(formatComment({
-          ...comment, lovesCount, loved, isOwner,
+          ...comment, lovesCount, loved, isOwner, user: formatCommentUser(comment.user),
         }));
         Object.assign(comment, { lovesCount: res.body.comment.lovesCount });
       } else if (msgError) {
