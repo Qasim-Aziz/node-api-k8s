@@ -18,11 +18,11 @@ spec:
   - host: api.anonyme.io
     http:
       paths:
-      - backend:
-          serviceName: jardin-prod-svc
-          servicePort: 3000
-        path: /
       # - backend:
-      #     serviceName: nginx-prod
-      #     servicePort: 80
-      #   path: /
+      #     serviceName: jardin-prod-svc
+      #     servicePort: 3000
+      #   path: /api
+      - backend:
+          serviceName: nginx-prod
+          servicePort: 80
+        path: /
