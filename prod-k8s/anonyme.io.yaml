@@ -4,7 +4,7 @@ metadata:
   name: anonyme.io
   namespace: prod
   annotations:
-    #kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: nginx
     #nginx.ingress.kubernetes.io/ssl-redirect: "false"
     #nginx.ingress.kubernetes.io/use-regex: "true"
     #nginx.ingress.kubernetes.io/rewrite-target: /$1
