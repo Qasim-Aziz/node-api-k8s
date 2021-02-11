@@ -40,6 +40,6 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: nginx-prod
-          servicePort: 80
+          serviceName: jardin-prod-svc
+          servicePort: 3000
         
