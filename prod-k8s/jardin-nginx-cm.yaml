@@ -11,7 +11,7 @@ data:
         server_name anonyme.io;
         
         location / {
-          proxy_pass http://10.60.11.18:3000;
+          proxy_pass http://jardin-prod-svc:3000;
         }
   
       }

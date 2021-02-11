@@ -1,27 +1,47 @@
+# apiVersion: networking.k8s.io/v1beta1
+# kind: Ingress
+# metadata:
+#   name: anonyme.io
+#   namespace: prod
+#   annotations:
+#     kubernetes.io/ingress.class: nginx
+#     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+#     nginx.ingress.kubernetes.io/use-regex: "true"
+#     nginx.ingress.kubernetes.io/rewrite-target: /$1
+#     #cert-manager.io/cluster-issuer: "letsencrypt-prod"
+# spec:
+#   # tls:
+#   # - hosts:
+#   #   - api.anonyme.io
+#   #   secretName: api-tls
+#   rules:
+#   - host: api.anonyme.io
+#     http:
+#       paths:
+#       # - backend:
+#       #     serviceName: jardin-prod-svc
+#       #     servicePort: 3000
+#       #   path: /api
+#       - backend:
+#           serviceName: nginx
+#           servicePort: 80
+        
+
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: anonyme.io
+  name: ingress-resource
   namespace: prod
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
-  tls:
-  - hosts:
-    - api.anonyme.io
-    secretName: api-tls
   rules:
-  - host: api.anonyme.io
+  - host: frontend.104.198.30.205.nip.io
     http:
       paths:
-      # - backend:
-      #     serviceName: jardin-prod-svc
-      #     servicePort: 3000
-      #   path: /api
       - backend:
           serviceName: nginx-prod
           servicePort: 80
