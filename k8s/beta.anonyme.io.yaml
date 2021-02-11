@@ -16,7 +16,7 @@ spec:
   #   - beta.anonyme.io
   #   secretName: beta-tls
   rules:
-  - host: frontend.104.198.30.205.nip.io
+  - host: beta.104.198.30.205.nip.io
     http:
       paths:
       - backend:
