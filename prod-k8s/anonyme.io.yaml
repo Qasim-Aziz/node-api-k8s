@@ -23,6 +23,6 @@ spec:
       #     servicePort: 3000
       #   path: /api
       - backend:
-          serviceName: jardin-prod-svc
-          servicePort: 3000
+          serviceName: nginx
+          servicePort: 80
         
