@@ -46,7 +46,4 @@ spec:
           serviceName: nginx-prod
           servicePort: 80
         path: /
-      - backend:
-          serviceName: grafana.monitoring.svc.cluster.local
-          servicePort: 3000
-        path: /grafana
+      
