@@ -1,10 +1,12 @@
 import httpStatus from 'http-status';
 import request from 'supertest';
 import app from 'src/application';
-import { EmotionCode, PrivacyLevel } from 'src/server/constants';
+import { ContextType, EmotionCode, PrivacyLevel } from 'src/server/constants';
 import { checkExpectedStatus } from 'src/server/tests/tester.base';
 
 let messageCounter = 0;
+
+const omitTraitNames = ({ traitNames, ...message }) => (message);
 
 export const publishMessage = async (user, message, { status = httpStatus.OK } = {}) => request(app)
   .post('/api/messages')
@@ -13,10 +15,12 @@ export const publishMessage = async (user, message, { status = httpStatus.OK } =
   .expect(checkExpectedStatus(status))
   .then((res) => {
     const messageRes = res.body.message;
-    expect(messageRes).toMatchObject(message);
+    expect(messageRes).toMatchObject(omitTraitNames(message));
+    if (message.traitNames) expect(messageRes.traitNames.sort()).toMatchObject(message.traitNames.sort());
     expect(messageRes.nbLoves).toEqual(0);
     expect(messageRes.nbViews).toEqual(0);
     expect(messageRes.userId).toEqual(user.id);
+    expect(messageRes.isOwner).toEqual(true);
     return Object.assign(message, messageRes);
   });
 
@@ -47,6 +51,7 @@ export const updateMessage = async (user, messageId, messageData, { status = htt
   if (nbLoves !== null) expect(messageRes.nbLoves).toEqual(nbLoves);
   if (nbViews !== null) expect(messageRes.nbViews).toEqual(nbViews);
   expect(messageRes.userId).toEqual(user.id);
+  expect(messageRes.isOwner).toEqual(true);
   return messageRes;
 };
 
@@ -69,12 +74,16 @@ export const getMessage = async (user, messageId, {
   if (nbComments !== null) expect(messageRes.nbComments).toEqual(nbComments);
   expect(messageRes.loved).toEqual(loved);
   expect(messageRes.commented).toEqual(commented);
+  expect(messageRes.isOwner).toEqual(user.id === messageRes.userId);
   return messageRes;
 };
 
-export const getNextMessage = async (user, { status = httpStatus.OK, expectedMessageId = null, nbViews = null } = {}) => {
+export const getNextMessage = async (user, {
+  status = httpStatus.OK, expectedMessageId = null, nbViews = null, context = ContextType.ALL,
+} = {}) => {
   const res = await request(app)
     .get('/api/messages/next')
+    .query({ context })
     .set('Authorization', user.token)
     .expect(checkExpectedStatus(status));
   if (status !== httpStatus.OK) return null;
@@ -145,15 +154,18 @@ export const searchTraits = async (user, q, { status = httpStatus.OK, expectedRe
   return traitsRes;
 };
 
-export const getAllMessages = async (user, requestedUser, { status = httpStatus.OK, expectedMessagesIds = [] } = {}) => {
+export const getAllMessages = async (user, requestedUser, {
+  status = httpStatus.OK, expectedMessagesIds = [], total = null, limit = 10, offset = 0,
+} = {}) => {
   const res = await request(app)
     .get('/api/messages')
     .set('Authorization', user.token)
-    .query({ userId: requestedUser.id })
+    .query({ userId: requestedUser.id, limit, offset })
     .expect(checkExpectedStatus(status));
   if (status !== httpStatus.OK) return null;
   const messagesRes = res.body.messages;
-  expect(messagesRes.map((m) => m.id)).toEqual(expectedMessagesIds);
+  if (total) expect(res.body.total).toEqual(total);
+  expect(messagesRes.map((m) => m.id).sort()).toEqual(expectedMessagesIds.sort());
   if (user.id !== requestedUser.id) expect([...new Set(messagesRes.map((m) => m.privacy))]).toEqual([PrivacyLevel.PUBLIC]);
   return messagesRes;
 };

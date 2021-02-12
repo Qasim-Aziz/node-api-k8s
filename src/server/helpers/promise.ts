@@ -55,7 +55,7 @@ export class PromiseUtils {
     ],
   );
 
-  static promiseRetry = async (block, { retries = 1, timeout = 20 } = {}) => {
+  static promiseRetry = async (block, { retries = 0, timeout = 20 } = {}) => {
     await PromiseUtils.promiseTimeout((async () => {
       const blockRecursive = async (numberOfRetriesLeft, firstError = null) => {
         try {

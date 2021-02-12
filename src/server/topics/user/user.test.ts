@@ -57,14 +57,14 @@ describe('# Users Tests', () => {
       return Testers.getMe(user, { expectedUser: { id, pseudo, description } });
     });
 
-    test('should update me', () =>
-      Testers.updateUser(user, user.id, { description: 'Test' }));
+    test('should update me with trait names', () =>
+      Testers.updateMe(user, { description: 'Test', traitNames: ['Azerty', 'Bzerty'] }));
 
-    test('should not update another user', () =>
-      Testers.updateUser(user, anotherUser.id, {}, { status: httpStatus.FORBIDDEN }));
+    test('should update me with different trait names', () =>
+      Testers.updateMe(user, { traitNames: ['Bzerty', 'Czerty'] }));
 
     test('should not update me with another user pseudo', () =>
-      Testers.updateUser(user, user.id, { pseudo: existingPseudo }, { status: httpStatus.BAD_REQUEST }));
+      Testers.updateMe(user, { pseudo: existingPseudo }, { status: httpStatus.BAD_REQUEST }));
 
     test('should compute the right stats for user', async () => {
       await Testers.publishMessage(user, message1);
@@ -96,7 +96,7 @@ describe('# Users Tests', () => {
       const userScore = await Testers.registerUser({
         password: 'pwd', email: 'userScore@yopmail.com', pseudo: 'userScore', gender: GenderType.MALE,
       });
-      await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remindingScore: 0 } });
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remainingScore: 0 } });
       const message12points: any = {
         content: Array(1200).join('x'),
         privacy: PrivacyLevel.PUBLIC,
@@ -104,17 +104,17 @@ describe('# Users Tests', () => {
         traitNames: ['A', 'B', 'C', 'D', 'E', 'F'],
       };
       await Testers.publishMessage(userScore, message12points);
-      await Testers.getMe(userScore, { expectedUser: { totalScore: 12, remindingScore: 12 } });
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 12, remainingScore: 12 } });
       await Testers.updateMessage(userScore, message12points.id, { content: 'abc', privacy: PrivacyLevel.PRIVATE });
-      await Testers.getMe(userScore, { expectedUser: { totalScore: 3, remindingScore: 3 } });
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 3, remainingScore: 3 } });
       await Testers.deleteMessage(userScore, message12points.id);
-      await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remindingScore: 0 } });
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remainingScore: 0 } });
       const comment2Points = await Testers.commentMessage(userScore, message1, Array(160).join('x'));
-      await Testers.getMe(userScore, { expectedUser: { totalScore: 2, remindingScore: 2 } });
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 2, remainingScore: 2 } });
       await Testers.updateMessageComment(userScore, comment2Points, 'short comment');
-      await Testers.getMe(userScore, { expectedUser: { totalScore: 1, remindingScore: 1 } });
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 1, remainingScore: 1 } });
       await Testers.deleteMessageComment(userScore, comment2Points);
-      await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remindingScore: 0 } });
+      await Testers.getMe(userScore, { expectedUser: { totalScore: 0, remainingScore: 0 } });
     });
 
     test('should update correctly user score', async () => {

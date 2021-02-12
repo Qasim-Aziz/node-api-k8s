@@ -89,3 +89,37 @@ export enum GenderType {
   MALE = 'MALE',
   FEMALE = 'FEMALE',
 }
+
+export enum UserType {
+  PATIENT = 'PATIENT',
+  THERAPIST = 'THERAPIST',
+}
+
+export enum ContextType {
+  ALL = 'ALL',
+  FOLLOWED = 'FOLLOWED',
+}
+
+export enum TropheeCode {
+  BADGE_1 = 'BADGE_1',
+  BADGE_2 = 'BADGE_2',
+  BADGE_3 = 'BADGE_3',
+  BADGE_4 = 'BADGE_4',
+  BADGE_5 = 'BADGE_5',
+  BADGE_6 = 'BADGE_6',
+  BADGE_7 = 'BADGE_7',
+  BADGE_8 = 'BADGE_8',
+  BADGE_9 = 'BADGE_9',
+}
+
+export const TropheeScore = {
+  [TropheeCode.BADGE_1]: 4,
+  [TropheeCode.BADGE_2]: 9,
+  [TropheeCode.BADGE_3]: 15,
+  [TropheeCode.BADGE_4]: 25,
+  [TropheeCode.BADGE_5]: 40,
+  [TropheeCode.BADGE_6]: 50,
+  [TropheeCode.BADGE_7]: 80,
+  [TropheeCode.BADGE_8]: 150,
+  [TropheeCode.BADGE_9]: 300,
+};
