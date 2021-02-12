@@ -39,7 +39,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
-  - host: api.anonyme.io
+  - host: frontend.104.198.30.205.nip.io
     http:
       paths:
       - backend:
