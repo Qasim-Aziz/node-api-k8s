@@ -46,7 +46,4 @@ spec:
           serviceName: nginx-prod
           servicePort: 80
         path: /
-      - backend:
-          serviceName: grafana-svc
-          servicePort: 3000
-        path: /grafana
+      
