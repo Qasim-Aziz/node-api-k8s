@@ -6,6 +6,9 @@ metadata:
     app: jardin-back
   name: jardin-prod-svc
   namespace: prod
+  annotations:
+      prometheus.io/scrape: 'true'
+      prometheus.io/port:   '3000'
 spec:
   ports:
   - port: 3000
