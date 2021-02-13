@@ -7,6 +7,8 @@ metadata:
     app: jardin-back
   name: jardin-back-prod
   namespace: prod
+  annotations:
+      prometheus.io/scrape: 'true'
 spec:
   replicas: 1
   selector:
