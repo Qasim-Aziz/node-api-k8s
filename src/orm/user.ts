@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { OrmModel, sequelize } from 'src/orm/database';
 import { Utils } from 'src/server/helpers';
-import { DynamicLevel, GenderType } from 'src/server/constants';
+import { DynamicLevel, GenderType, UserType } from 'src/server/constants';
 
 export class User extends OrmModel {
   public email!: string;
@@ -18,11 +18,19 @@ export class User extends OrmModel {
 
   public totalScore!: number;
 
-  public remindingScore!: number;
+  public remainingScore!: number;
 
   public lastConnexionDate!: Date;
 
   public shouldResetPassword!: boolean;
+
+  public gender!: string;
+
+  public type!: string;
+
+  public nbTrophees!: number;
+
+  public tropheesStats!: Record<string, number>;
 
   public resetPasswordCode!: string;
 
@@ -67,6 +75,12 @@ User.init({
     allowNull: false,
     field: 'gender',
   },
+  type: {
+    type: DataTypes.ENUM,
+    values: Object.values(UserType),
+    allowNull: false,
+    field: 'type',
+  },
   description: {
     type: DataTypes.TEXT,
     allowNull: true,
@@ -89,11 +103,11 @@ User.init({
     defaultValue: 0,
     field: 'total_score',
   },
-  remindingScore: {
+  remainingScore: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,
-    field: 'reminding_score',
+    field: 'remaining_score',
   },
   isAdmin: {
     type: DataTypes.BOOLEAN,
@@ -125,5 +139,5 @@ User.init({
 
 // Scopes
 User.addScope('userComment', {
-  attributes: ['id', 'pseudo'],
+  attributes: ['id', 'pseudo', 'totalScore'],
 });

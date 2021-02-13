@@ -3,6 +3,18 @@ import Sequelize, { DataTypes } from "sequelize";
 
 const lib = require('./lib/lib');
 
+const TROPHEES_CODES = {
+  BADGE_1: 'BADGE_1',
+  BADGE_2: 'BADGE_2',
+  BADGE_3: 'BADGE_3',
+  BADGE_4: 'BADGE_4',
+  BADGE_5: 'BADGE_5',
+  BADGE_6: 'BADGE_6',
+  BADGE_7: 'BADGE_7',
+  BADGE_8: 'BADGE_8',
+  BADGE_9: 'BADGE_9',
+};
+
 const EMOTION_CODES = {
   APAISE: 'APAISE',
   CONTENT: 'CONTENT',
@@ -99,6 +111,10 @@ module.exports = {
         type: Sequelize.STRING(255),
         allowNull: false,
       },
+      position: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
     };
 
     const tagFields = {
@@ -126,7 +142,11 @@ module.exports = {
       },
       message_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
+      },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
       },
     };
 
@@ -161,6 +181,45 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
+      },
+    };
+
+    const tropheeFields = {
+      id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
+      deleted_at: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      message_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      offered_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
+      trophee_code: {
+        type: Sequelize.ENUM,
+        values: Object.values(TROPHEES_CODES),
+        allowNull: false,
       },
     };
 
@@ -238,6 +297,7 @@ module.exports = {
     await lib.createTable('view', viewingFields);
     await lib.createTable('love', heartFields);
     await lib.createTable('favorite', favoriteFields);
+    await lib.createTable('trophee', tropheeFields);
   },
 
   down: (queryInterface, Sequelize) => {

@@ -26,11 +26,12 @@ export default class CommentService {
           model: Love.unscoped(), attributes: [], where: { userId }, required: false,
         },
       ],
-      where: {
-        messageId,
-        parentId: null,
-      },
+      where: { messageId, parentId: null },
       transaction,
+      subQuery: false,
+      limit,
+      order: [['postedAt', 'desc']],
+      offset,
     });
     return { comments, total };
   }

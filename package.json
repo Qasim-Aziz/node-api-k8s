@@ -13,7 +13,7 @@
     "check-circular:all": "npm run build:all && (cd dist; npm run check-circular)",
     "check-circular": "madge --circular ./",
     "check-db": "",
-    "init-db": "NODE_ENV=test ./run-script.js db.init",
+    "init-db": "NODE_ENV=test ./run-script.js db.init | pino-pretty -i hostname",
     "lint": "eslint --quiet --fix --cache .",
     "migrate": "FORCE_UNIQUE_TRANSACTION=true ./run-script.js db.migrate",
     "init-data": "NODE_ENV=test FORCE_UNIQUE_TRANSACTION=true ./run-script.js init-data | pino-pretty -i hostname",

@@ -6,6 +6,8 @@ metadata:
     app: nginx
   name: nginx-prod
   namespace: prod
+  annotations:
+      prometheus.io/scrape: 'true'
 spec:
   replicas: 1
   selector:

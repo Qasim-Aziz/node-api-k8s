@@ -16,7 +16,6 @@ userRoutes
   })
   .addRoute('/:userId', {
     get: { handler: UserController.getUser },
-    put: { handler: UserController.updateUser },
   })
   .addRoute('/:userId/refreshUserLastConnexionDate', {
     post: { handler: UserController.refreshUserLastConnexionDate },
