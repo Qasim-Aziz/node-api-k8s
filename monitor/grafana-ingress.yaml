@@ -1,53 +1,53 @@
+# # apiVersion: networking.k8s.io/v1beta1
+# # kind: Ingress
+# # metadata:
+# #   name: grafana-ingress
+# #   namespace: monitoring
+# #   annotations:
+# #     kubernetes.io/ingress.class: nginx
+# #     nginx.ingress.kubernetes.io/use-regex: "true"
+# #     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+# #     nginx.ingress.kubernetes.io/rewrite-target: /$1
+# #     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    
+# # spec:
+# #   tls:
+# #   - hosts:
+# #     - api.anonyme.io
+# #     secretName: beta-tls
+# #   rules:
+# #   - host: api.anonyme.io
+# #     http:
+# #       paths:
+# #       - backend:
+# #           serviceName: grafana
+# #           servicePort: 3000
+# #         path: /grafana
+      
 # apiVersion: networking.k8s.io/v1beta1
 # kind: Ingress
 # metadata:
-#   name: grafana-ingress
+#   name: monitor-ingress
 #   namespace: monitoring
 #   annotations:
 #     kubernetes.io/ingress.class: nginx
 #     nginx.ingress.kubernetes.io/use-regex: "true"
 #     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 #     nginx.ingress.kubernetes.io/rewrite-target: /$1
-#     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+# #    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     
 # spec:
-#   tls:
-#   - hosts:
-#     - api.anonyme.io
-#     secretName: beta-tls
+#   # tls:
+#   # - hosts:
+#   #   - beta.anonyme.io
+#   #   secretName: beta-tls
 #   rules:
-#   - host: api.anonyme.io
+#   - host: frontend.104.198.30.205.nip.io
 #     http:
 #       paths:
 #       - backend:
 #           serviceName: grafana
 #           servicePort: 3000
 #         path: /grafana
-      
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: monitor-ingress
-  namespace: monitoring
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
-#    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    
-spec:
-  # tls:
-  # - hosts:
-  #   - beta.anonyme.io
-  #   secretName: beta-tls
-  rules:
-  - host: frontend.104.198.30.205.nip.io
-    http:
-      paths:
-      - backend:
-          serviceName: grafana
-          servicePort: 3000
-        path: /grafana
       
     
