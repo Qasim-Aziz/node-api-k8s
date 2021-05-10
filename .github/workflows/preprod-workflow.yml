@@ -22,4 +22,12 @@ jobs:
     - name: Docker push images
       run: |
         docker push docker.io/qasim683/jardin-node-api:1.0.0
+
+    - name: test docker
+      run: |
+        docker run -d -p 2000:3000 qasim683/jardin-node-api:1.0.0 npm run serve
+    - name: curl localhost
+      run: |
+        curl -v localhost:2000/api
+        
  
